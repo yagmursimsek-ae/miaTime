@@ -1,0 +1,66 @@
+---
+title: "miaTime: Microbiome Time Series Analysis"
+date: "`r Sys.Date()`"
+package: 
+    miaTime
+output: 
+    BiocStyle::html_document:
+        fig_height: 7
+        fig_width: 10
+        toc: yes
+        toc_depth: 2
+        number_sections: true
+vignette: >
+  %\VignetteIndexEntry{miaTime}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(knitr)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE
+)
+```
+
+## Introduction
+
+`miaTime` implements tools for time series manipulation based on the
+`r BiocStyle::Biocpkg("TreeSummarizedExperiment")` data container.
+
+## Installation
+
+Installing the latest development version in R.
+
+```{r}
+#| label: install
+#| eval: false
+
+BiocManager::install("miaTime")
+```
+
+## Load the package
+
+Once installed, `miaTime` is made available in the usual way.
+
+```{r}
+#| label: load_package
+
+library(miaTime)
+```
+
+See [articles](https://microbiome.github.io/miaTime/articles/) for more detailed
+example workflows.
+
+## Session info
+
+```{r}
+#| label: session_info
+
+sessionInfo()
+```

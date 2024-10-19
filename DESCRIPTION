@@ -1,7 +1,7 @@
 Package: miaTime
 Type: Package
 Title: Microbiome Time Series Analysis
-Version: 0.1.22
+Version: 0.99.0
 Authors@R:
      c(person(given = "Leo", family = "Lahti", role = c("aut"),
               email = "leo.lahti@iki.fi",
@@ -19,7 +19,7 @@ Authors@R:
 Description: 
     The `miaTime` package provides tools for microbiome time series analysis
     based on (Tree)SummarizedExperiment infrastructure.
-biocViews: Microbiome, Software, Sequencing, Coverage
+biocViews: Microbiome, Software, Sequencing
 License: Artistic-2.0 | file LICENSE
 Depends:
     R (>= 4.0)
@@ -47,10 +47,8 @@ Suggests:
     zoo
 Remotes:
     github::microbiome/mia
-Encoding: UTF-8
 URL: https://github.com/microbiome/miaTime
+Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr
-LazyData: false
-Config/testthat/edition: 3
+VignetteBuilder: quarto
