@@ -7,6 +7,10 @@
 #' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
 NULL
 
+#' @import mia
+#' @import TreeSummarizedExperiment
+NULL
+
 #' @title HITChip Atlas with 1006 Western Adults
 #' @description This data set contains genus-level microbiota profiling with
 #' HITChip for 1006 western adults with no reported health complications,
