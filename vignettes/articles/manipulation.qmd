@@ -73,6 +73,7 @@ library("tidySingleCellExperiment")
 
 data(hitchip1006)
 tse <- hitchip1006
+
 tse_tibble <- tse |> arrange(subject, time)
 ```
 

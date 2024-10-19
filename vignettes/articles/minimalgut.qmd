@@ -1,9 +1,6 @@
 ---
 title: "Minimal gut bioreactor examples"
 date: "`r Sys.Date()`"
-author:
-- name: Sudarshan Shetty
-- name: Leo Lahti
 package: 
     miaTime
 output: 
@@ -14,64 +11,59 @@ output:
         toc_depth: 2
         number_sections: true
 vignette: >
-    %\VignetteIndexEntry{miaTime}
-    %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{miaTime}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
 
-```{r eval=FALSE, include=FALSE}
-library(Cairo)
-knitr::opts_chunk$set(cache = FALSE,
-                      fig.width = 9,
-                      dpi=300,
-                      dev = "png",
-                      dev.args = list(type = "cairo-png"),
-                      message = FALSE,
-                      warning = FALSE)
-```
+```{r}
+#| label: setup
+#| include: false
 
-```{r loadhide, message=FALSE, warning=FALSE, echo=FALSE}
-library(mia)
-library(miaTime)
-library(dplyr)
-library(lubridate)
 library(knitr)
-library(TreeSummarizedExperiment)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE
+)
 ```
-
 
 # Minimal gut microbiome
 
 Dense samples of the minimal gut microbiome. In the initial hours, MDb-MM was grown under batch condition and 24 h onwards, continuous feeding of media with pulse feeding cycles. This information is stored in the `colData`.   
 
-```{r fig.width=8, fig.height=3}
+```{r}
+#| label: setup
+
 library(miaTime)
+
 data(minimalgut)
 tse <- minimalgut
 
 # quick check of number of samples 
-kable(table(colData(tse)$StudyIdentifier,colData(tse)$condition_1))
+table(tse[["StudyIdentifier"]], tse[["condition_1"]])
 ```
 
 Visualize samples available for each of the bioreactors. This allows
 to identify if there are any missing samples for specific times.
 
-
 ```{r}
+#| label: setup
+
 library(ggplot2)
 library(tidySummarizedExperiment)
 tse |> 
     ggplot(aes(as.factor(Time.hr), StudyIdentifier)) +
     geom_tile(aes(fill=condition_1), color="white") +
-    scale_fill_manual("Condition Sampled", 
-                      values = c("#ff006e", "#e07a5f", "#457b9d")) +
+    scale_fill_manual(
+        "Condition Sampled", values = c("#ff006e", "#e07a5f", "#457b9d")) +
     theme_minimal() +
-    theme(axis.text.x = element_text(size=8, angle = 90),
-          legend.position = "top") +
-    labs(x="Time (h)", y="")
+    theme(
+        axis.text.x = element_text(size = 8, angle = 90),
+        legend.position = "top") +
+    labs(x = "Time (h)", y = "")
 ```
-
 
 ## Community dynamics   
 
@@ -81,23 +73,29 @@ can investigate the succession of mdbMM16 from the start of experiment
 here hour zero until the end of the experiment.
 
 ```{r}
-## Divergence from baseline i.e from hour zero.
-tse <- mia::relAbundanceCounts(minimalgut) # get relative abundance
-tse <- getBaselineDivergence(tse,
-                             group = "StudyIdentifier",
-                             time_field = "Time.hr",
-                             name_divergence = "divergence_from_baseline",
-                             name_timedifference = "time_from_baseline",
-                             assay.type="relabundance",
-                             FUN = vegan::vegdist,
-                             method="bray")
+#| label: setup
+
+# Get relative abundance
+tse <- transformAssay(tse, method = "relabundance")
+# Divergence from baseline i.e from hour zero.
+tse <- getBaselineDivergence(
+    tse,
+    group = "StudyIdentifier",
+    time_field = "Time.hr",
+    name_divergence = "divergence_from_baseline",
+    name_timedifference = "time_from_baseline",
+    assay.type="relabundance",
+    FUN = vegan::vegdist,
+    method="bray")
 
 ```
 
 
 Visualize the divergence
 
-```{r fig.height=4, fig.width=8}
+```{r}
+#| label: setup
+
 # First define nice colors for bioreactors
 bioreac_cols <- c(`Bioreactor A`= "#b2182b",
                   `Bioreactor B`= "#2166ac",
@@ -120,10 +118,15 @@ tse |>
 
 ## Visualizing selected taxa
 
-Now visualize abundance of *Blautia hydrogenotrophica* using the `miaViz::plotSeries` function.
+Now visualize abundance of *Blautia hydrogenotrophica* using the
+`miaViz::plotSeries` function.
 
-```{r fig.height=4, fig.width=8}
+```{r}
+#| label: setup
+
 library(miaViz)
+
+
 plotSeries(mia::relAbundanceCounts(minimalgut),
            x = "Time.hr",
            y = "Blautia_hydrogenotrophica",
@@ -138,15 +141,15 @@ plotSeries(mia::relAbundanceCounts(minimalgut),
     theme(legend.position = "none") 
 ```
 
-
-
 ## Visualize the rate (slope) of divergence 
 
 Sample dissimilarity between consecutive time steps(step size n >= 1) within
 a group(subject, age, reaction chamber, etc.) can be calculated by `getStepwiseDivergence`. If we normalize this by the time interval, this gives an approximate slope for the change.
 
 
-```{r getStepwiseDivergence, fig.height=4, fig.width=8, warning=FALSE}
+```{r}
+#| label: stepwise_divergence
+
 # Load libraries
 library(miaTime)
 library(dplyr)
@@ -182,13 +185,13 @@ p <- tse |> ggplot(aes(x=time_from_baseline,
 print(p)
 ```
 
-
-
 ## Moving average of the slope
 
 This shows how to calculate and plot moving average for the variable of interest (here: slope).
 
 ```{r rollmean, fig.height=4, fig.width=8, warning=FALSE}
+#| label: setup
+
 # Add slope explicitly in colData
 colData(tse)$slope <- colData(tse)$divergence_from_previous_step / colData(tse)$time_from_previous_step
 
@@ -235,6 +238,8 @@ example we create artificial replicates and variation for a brief example.
 
 
 ```{r errorbars, fig.height=4, fig.width=8, warning=FALSE, message=FALSE}
+#| label: setup
+
 ## Source: https://www.geeksforgeeks.org/adding-error-bars-to-a-line-graph-with-ggplot2-in-r/
 ## Gives count, mean, standard deviation, standard error of the mean,
 ## and confidence interval (default 95%).
@@ -304,10 +309,10 @@ p <- ggplot(df,
 print(p)
 ```
 
-
-
 # Session info
 
 ```{r}
+#| label: session_info
+
 sessionInfo()
 ```
