@@ -2,14 +2,17 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check-bioc-devel](https://github.com/microbiome/miaTime/workflows/R-CMD-check-bioc-devel/badge.svg)](https://github.com/microbiome/miaTime/actions)
-<!--[![R-CMD-check-bioc](https://github.com/microbiome/mia/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/microbiome/mia/actions/workflows/check-bioc.yml)-->
-[![Codecov test
-coverage](https://codecov.io/gh/microbiome/miaTime/branch/master/graph/badge.svg)](https://codecov.io/gh/microbiome/miaTime?branch=master)
+[![Platforms](http://bioconductor.org/shields/availability/release/miaTime.svg)](https://bioconductor.org/packages/release/bioc/html/miaTime.html)
+[![rworkflows](https://github.com/microbiome/miaTime/actions/workflows/rworkflows.yml/badge.svg?branch=devel)](https://github.com/microbiome/miaTime/actions)
+[![Bioc-release](http://bioconductor.org/shields/build/release/bioc/miaTime.svg)](http://bioconductor.org/packages/release/bioc/html/miaTime.html)
+[![Bioc-age](http://bioconductor.org/shields/years-in-bioc/miaTime.svg)](https://bioconductor.org/packages/release/bioc/html/miaTime.html)
+[![Codecov test coverage](https://codecov.io/gh/microbiome/miaTime/branch/devel/graph/badge.svg)](https://codecov.io/gh/microbiome/miaTime?branch=devel)
+[![Dependencies](http://bioconductor.org//shields/dependencies/release/miaTime.svg)](https://bioconductor.org/packages/release/bioc/html/miaTime.html)
 
 <!-- badges: end -->
 
-# miaTime
+## Using the package
+
 This R package can be used to analyse time series data for microbial
 communities. The package is part of [miaverse](https://microbiome.github.io/), 
 and is based on the `TreeSummarizedExperiment` data container.
@@ -18,16 +21,35 @@ See the [package homepage](https://microbiome.github.io/miaTime) for
 example workflows.
 
 ## Installation
- 
-The package can be directly installed from R command line.
 
+### Bioc-release
 
-```r
-devtools::install_github("microbiome/miaTime")
-library(miaTime)
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("miaTime")
 ```
 
-### Contributions and acknowledgments
+### Bioc-devel
+
+```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("miaTime")
+```
+
+### GitHub
+
+```
+remotes::install_github("microbiome/miaTime")
+```
+
+## Contributions and acknowledgments
 
 You can find us online from [Gitter](https://gitter.im/microbiome/miaverse).
 
@@ -43,22 +65,8 @@ flow kind of approach. Development version should be done against the
 citation("miaTime")  
 ```
 
-```
-## Kindly cite the miaTime R package as follows:
-## 
-##   (C) Yagmur Simsek and Leo Lahti. miaTime R package Version 0.1.21
-##   Package URL: microbiome.github.io/miaTime
-## 
-## A BibTeX entry for LaTeX users is
-## 
-##   @Misc{,
-##     title = {miaTime R package},
-##     author = {Yagmur Simsek and Leo Lahti},
-##     url = {microbiome.github.io/miaTime},
-##     note = {Version 0.1.21},
-##   }
-```
+## Code of conduct
 
-# Code of conduct
-
-The project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+The project is released with a
+[Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
