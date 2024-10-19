@@ -1,11 +1,6 @@
 ---
 title: "Time series manipulation"
 date: "`r Sys.Date()`"
-author:
-- name: Leo Lahti
-  email: leo.lahti@iki.fi
-- name: Yagmur Simsek
-  email: yagmur.simsek@hsrw.org
 package: 
     miaTime
 output: 
@@ -16,140 +11,150 @@ output:
         toc_depth: 2
         number_sections: true
 vignette: >
-    %\VignetteIndexEntry{miaTime}
-    %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{miaTime}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
 
-```{r eval=FALSE, include=FALSE}
-library(Cairo)
-knitr::opts_chunk$set(cache = FALSE,
-                      fig.width = 9,
-                      dpi=300,
-                      dev = "png",
-                      dev.args = list(type = "cairo-png"),
-                      message = FALSE,
-                      warning = FALSE)
+```{r}
+#| label: setup
+#| include: false
+
+library(knitr)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE
+)
 ```
 
-```{r loadhide, message=FALSE, warning=FALSE, echo=FALSE}
-library(mia)
-library(miaTime)
-library(dplyr)
-library(lubridate)
-library(SummarizedExperiment)
-```
+## Introduction
 
-# Introduction
+`miaTime` implements tools for time series manipulation based on the
+`r BiocStyle::Biocpkg("TreeSummarizedExperiment")` data container. Much of the
+functionality is also applicable to the
+`r BiocStyle::Biocpkg("SummarizedExperiment")` data objects. This tutorial
+shows how to use `miaTime` methods as well as the broader R/Bioconductor
+ecosystem to manipulate time series data.
 
-`miaTime` implements tools for time series manipulation based on the `TreeSummarizedExperiment` [@TSE] data container. Much of the functionality is also applicable to the `SummarizedExperiment` [@SE] data objects. This tutorial shows how to use `miaTime` methods as well as the broader R/Bioconductor ecosystem to manipulate time series data.
-
-Check also the related package [TimeSeriesExperiment](https://github.com/nlhuong/TimeSeriesExperiment).
+Check also the related package
+[TimeSeriesExperiment](https://github.com/nlhuong/TimeSeriesExperiment).
 
 ## Installation
 
-Installing the latest development version in R.
+`miaTime` is hosted on Bioconductor, and can be installed using via
+`BiocManager`.
 
-```{r, eval=FALSE}
-library(devtools)
-devtools::install_github("microbiome/miaTime")
+```{r}
+#| label: install
+#| eval: false
+
+BiocManager::install("miaTime")
 ```
 
-Loading the package:
+Once installed, `miaTime` is made available in the usual way.
 
-```{r load-packages, message=FALSE, warning=FALSE}
+```{r}
+#| label: load_package
+
 library(miaTime)
 ```
 
-
 ## Sorting samples 
 
-The _tidySingleCellExperiment_ package provides handy functions for (Tree)SE manipulation.
+The `r BiocStyle::Biocpkg("tidySingleCellExperiment")` package provides handy
+functions for `(Tree)SE` manipulation.
 
-```{r sort samples, message=FALSE, warning=FALSE}
+```{r}
+#| label: sort_samples
+
 library("tidySingleCellExperiment")
+
 data(hitchip1006)
 tse <- hitchip1006
-tse2 <- tse %>% arrange(subject, time)
+tse_tibble <- tse |> arrange(subject, time)
 ```
 
-
-## Storing time information with Period class
+## Storing time information with `period` class
 
 `miaTime` utilizes the functions available in the package `lubridate`
-to convert time series field to "Period" class object. This gives access to a 
-number of readily available [time series manipulation tools](https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html).
+to convert time series field to `period` class object. This gives access to a 
+number of readily available
+[time series manipulation tools](https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html).
 
 
 Load example data:
 
 ```{r}
-# Load packages
-library(miaTime)
-library(lubridate)
-library(SummarizedExperiment)
+#| label: lubridate
 
-# Load demo data
-data(hitchip1006)
-tse <- hitchip1006
+# Load packages
+library(lubridate)
 
 # Time is given in days in the demo data.
 # Convert days to seconds
-time_in_seconds <- 60*60*24*colData(tse)[,"time"]
+time_in_seconds <- 60*60*24*tse[["time"]]
 # Convert the time data to period class
-Seconds <- as.period(time_in_seconds, unit="sec")
+seconds <- as.period(time_in_seconds, unit = "sec")
 # Check the output
-Seconds[1140:1151]
+seconds |> tail()
 ```
-
 
 ## Conversion between time units
 
 The time field in days is now shown in seconds. It can then be
-converted to many different units using the lubridate package.
+converted to many different units using the `lubridate` package.
 
 ```{r}
-Hours <- as.period(Seconds, unit = "hour")
-Hours[1140:1151]
+#| label: hours
+
+hours <- as.period(seconds, unit = "hour")
+hours |> tail()
 ```
 
 The updated time information can then be added to the
 `SummarizedExperiment` data object as a new `colData` (sample data)
 field.
 
-
 ```{r}
-colData(tse)$timeSec <- Seconds
+#| label: add_seconds
+
+colData(tse)$time_sec <- seconds
 colData(tse)
 ```
 
 ## Calculating time differences 
 
-The \link[lubridate]{as.duration} function helps to specify time points as duration.
+The `lubridate::as.duration()` function helps to specify time points as
+duration.
 
 ```{r}
-Duration <- as.duration(Seconds)
-Duration[1140:1151]
+#| label: duration
+
+duration <- as.duration(seconds)
+duration |> tail()
 ```
 
 The difference between subsequent time points can then be calculated.
 
 ```{r}
-Timediff <- diff(Duration)
-Timediff <- c(NA, Timediff)
-Timediff[1140:1151]
+#| label: time_diff
+
+time_diff <- diff(duration)
+time_diff <- c(NA, time_diff)
+time_diff |> tail()
 ```
 
 The time difference from a selected point to the other time points
 can be calculated as follows.
 
 ```{r}
-base <- Hours - Hours[1] #distance from starting point
-base[1140:1151]
+#| label: time_diff2
 
-base_1140 <- Seconds - Seconds[1140]
-base_1140[1140:1151]
+# Difference from second time point
+time_diff <- hours - sort(unique(hours))[[2]]
+time_diff |> tail()
 ```
 
 ## Time point rank
@@ -157,52 +162,55 @@ base_1140[1140:1151]
 Rank of the time points can be calculated by `rank` function provided in base R.
 
 ```{r}
-colData(tse)$rank <- rank(colData(tse)$time)
+#| label: rank
+
+tse[["time"]] <- rank(tse[["time"]])
 colData(tse)
 ```
 
-
 ## Operations per unit
 
-Sometimes we need to operate on time series per unit (subject,
-reaction chamber, sampling location, ...).
+Sometimes we need to operate on time series per unit (subject, reaction chamber,
+sampling location, ...).
 
 Add time point rank per subject.
 
 ```{r}
+#| label: hours
+
 library(dplyr)
-colData(tse) <- colData(tse) %>%
-   as.data.frame() %>%
-   group_by(subject) %>%
-   mutate(rank = rank(time, ties.method="average")) %>%
+
+colData(tse) <- colData(tse) |>
+   as.data.frame() |>
+   group_by(subject) |>
+   mutate(rank = rank(time, ties.method = "average")) |>
    DataFrame()
 ```
-
 
 ## Subset to baseline samples
 
 ```{r}
-library(tidySummarizedExperiment)
+#| label: hours
 
 # Pick samples with time point 0
 tse <- hitchip1006 |> filter(time == 0)
 # Or: tse <- tse[, tse$time==0]
 
 # Sample with the smallest time point within each subject
-colData(tse) <- colData(tse) %>%
-   as.data.frame() %>%
-   group_by(subject) %>%
-   mutate(rank = rank(time, ties.method="average")) %>%
-   DataFrame
+colData(tse) <- colData(tse) |>
+   as.data.frame() |>
+   group_by(subject) |>
+   mutate(rank = rank(time, ties.method = "average")) |>
+   DataFrame()
 
 # Pick the subset including first time point per subject
-tse1 <- tse[, tse$rank == 1]
+tse <- tse[, tse$rank == 1]
 ```
-
-
 
 # Session info
 
 ```{r}
+#| label: session_info
+
 sessionInfo()
 ```
