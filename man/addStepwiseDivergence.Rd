@@ -30,45 +30,52 @@ addStepwiseDivergence(x, ...)
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 object.}
 
-\item{...}{optional arguments passed into
+\item{...}{Optional arguments passed into
 \code{\link[mia:addDivergence]{mia::addDivergence()}}.}
 
-\item{time.col}{\code{Character scalar}. Specifies the name of the
-time series field in \code{colData}.}
+\item{time.col}{\code{Character scalar}. Specifies a name of the column from
+\code{colData} that identifies the sampling time points for the samples.}
 
 \item{assay.type}{\code{Character scalar}. Specifies which assay values are
 used in the dissimilarity estimation. (Default: \code{"counts"})}
 
 \item{time.interval}{\code{Integer scalar}. Indicates the increment between
-time steps. If you need to take every second, every third, or so, time step
-only, then increase this accordingly. (Default: \code{1L})}
+time steps. By default, the function compares each sample to the
+previous one. If you need to take every second, every third, or so, time
+step, then increase this accordingly. (Default: \code{1L})}
 
-\item{group}{\code{Character scalar}. Specifies the grouping
-factor (name of a \code{colData} field). If given, the divergence is calculated
-per group.  e.g. subject, chamber, group etc. (Default: \code{NULL})}
+\item{group}{\code{Character scalar}. Specifies a name of the column from
+\code{colData} that identifies the grouping of the samples.
+(Default: \code{NULL})}
 
-\item{method}{\code{Character scalar}. Used to calculate the distance.
+\item{method}{\code{Character scalar}. Used to calculate the dissimilarity
 Method is passed to the function that is specified by \code{dis.fun}.
 (Default: \code{"bray"})}
 
-\item{name}{\code{Character scalar}. Shows beta diversity between
-samples. (Default: \code{"time_divergence"})}
+\item{name}{\code{Character scalar}. Specifies a column name for storing
+divergence results. (Default: \code{"divergence"})}
 
-\item{name.time}{\code{Character scalar}. Field name for adding the
-time difference between samples used to calculate beta diversity.
-(Default: \code{"time_difference"})}
+\item{name.time}{\code{Character scalar}. Specifies a column name for storing
+time differences. (Default: \code{"time_diff"})}
 }
 \value{
-a
-\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+\code{getStepwiseDivergence} returns \code{DataFrame} object
 containing the sample dissimilarity and corresponding time difference between
-samples (across n time steps), within each level of the grouping factor.
+samples. \code{addStepwiseDivergence}, on the other hand, returns a
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+object with these results in its \code{colData}.
 }
 \description{
-Calculates sample dissimilarity between consecutive time points (t, t+i),
-within a group (subject, reaction chamber, or similar). The corresponding
-time difference is returned as well. The method operates on
-\code{SummarizedExperiment} objects, and the results are stored in \code{colData}.
+Calculates sample dissimilarity between consecutive time points.
+The corresponding time difference is returned as well.
+}
+\details{
+These functions calculate time-wise divergence, meaning each sample is
+compared to the previous i-th sample, where i is the specified time
+interval (see \code{time.interval}). By default, the function calculates
+divergence by comparing all samples with each other. However, it is often
+more meaningful to calculate divergence within a specific patient or group
+(see the \code{group} parameter).
 }
 \examples{
 library(miaTime)
@@ -78,10 +85,14 @@ tse <- transformAssay(hitchip1006, method = "relabundance")
 
 # Calculate divergence
 tse <- addStepwiseDivergence(
-    tse, group = "subject",
-    time_interval = 1,
+    tse,
+    group = "subject",
+    time.interval = 1,
     time.col = "time",
-    assay.type="relabundance"
+    assay.type = "relabundance"
     )
 
+}
+\seealso{
+\code{\link[mia:addDivergence]{mia::addDivergence()}}
 }

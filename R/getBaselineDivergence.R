@@ -1,53 +1,20 @@
+#' @name addBaselineDivergence
+#' @export
+#' 
+#' @title
 #' Beta diversity between the baseline and later time steps 
-#'
+#' 
+#' @description
 #' Calculates sample dissimilarity between the given baseline and other
 #' time points, optionally within a group (subject, reaction chamber, or
 #' similar). The corresponding time difference is returned as well.
-#' The method operates on `SummarizedExperiment` objects, and the results
-#' are stored in `colData`.
 #' 
-#' @param x A
-#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-#' object.
-#' 
-#' @param assay.type \code{Character scalar}. Specifies which assay values are 
-#' used in the dissimilarity estimation. (Default: \code{"counts"})
-#' 
-#' @param group \code{Character scalar}. Specifies the grouping
-#' factor (name of a `colData` field). If given, the divergence is calculated
-#' per group.  e.g. subject, chamber, group etc. (Default: \code{NULL})
-#' 
-#' @param time.col \code{Character scalar}. Specifies the name of the
-#' time series field in `colData`.
-#' 
-#' @param method \code{Character scalar}. Used to calculate the distance. 
-#' Method is passed to the function that is specified by \code{dis.fun}. 
-#' (Default: \code{"bray"})
-#' 
-#' @param name \code{Character scalar}. Shows beta diversity between 
-#' samples. (Default: \code{"time_divergence"})
-#' 
-#' @param name.time \code{Character scalar}. Field name for adding the 
-#' time difference between samples used to calculate beta diversity. 
-#' (Default: \code{"time_difference"})
-#' 
-#' @param reference \code{Character vector}. Specifies the baseline
-#' sample(s) to be used. If the \code{group} argument is given, this must be a
-#' named \code{vector}; one element per group.
-#' 
-#' @param ... optional arguments passed into
-#' \code{\link[mia:addDivergence]{mia::addDivergence()}}.
-#'
-#' @return a
-#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-#' containing the sample dissimilarity and corresponding time difference between
-#' samples (across n time steps), within each level of the grouping factor.
-#'
 #' @details
-#' The group argument allows calculating divergence per group. Otherwise, this
-#' is done across all samples at once.
+#' The group argument allows calculating divergence per group. If given, the
+#' divergence is calculated per group.  e.g. subject, chamber, group etc.
+#' Otherwise, this is done across all samples at once.
 #'
-#' The baseline sample/s always need to belong to the data object i.e. they
+#' The baseline sample(s) always need to belong to the data object i.e. they
 #' can be merged into it before
 #' applying this function. The reason is that they need to have comparable
 #' sample data, at least some time point
@@ -57,6 +24,44 @@
 #' (per group). Alternatively,
 #' the user can provide the baseline vector, or a list of baseline vectors per
 #' group (named list per group).
+#' 
+#' @return
+#' \code{getBaselineDivergence} returns \code{DataFrame} object
+#' containing the sample dissimilarity and corresponding time difference between
+#' samples. \code{addBaselineDivergence}, on the other hand, returns a
+#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+#' object with these results in its \code{colData}.
+#' 
+#' @param x A
+#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+#' object.
+#' 
+#' @param assay.type \code{Character scalar}. Specifies which assay values are 
+#' used in the dissimilarity estimation. (Default: \code{"counts"})
+#' 
+#' @param group \code{Character scalar}. Specifies a name of the column from
+#' \code{colData} that identifies the grouping of the samples.
+#' (Default: \code{NULL})
+#' 
+#' @param time.col \code{Character scalar}. Specifies a name of the column from
+#' \code{colData} that identifies the sampling time points for the samples.
+#' 
+#' @param method \code{Character scalar}. Used to calculate the dissimilarity 
+#' Method is passed to the function that is specified by \code{dis.fun}. 
+#' (Default: \code{"bray"})
+#' 
+#' @param reference \code{Character scalar}. Specifies a name of the column from
+#' \code{colData} that identifies the baseline samples to be used.
+#' (Default: \code{NULL})
+#' 
+#' @param name \code{Character scalar}. Specifies a column name for storing
+#' divergence results. (Default: \code{"divergence"})
+#' 
+#' @param name.time \code{Character scalar}. Specifies a column name for storing
+#' time differences. (Default: \code{"time_diff"})
+#' 
+#' @param ... Optional arguments passed into
+#' \code{\link[mia:addDivergence]{mia::addDivergence()}}.
 #'
 #' @examples
 #' library(miaTime)
@@ -85,9 +90,9 @@
 #'     assay.type="relabundance",
 #'     dis.fun = vegan::vegdist,
 #'     method="bray")
-#'
-#' @name addBaselineDivergence
-#' @export
+#' 
+#' @seealso
+#' \code{\link[mia:addDivergence]{mia::addDivergence()}}
 #' 
 NULL
 

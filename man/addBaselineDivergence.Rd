@@ -30,52 +30,51 @@ addBaselineDivergence(x, ...)
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 object.}
 
-\item{...}{optional arguments passed into
+\item{...}{Optional arguments passed into
 \code{\link[mia:addDivergence]{mia::addDivergence()}}.}
 
-\item{time.col}{\code{Character scalar}. Specifies the name of the
-time series field in \code{colData}.}
+\item{time.col}{\code{Character scalar}. Specifies a name of the column from
+\code{colData} that identifies the sampling time points for the samples.}
 
 \item{assay.type}{\code{Character scalar}. Specifies which assay values are
 used in the dissimilarity estimation. (Default: \code{"counts"})}
 
-\item{reference}{\code{Character vector}. Specifies the baseline
-sample(s) to be used. If the \code{group} argument is given, this must be a
-named \code{vector}; one element per group.}
+\item{reference}{\code{Character scalar}. Specifies a name of the column from
+\code{colData} that identifies the baseline samples to be used.
+(Default: \code{NULL})}
 
-\item{group}{\code{Character scalar}. Specifies the grouping
-factor (name of a \code{colData} field). If given, the divergence is calculated
-per group.  e.g. subject, chamber, group etc. (Default: \code{NULL})}
+\item{group}{\code{Character scalar}. Specifies a name of the column from
+\code{colData} that identifies the grouping of the samples.
+(Default: \code{NULL})}
 
-\item{method}{\code{Character scalar}. Used to calculate the distance.
+\item{method}{\code{Character scalar}. Used to calculate the dissimilarity
 Method is passed to the function that is specified by \code{dis.fun}.
 (Default: \code{"bray"})}
 
-\item{name}{\code{Character scalar}. Shows beta diversity between
-samples. (Default: \code{"time_divergence"})}
+\item{name}{\code{Character scalar}. Specifies a column name for storing
+divergence results. (Default: \code{"divergence"})}
 
-\item{name.time}{\code{Character scalar}. Field name for adding the
-time difference between samples used to calculate beta diversity.
-(Default: \code{"time_difference"})}
+\item{name.time}{\code{Character scalar}. Specifies a column name for storing
+time differences. (Default: \code{"time_diff"})}
 }
 \value{
-a
-\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+\code{getBaselineDivergence} returns \code{DataFrame} object
 containing the sample dissimilarity and corresponding time difference between
-samples (across n time steps), within each level of the grouping factor.
+samples. \code{addBaselineDivergence}, on the other hand, returns a
+\code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+object with these results in its \code{colData}.
 }
 \description{
 Calculates sample dissimilarity between the given baseline and other
 time points, optionally within a group (subject, reaction chamber, or
 similar). The corresponding time difference is returned as well.
-The method operates on \code{SummarizedExperiment} objects, and the results
-are stored in \code{colData}.
 }
 \details{
-The group argument allows calculating divergence per group. Otherwise, this
-is done across all samples at once.
+The group argument allows calculating divergence per group. If given, the
+divergence is calculated per group.  e.g. subject, chamber, group etc.
+Otherwise, this is done across all samples at once.
 
-The baseline sample/s always need to belong to the data object i.e. they
+The baseline sample(s) always need to belong to the data object i.e. they
 can be merged into it before
 applying this function. The reason is that they need to have comparable
 sample data, at least some time point
@@ -114,4 +113,7 @@ tse <- addBaselineDivergence(
     dis.fun = vegan::vegdist,
     method="bray")
 
+}
+\seealso{
+\code{\link[mia:addDivergence]{mia::addDivergence()}}
 }

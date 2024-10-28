@@ -1,24 +1,35 @@
+#' @name addStepwiseDivergence
+#' @export
+#' 
+#' @title
 #' Beta diversity between consecutive time steps 
-#'
-#' Calculates sample dissimilarity between consecutive time points (t, t+i),
-#' within a group (subject, reaction chamber, or similar). The corresponding
-#' time difference is returned as well. The method operates on
-#' `SummarizedExperiment` objects, and the results are stored in `colData`.
-#'
+#' 
+#' @description
+#' Calculates sample dissimilarity between consecutive time points.
+#' The corresponding time difference is returned as well.
+#' 
+#' @details
+#' These functions calculate time-wise divergence, meaning each sample is
+#' compared to the previous i-th sample, where i is the specified time
+#' interval (see \code{time.interval}). By default, the function calculates
+#' divergence by comparing all samples with each other. However, it is often
+#' more meaningful to calculate divergence within a specific patient or group
+#' (see the \code{group} parameter).
+#' 
+#' @return
+#' \code{getStepwiseDivergence} returns \code{DataFrame} object
+#' containing the sample dissimilarity and corresponding time difference between
+#' samples. \code{addStepwiseDivergence}, on the other hand, returns a
+#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+#' object with these results in its \code{colData}.
+#' 
 #' @inheritParams addBaselineDivergence
 #' 
 #' @param time.interval \code{Integer scalar}. Indicates the increment between 
-#' time steps. If you need to take every second, every third, or so, time step 
-#' only, then increase this accordingly. (Default: \code{1L})
-#' 
-#' @return a
-#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
-#' containing the sample dissimilarity and corresponding time difference between
-#' samples (across n time steps), within each level of the grouping factor.
-#'
-#' @name addStepwiseDivergence
-#' @export
-#'
+#' time steps. By default, the function compares each sample to the
+#' previous one. If you need to take every second, every third, or so, time
+#' step, then increase this accordingly. (Default: \code{1L})
+#
 #' @examples
 #' library(miaTime)
 #'
@@ -27,11 +38,15 @@
 #' 
 #' # Calculate divergence
 #' tse <- addStepwiseDivergence(
-#'     tse, group = "subject",
-#'     time_interval = 1,
+#'     tse,
+#'     group = "subject",
+#'     time.interval = 1,
 #'     time.col = "time",
-#'     assay.type="relabundance"
+#'     assay.type = "relabundance"
 #'     )
+#' 
+#' @seealso
+#' \code{\link[mia:addDivergence]{mia::addDivergence()}}
 #' 
 NULL
 
@@ -108,7 +123,7 @@ setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
 #' @export
 setMethod("addStepwiseDivergence", signature = c(x = "SummarizedExperiment"),
     function(x, name = "divergence", name.time = "time_diff", ...){
-      # Calculate divergence
+        # Calculate divergence
         res <- getStepwiseDivergence(x,  ...)
         # Add to colData
         res <- as.list(res) |> unname()
