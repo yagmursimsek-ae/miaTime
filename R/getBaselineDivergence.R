@@ -222,72 +222,65 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     
     # Check that group is correctly defined. It can be either NULL, a column
     # from colData or a vector that has group information for all samples.
+    # If it is NULL, add group info --> all samples are in same group
     if( is.null(group) ){
-        # If it is NULL, add group info --> all samples are in same group
         cd[[group.name]] <- rep("group", nrow(cd))
         group <- group.name
     }
     # If it is a single character value, it should specify a column from
     # colData
-    is_wrong_string <- .is_non_empty_character(group) &&
-        !group %in% colnames(cd)
+    is_colname <- .is_non_empty_string(group) && group %in% colnames(cd)
     # If it is a vector, then it should have values for all the samples
-    is_wrong_vector <- !.is_non_empty_character(group) &&
-        length(group) != nrow(cd)
-    if( is_wrong_string || is_wrong_vector ){
+    is_vector <- .is_non_empty_character(group) && length(group) == nrow(cd)
+    if( !(is_colname || is_vector) ){
         stop("'group' must be NULL or a single character value specifying ",
             "a column from colData(x).", call. = FALSE)
     }
     # If it was correctly defined vector, add it to colData
-    if( .is_non_empty_character(group) && !group %in% colnames(cd) ){
+    if( is_vector ){
         cd[[group.name]] <- group
         group <- group.name
     }
     
-    # If reference was specified, check that it is specifying samples
-    # correctly.
-    # It can be a single character value specifying a column from colData
-    # (preferred) or single character value specifying a sample.
-    is_wrong_string <- FALSE
-    if( !is.null(reference) && .is_non_empty_string(reference) ){
-        is_wrong_string <- !(reference %in% colnames(cd) ||
-            reference %in% rownames(cd))
-    }
-    # It can also be a character vector. Then its length should match with
-    # the length of sample or groups if "group" is specified. (At this point,
-    # group cannot be NULL, because we defined it earlier if it was not
-    # specified by user)
-    is_wrong_vector <- FALSE
-    if( !is.null(reference) && !.is_non_empty_string(reference) ){
-        is_wrong_vector <- length(reference) != length(unique(cd[[group]]))
-        # If the user provided a vector for each group, the vector must be named
-        if( !is_wrong_vector && length(reference) != nrow(cd) &&
-            is.null(names(reference)) ){
-            is_wrong_vector <- TRUE
-        }
-        # Otherwise, we can expand the reference vector for each member of the
-        # groups
-        if( !is_wrong_vector && length(reference) != nrow(cd) ){
-            reference <- reference[ match(cd[[group]], names(reference)) ]
-        }
-    }
-    if( is_wrong_string || is_wrong_vector ){
-        stop("'reference' must be NULL or a single character value specifying ",
-            "a column from colData(x).", call. = FALSE)
-    }
-    # If it was character vector or a sample name, add it to colData
-    if( !is.null(reference) && !(.is_non_empty_string(reference) &&
-            reference %in% colnames(cd)) ){
-        cd[[ref.name]] <- reference
-        reference <- ref.name
-    }
-    
-    # If the reference is now NULL, it means that user did not specify it.
+    # If the reference is NULL, it means that user did not specify it.
     # Get the reference samples.
     if( is.null(reference) ){
         ref <- .get_reference_samples(
             cd, time.col, time.interval, group, reference.method)
         cd[[ref.name]] <- ref
+        reference <- ref.name
+    }
+    # If reference was specified, check that it is specifying samples
+    # correctly.
+    # It can be a single character value specifying a column from colData
+    # (preferred) or single character value specifying a sample.
+    is_colname <- .is_non_empty_string(reference) && reference %in% colnames(cd)
+    is_sample <- .is_non_empty_string(reference) && reference %in% rownames(cd)
+    # Column name from colData takes precedence
+    is_sample <- is_sample && !is_colname
+    # It can also be a character vector. Then its length should match with
+    # the length of sample or groups if "group" is specified. (At this point,
+    # group cannot be NULL, because we defined it earlier if it was not
+    # specified by user). Moreover, if the vector specified reference for each
+    # group, it must include names that links to groups.
+    is_vector_sam <- .is_non_empty_character(reference) &&
+        length(reference) == nrow(cd)
+    is_vector_group <- .is_non_empty_character(reference) &&
+        length(reference) == length(unique(cd[[group]])) &&
+        !is.null(names(reference)) && all(names(reference) %in% cd[[group]])
+    # Give warning if the input was incorrect
+    if( !(is_colname || is_sample || is_vector_sam ||
+            is_vector_group) ){
+        stop("'reference' must be NULL or a single character value specifying ",
+            "a column from colData(x).", call. = FALSE)
+    }
+    # If the vector was for each group, extend the vector for each sample
+    if( is_vector_group ){
+        reference <- reference[ match(cd[[group]], names(reference)) ]
+    }
+    # If it was character vector or a sample name, add it to colData
+    if( is_vector_sam || is_vector_group || is_sample ){
+        cd[[ref.name]] <- reference
         reference <- ref.name
     }
     

@@ -79,27 +79,20 @@ test_that("addBaselineDivergence reference", {
     # Test with full baseline list
     baselines <- sample(colnames(tse), length(subjects))
     names(baselines) <- subjects
+    baselines[names(baselines) == tse[, "Sample-843"][["subject"]]] <-
+        "Sample-1075"
     tse8 <- addBaselineDivergence(
         tse, group = "subject", time.col = "time", reference = baselines, 
-        name.time = "time_from_baseline", name = "divergence_from_baseline")
-    tse[["reference_sam"]] <- baselines[ match(names(baselines), tse$subject) ]
-    res <- addBaselineDivergence(
-        tse, group = "subject", time.col = "time", reference = "reference_sam", 
         name.time = "time_from_baseline", name = "divergence_from_baseline")
     expect_identical(
         colData(tse7)["Sample-843", "time_from_baseline"], 
         colData(tse8)["Sample-843", "time_from_baseline"])
-    
-    # Single baseline
-    tse9 <- addBaselineDivergence(
-        tse, group = "subject", time.col = "time", reference = "Sample-1075", 
+    tse[["reference_sam"]] <- baselines[ match(tse$subject, names(baselines)) ]
+    res <- addBaselineDivergence(
+        tse, group = "subject", time.col = "time", reference = "reference_sam", 
         name.time = "time_from_baseline", name = "divergence_from_baseline")
-    expect_identical(
-        colData(tse9)["Sample-1075", "time_from_baseline"], 
-        colData(tse5)["Sample-1075", "time_from_baseline"])
-    expect_identical(
-        colData(tse8)["Sample-843", "time_from_baseline"] + 0.7, 
-        colData(tse5)["Sample-1075", "time_from_baseline"])
+    ref <- getDivergence(tse, reference = "reference_sam")
+    expect_equal(res[["divergence_from_baseline"]], ref)
 })
 
 # Test that altExp works
