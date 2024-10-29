@@ -97,16 +97,21 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         ########################### INPUT CHECK END ############################
         x <- .check_and_get_altExp(x, ...)
         # Add stepwise samples to colData
-        x <- .add_reference_samples_to_coldata(
+        args <- .add_reference_samples_to_coldata(
             x, time.col, group, time.interval = time.interval,
             reference.method = "stepwise", ...)
-        reference <- x[[2]]
-        x <- x[[1]]
+        # Create an argument list. Do not include altexp as it is already taken
+        # into account.
+        args <- c(
+          args,
+          list(assay.type = assay.type, method = method),
+          list(...)[!names(list(...)) %in% c("altexp")]
+        )
         # Calculate divergences
-        res <- getDivergence(
-            x, assay.type = assay.type, reference = reference,
-            method = method, ...)
+        res <- do.call(getDivergence, args)
         # Add time difference
+        x <- args[["x"]]
+        reference <- args[["reference"]]
         time_res <- .get_time_difference(x, time.col, reference)
         # Create a DF to return
         res <- .convert_divergence_to_df(x, res, time_res, name, name.time)

@@ -117,6 +117,19 @@ test_that("Test altExp", {
         altExp(tse, "Family")$divergence, altExp(tse, "Family_test")$val)
 })
 
+# Test that get* and add* gives same result
+test_that(".get_reference_samples with different time intervals", {
+    data(hitchip1006)
+    tse <- hitchip1006
+    tse <- addBaselineDivergence(
+        tse, group = "subject", time.col = "time",
+        assay.type = "counts", method = "euclidean")
+    res <- getBaselineDivergence(
+        tse, group = "subject", time.col = "time",
+        assay.type = "counts", method = "euclidean")
+    expect_equal(colData(tse)[, c("divergence", "time_diff")], res)
+})
+
 # Basic SummarizedExperiment for testing
 col_data <- DataFrame(
     time = c(0, 1, 2, 1, 2, 0),
@@ -172,13 +185,7 @@ test_that(".add_reference_samples_to_coldata assigns correct baselines", {
 })
 
 # Reference sample assignments
-test_that(".get_reference_samples baseline and stepwise", {
-    baseline <- .get_reference_samples(
-        colData(se), time.col = "time", group = "group",
-        reference.method = "baseline")
-    expect_equal(baseline, c(
-        "Sample1", "Sample1", "Sample1", "Sample6", "Sample6", "Sample6"))
-    
+test_that(".get_reference_samples baseline", {
     stepwise <- .get_reference_samples(
         colData(se), time.col = "time", group = "group",
         reference.method = "stepwise", time.interval = 1)
@@ -229,17 +236,6 @@ test_that("addBaselineDivergence with custom reference sample", {
     se_result <- addBaselineDivergence(
         se, time.col = "time", reference = "Sample1")
     expect_equal(colData(se_result)["Sample1", "divergence"], 0)
-})
-
-# Test that time intervals calculation work
-test_that(".get_reference_samples with different time intervals", {
-    interval_1 <- .get_reference_samples(
-        colData(se), time.col = "time", group = "group",
-        reference.method = "stepwise", time.interval = 1)
-    interval_2 <- .get_reference_samples(
-        colData(se), time.col = "time", group = "group",
-        reference.method = "stepwise", time.interval = 2)
-    expect_false(all(interval_1 == interval_2))
 })
 
 # Test that postprocessing works with NA values

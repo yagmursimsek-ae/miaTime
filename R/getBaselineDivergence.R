@@ -193,7 +193,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 # baseline information was provided, this function output TreeSE with baseline
 # info for each sample in colData.
 .add_reference_samples_to_coldata <- function(
-        x, time.col, group, reference,
+        x, time.col, group, reference = NULL,
         ref.name = "temporal_reference_for_divergence",
         group.name = "temporal_group_for_divergence",
         time.interval = NULL,
