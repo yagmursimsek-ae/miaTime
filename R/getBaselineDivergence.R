@@ -147,15 +147,21 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         }
         ########################### INPUT CHECK END ############################
         # Add baseline samples to colData
-        x <- .add_reference_samples_to_coldata(
-            x, time.col, group, reference, reference.method = "baseline", ...)
-        reference <- x[[2]]
-        x <- x[[1]]
+        args <- .add_reference_samples_to_coldata(
+            x, time.col, group, reference, assay.type, method,
+            reference.method = "baseline", ...)
+        # Create an argument list. Do not include altexp as it is already taken
+        # into account.
+        args <- c(
+            args,
+            list(assay.type = assay.type, method = method),
+            list(...)[!names(list(...)) %in% c("altexp")]
+        )
         # Calculate divergences
-        res <- getDivergence(
-            x, assay.type = assay.type, reference = reference,
-            method = method, ...)
+        res <- do.call(getDivergence, args)
         # Add time difference
+        x <- args[["x"]]
+        reference <- args[["reference"]]
         time_res <- .get_time_difference(x, time.col, reference)
         # Create a DF to return
         res <- .convert_divergence_to_df(x, res, time_res, name, name.time)
@@ -187,7 +193,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 # baseline information was provided, this function output TreeSE with baseline
 # info for each sample in colData.
 .add_reference_samples_to_coldata <- function(
-        x, time.col, group, reference = NULL,
+        x, time.col, group, reference,
         ref.name = "temporal_reference_for_divergence",
         group.name = "temporal_group_for_divergence",
         time.interval = NULL,
@@ -269,9 +275,9 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         stop("'reference' must be NULL or a single character value specifying ",
             "a column from colData(x).", call. = FALSE)
     }
-    # If it was character vector or if it specified a sample name, add it to
-    # colData
-    if( !is.null(reference) ){
+    # If it was character vector or a sample name, add it to colData
+    if( !is.null(reference) && !(.is_non_empty_string(reference) &&
+            reference %in% colnames(cd)) ){
         cd[[ref.name]] <- reference
         reference <- ref.name
     }
@@ -289,7 +295,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     colData(x) <- cd
     # The returned value includes the TreeSE along with reference
     # column name because it might be that we have modified it.
-    res <- list(x, reference)
+    res <- list(x = x, reference = reference)
     return(res)
 }
 
