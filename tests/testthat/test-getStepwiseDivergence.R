@@ -245,26 +245,26 @@ test_that(".get_reference_samples stepwise", {
 
 # Test that works with different counts table
 test_that("addStepwiseDivergence with multiple assay types", {
-  assays(se, withDimnames = FALSE) <- list(
-      counts = count_data, alt_counts = count_data * 2)
-  se_result <- addStepwiseDivergence(
-      se, time.col = "time", assay.type = "alt_counts")
-  expect_true("divergence" %in% colnames(colData(se_result)))
+    assays(se, withDimnames = FALSE) <- list(
+        counts = count_data, alt_counts = count_data * 2)
+    se_result <- addStepwiseDivergence(
+        se, time.col = "time", assay.type = "alt_counts")
+    expect_true("divergence" %in% colnames(colData(se_result)))
 })
 
 # Test that error occurs if if method is unsupported
 test_that("getStepwiseDivergence unsupported method", {
-  expect_error(getStepwiseDivergence(
-      se, time.col = "time", method = "unsupported"))
+    expect_error(getStepwiseDivergence(
+        se, time.col = "time", method = "unsupported"))
 })
 
 # Test that the divergence is calculated correctly for specific reference sample
 test_that("addStepwiseDivergence with custom reference sample", {
-  res <- getStepwiseDivergence(
-      se, time.col = "time", group = "group")
-  se[["reference"]] <- c(NA, "Sample1", "Sample2", "Sample6", "Sample4", NA)
-  time_diff <- c(NA, 1, 1, 1, 1, NA)
-  ref <- getDivergence(se, reference = "reference")
-  expect_equal(res[["divergence"]], ref)
-  expect_equal(res[["time_diff"]], time_diff)
+    res <- getStepwiseDivergence(
+        se, time.col = "time", group = "group")
+    se[["reference"]] <- c(NA, "Sample1", "Sample2", "Sample6", "Sample4", NA)
+    time_diff <- c(NA, 1, 1, 1, 1, NA)
+    ref <- getDivergence(se, reference = "reference")
+    expect_equal(res[["divergence"]], ref)
+    expect_equal(res[["time_diff"]], time_diff)
 })
