@@ -66,8 +66,6 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         time.interval = 1L,
         group = NULL,
         method = "bray",
-        name = "divergence",
-        name.time = "time_diff",
         ...){
         ############################# INPUT CHECK ##############################
         temp <- .check_input(
@@ -83,10 +81,6 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
             group, list(NULL, "character scalar"), colnames(colData(x)))
         #
         temp <- .check_input(method, list("character scalar"))
-        #
-        temp <- .check_input(name, list(NULL, "character scalar"))
-        #
-        temp <- .check_input(name.time, list(NULL, "character scalar"))
         #
         if( is.null(rownames(x)) ){
             rownames(x) <- paste0("row", seq_len(nrow(x)))
@@ -114,7 +108,7 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         reference <- args[["reference"]]
         time_res <- .get_time_difference(x, time.col, reference)
         # Create a DF to return
-        res <- .convert_divergence_to_df(x, res, time_res, name, name.time)
+        res <- .convert_divergence_to_df(x, res, time_res, ...)
         return(res)
     }
 )

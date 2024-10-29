@@ -16,8 +16,6 @@ getStepwiseDivergence(x, ...)
   time.interval = 1L,
   group = NULL,
   method = "bray",
-  name = "divergence",
-  name.time = "time_diff",
   ...
 )
 

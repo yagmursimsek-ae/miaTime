@@ -16,8 +16,6 @@ getBaselineDivergence(x, ...)
   reference = NULL,
   group = NULL,
   method = "bray",
-  name = "divergence",
-  name.time = "time_diff",
   ...
 )
 
