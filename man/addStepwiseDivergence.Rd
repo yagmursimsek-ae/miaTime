@@ -64,8 +64,8 @@ samples. \code{addStepwiseDivergence}, on the other hand, returns a
 object with these results in its \code{colData}.
 }
 \description{
-Calculates sample dissimilarity between consecutive time points.
-The corresponding time difference is returned as well.
+Calculates sample dissimilarity between consecutive time points along with
+time difference.
 }
 \details{
 These functions calculate time-wise divergence, meaning each sample is
