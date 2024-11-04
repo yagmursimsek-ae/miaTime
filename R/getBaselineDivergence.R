@@ -69,27 +69,27 @@
 #'
 #' data(hitchip1006)
 #' tse <- transformAssay(hitchip1006, method = "relabundance")
-#'
+#' 
+#' # By default, reference samples are the samples from the first timepoint
 #' tse <- addBaselineDivergence(
 #'     tse,
 #'     group = "subject",
 #'     time.col = "time",
-#'     name = "divergence_from_baseline",
-#'     name.time = "time_from_baseline",
-#'     assay.type="relabundance",
-#'     dis.fun = vegan::vegdist,
-#'     method="bray")
-#'
+#'     assay.type = "relabundance",
+#'     method = "bray")
+#' 
+#' # Add reference samples to colData, if you want to specify reference
+#' # samples manually
+#' colData(tse)[["reference"]] <- "Sample-875"
 #' tse <- addBaselineDivergence(
 #'     tse,
-#'     baseline.sample = "Sample-875",
+#'     reference = "reference",
 #'     group = "subject",
 #'     time.col = "time",
 #'     name = "divergence_from_baseline",
 #'     name.time = "time_from_baseline",
-#'     assay.type="relabundance",
-#'     dis.fun = vegan::vegdist,
-#'     method="bray")
+#'     assay.type = "relabundance",
+#'     method = "bray")
 #' 
 #' @seealso
 #' \code{\link[mia:addDivergence]{mia::addDivergence()}}

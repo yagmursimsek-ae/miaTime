@@ -88,9 +88,8 @@ tse <- addBaselineDivergence(tse,
                              time.col = "Time.hr",
                              name = "divergence_from_baseline",
                              name.time = "time_from_baseline",
-                             assay.type="relabundance",
-                             dis.fun = vegan::vegdist,
-                             method="bray")
+                             assay.type = "relabundance",
+                             method = "bray")
 
 ```
 
@@ -160,9 +159,8 @@ tse <- addStepwiseDivergence(tse, group = "StudyIdentifier",
                                time.col = "Time_hr_num",
                                name = "divergence_from_previous_step",
                                name.time = "time_from_previous_step",
-                               assay.type ="relabundance",
-                               dis.fun = vegan::vegdist,
-                               method="bray")
+                               assay.type = "relabundance",
+                               method = "bray")
 
 # We have now new fields added in the colData:
 # time_from_previous_step, divergence_from_previous_step
