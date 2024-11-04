@@ -1,3 +1,8 @@
+Changes in version 0.99.0
++ Take into account Bioconductor requirements
+
+Changes in 0.1.23
++ Restructure *BaselineDivergence and *StepwiseDivergence
 
 Changes in version 0.1.19
 + changed assay_name to assay.type
