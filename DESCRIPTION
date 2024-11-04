@@ -41,11 +41,7 @@ Suggests:
     rmarkdown,
     scater,
     testthat,
-    tidySingleCellExperiment,
-    tidySummarizedExperiment,
-    TreeSummarizedExperiment,
-    vegan,
-    zoo
+    vegan
 Remotes:
     github::microbiome/mia
 URL: https://github.com/microbiome/miaTime

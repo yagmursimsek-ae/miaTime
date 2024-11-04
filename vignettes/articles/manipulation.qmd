@@ -63,8 +63,8 @@ library(miaTime)
 
 ## Sorting samples 
 
-The `r BiocStyle::Biocpkg("tidySingleCellExperiment")` package provides handy
-functions for `(Tree)SE` manipulation.
+To sort data based on subject and time point in base R, you can use the
+`order()` function.
 
 ```{r}
 #| label: sort_samples
@@ -74,7 +74,8 @@ library("tidySingleCellExperiment")
 data(hitchip1006)
 tse <- hitchip1006
 
-tse_tibble <- tse |> arrange(subject, time)
+index <- order(tse[["subject"]], tse[["time"]])
+tse <- tse[ , index]
 ```
 
 ## Storing time information with `period` class
