@@ -73,7 +73,8 @@ comparing them to the first time point.
 data(hitchip1006)
 tse <- hitchip1006
 
-res <- getBaselineDivergence(tse, group = "sample", name = "baseline")
+res <- getBaselineDivergence(
+    tse, time.col = "time", group = "sample", name = "baseline")
 res |> head()
 ```
 
@@ -86,13 +87,13 @@ the same subject.
 ```{r}
 #| label: time_divergence
 
-tse <- addStepwiseDivergence(tse)
+tse <- addStepwiseDivergence(tse, time.col = "time")
 colData(tse)
 ```
 
 ## Visualize time series
 
-We can visualile time series data with `r BiocStyle::Biocpkg("miaViz")`. Below,
+We can visualize time series data with `r BiocStyle::Biocpkg("miaViz")`. Below,
 we visualize 2 most abundant taxa.
 
 ```{r}

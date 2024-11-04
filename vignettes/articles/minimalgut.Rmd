@@ -132,7 +132,7 @@ tse <- addStepwiseDivergence(
     method = "bray",
     group = "StudyIdentifier",
     time.interval = 1,
-    time.col = "Time_hr_num",
+    time.col = "Time.hr",
     name = "divergence_from_previous_step",
     name.time = "time_from_previous_step"
     )
