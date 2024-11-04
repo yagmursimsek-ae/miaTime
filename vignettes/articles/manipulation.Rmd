@@ -32,8 +32,8 @@ knitr::opts_chunk$set(
 ## Introduction
 
 `miaTime` implements tools for time series manipulation based on the
-`r BiocStyle::Biocpkg("TreeSummarizedExperiment")` data container. Much of the
-functionality is also applicable to the
+`r BiocStyle::Biocpkg("TreeSummarizedExperiment")` (`TreeSE`) data container.
+Much of the functionality is also applicable to the
 `r BiocStyle::Biocpkg("SummarizedExperiment")` data objects. This tutorial
 shows how to use `miaTime` methods as well as the broader R/Bioconductor
 ecosystem to manipulate time series data.
@@ -176,7 +176,7 @@ sampling location, ...).
 Add time point rank per subject.
 
 ```{r}
-#| label: rank
+#| label: rank_for_subject
 
 library(dplyr)
 
@@ -185,6 +185,18 @@ colData(tse) <- colData(tse) |>
    group_by(subject) |>
    mutate(rank = rank(time, ties.method = "average")) |>
    DataFrame()
+```
+
+## Subset to baseline samples
+
+`TreeSE` consists of rows for features and columns for samples. If we are
+specifically interested in baseline samples, we can easily subset the data as
+follows.
+
+```{r}
+#| label: subset
+
+tse <- tse[, tse$time==0]
 ```
 
 # Session info
