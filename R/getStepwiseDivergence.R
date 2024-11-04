@@ -54,7 +54,7 @@ NULL
 #' @export
 #'
 setGeneric("getStepwiseDivergence", signature = c("x"), function(x, ...)
-  standardGeneric("getStepwiseDivergence"))
+    standardGeneric("getStepwiseDivergence"))
 
 #' @rdname addStepwiseDivergence
 #' @export
@@ -97,9 +97,9 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         # Create an argument list. Do not include altexp as it is already taken
         # into account.
         args <- c(
-          args,
-          list(assay.type = assay.type, method = method),
-          list(...)[!names(list(...)) %in% c("altexp")]
+            args,
+            list(assay.type = assay.type, method = method),
+            list(...)[!names(list(...)) %in% c("altexp")]
         )
         # Calculate divergences
         res <- do.call(getDivergence, args)
