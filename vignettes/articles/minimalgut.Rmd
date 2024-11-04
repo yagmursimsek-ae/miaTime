@@ -169,6 +169,8 @@ interest (here: slope).
 ```{r}
 #| label: moving_average
 
+library(dplyr)
+
 # Calculate moving average with time window of 3 time points
 tse[["sliding_divergence"]] <- colData(tse) |>
     as.data.frame() |>
