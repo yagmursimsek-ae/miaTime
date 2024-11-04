@@ -6,15 +6,15 @@ Authors@R:
      c(person(given = "Leo", family = "Lahti", role = c("aut"),
               email = "leo.lahti@iki.fi",
               comment = c(ORCID = "0000-0001-5537-637X")),
+       person(given = "Tuomas", family = "Borman", role = c("aut"),
+              email = "tuomas.v.borman@utu.fi",
+              comment = c(ORCID = "0000-0002-8563-8884")),
        person(given = "Yagmur", family = "Simsek", role = c("aut", "cre"),
               email = "yagmur.simsek@hsrw.org"),
        person(given = "Sudarshan", family = "Shetty", role = c("ctb"),
               email = "sudarshanshetty9@gmail.com"),
-       person(given = "Chouaib", family = "Benchraka", role=c("ctb")),
-       person(given = "Tuomas", family = "Borman", role = c("ctb"),
-              email = "tuomas.v.borman@utu.fi",
-              comment = c(ORCID = "0000-0002-8563-8884")),
-      person(given = "Muluh", family = "Muluh", role=c("ctb"))
+       person(given = "Chouaib", family = "Benchraka", role = c("ctb")),
+      person(given = "Muluh", family = "Muluh", role = c("ctb"))
         )
 Description:
     The `miaTime` package provides tools for microbiome time series analysis
@@ -22,7 +22,7 @@ Description:
 biocViews: Microbiome, Software, Sequencing
 License: Artistic-2.0 | file LICENSE
 Depends:
-    R (>= 4.0),
+    R (>= 4.4.0),
     mia
 Imports:
     dplyr,
@@ -42,9 +42,8 @@ Suggests:
     scater,
     testthat,
     vegan
-Remotes:
-    github::microbiome/mia
 URL: https://github.com/microbiome/miaTime
+BugReports: https://github.com/microbiome/miaTime/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
