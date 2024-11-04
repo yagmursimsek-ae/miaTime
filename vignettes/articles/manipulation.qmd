@@ -11,9 +11,9 @@ output:
         toc_depth: 2
         number_sections: true
 vignette: >
-  %\VignetteIndexEntry{miaTime}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{mia}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
 
@@ -68,8 +68,6 @@ To sort data based on subject and time point in base R, you can use the
 
 ```{r}
 #| label: sort_samples
-
-library("tidySingleCellExperiment")
 
 data(hitchip1006)
 tse <- hitchip1006
