@@ -97,7 +97,8 @@ NULL
 NULL
 
 #' @title SilvermanAGutData
-#' @description The SilvermanAGutData dataset contains 16S rRNA gene based high-throughput
+#' @description
+#' The SilvermanAGutData dataset contains 16S rRNA gene based high-throughput
 #' profiling of 4 in vitro artificial gut models. The sampling was done hourly
 #' and daily to capture sub-daily dynamics of microbial community originating
 #' from human feces. The data consists of 413 taxa from 639 samples.

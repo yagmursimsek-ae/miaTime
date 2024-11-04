@@ -31,7 +31,9 @@ knitr::opts_chunk$set(
 
 # Minimal gut microbiome
 
-Dense samples of the minimal gut microbiome. In the initial hours, MDb-MM was grown under batch condition and 24 h onwards, continuous feeding of media with pulse feeding cycles. This information is stored in the `colData`.   
+Dense samples of the minimal gut microbiome. In the initial hours, MDb-MM was
+grown under batch condition and 24 h onwards, continuous feeding of media with
+pulse feeding cycles. This information is stored in the `colData`.   
 
 ```{r}
 #| label: setup
@@ -74,20 +76,16 @@ here hour zero until the end of the experiment.
 
 ```{r}
 #| label: setup
-
-# Get relative abundance
-tse <- transformAssay(tse, method = "relabundance")
-# Divergence from baseline i.e from hour zero.
-tse <- getBaselineDivergence(
+## Divergence from baseline i.e from hour zero.
+tse <- transformAssay(minimalgut, method = "relabundance")
+tse <- addBaselineDivergence(
     tse,
     group = "StudyIdentifier",
-    time_field = "Time.hr",
-    name_divergence = "divergence_from_baseline",
-    name_timedifference = "time_from_baseline",
-    assay.type="relabundance",
-    FUN = vegan::vegdist,
-    method="bray")
-
+    time.col = "Time.hr",
+    name = "divergence_from_baseline",
+    name.time = "time_from_baseline",
+    assay.type = "relabundance",
+    method = "bray")
 ```
 
 
@@ -125,9 +123,7 @@ Now visualize abundance of *Blautia hydrogenotrophica* using the
 #| label: setup
 
 library(miaViz)
-
-
-plotSeries(mia::relAbundanceCounts(minimalgut),
+plotSeries(transformAssay(minimalgut, method = "relabundance"),
            x = "Time.hr",
            y = "Blautia_hydrogenotrophica",
            colour_by = "Species",
@@ -144,8 +140,9 @@ plotSeries(mia::relAbundanceCounts(minimalgut),
 ## Visualize the rate (slope) of divergence 
 
 Sample dissimilarity between consecutive time steps(step size n >= 1) within
-a group(subject, age, reaction chamber, etc.) can be calculated by `getStepwiseDivergence`. If we normalize this by the time interval, this gives an approximate slope for the change.
-
+a group(subject, age, reaction chamber, etc.) can be calculated by
+`addStepwiseDivergence`. If we normalize this by the time interval, this gives
+an approximate slope for the change.
 
 ```{r}
 #| label: stepwise_divergence
@@ -154,18 +151,17 @@ a group(subject, age, reaction chamber, etc.) can be calculated by `getStepwiseD
 library(miaTime)
 library(dplyr)
 
-# Sort samples by time (necessary for getStepwiseDivergence)
+# Sort samples by time (necessary for addStepwiseDivergence)
 tse <- tse[, order(colData(tse)$Time_hr_num)]
 
 # Divergence between consecutive time points
-tse <- getStepwiseDivergence(tse, group = "StudyIdentifier",
+tse <- addStepwiseDivergence(tse, group = "StudyIdentifier",
                                time_interval = 1,
-                               time_field = "Time_hr_num",
-                               name_divergence = "divergence_from_previous_step",
-                               name_timedifference = "time_from_previous_step",
-                               assay.type ="relabundance",
-                               FUN = vegan::vegdist,
-                               method="bray")
+                               time.col = "Time_hr_num",
+                               name = "divergence_from_previous_step",
+                               name.time = "time_from_previous_step",
+                               assay.type = "relabundance",
+                               method = "bray")
 
 # We have now new fields added in the colData:
 # time_from_previous_step, divergence_from_previous_step
@@ -196,7 +192,7 @@ This shows how to calculate and plot moving average for the variable of interest
 colData(tse)$slope <- colData(tse)$divergence_from_previous_step / colData(tse)$time_from_previous_step
 
 # Split by group and perform operation
-tselist <- mia::splitOn(tse, "StudyIdentifier")
+tselist <- splitOn(tse, "StudyIdentifier")
 
 # colData(tse)$divergence_from_previous_step
 addmean <- function (x, k, field, field_name) {
@@ -215,7 +211,7 @@ addmean <- function (x, k, field, field_name) {
 tselist2 <- lapply(tselist, function (x) {addmean(x, k=3, field = "slope", field_name = "sliding_average")})
 
 # Merge back
-tse <- mia::mergeSEs(tselist2)
+tse <- mergeSEs(tselist2)
 
 # Visualize
 theme_set(theme_bw(10))
