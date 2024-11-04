@@ -1,7 +1,7 @@
 Package: miaTime
 Type: Package
 Title: Microbiome Time Series Analysis
-Version: 0.1.22
+Version: 0.1.23
 Authors@R:
      c(person(given = "Leo", family = "Lahti", role = c("aut"),
               email = "leo.lahti@iki.fi",
@@ -22,28 +22,29 @@ Description:
 biocViews: Microbiome, Software, Sequencing, Coverage
 License: Artistic-2.0 | file LICENSE
 Depends:
-    R (>= 4.0)
+    R (>= 4.0),
+    mia
 Imports:
     dplyr,
-    methods,    
-    mia,
+    methods,
     S4Vectors,
-    SummarizedExperiment,
     SingleCellExperiment,
-    vegan,
-    scater
+    SummarizedExperiment,
+    TreeSummarizedExperiment
 Suggests: 
-    TreeSummarizedExperiment,
+    BiocStyle,
+    devtools,
+    ggplot2,
+    knitr,
+    lubridate,
+    miaViz,
+    rmarkdown,
+    scater,
+    testthat,
     tidySingleCellExperiment,
     tidySummarizedExperiment,
-    ggplot2,
-    miaViz,
-    lubridate,
-    rmarkdown,
-    knitr,
-    devtools,
-    BiocStyle,
-    testthat,
+    TreeSummarizedExperiment,
+    vegan,
     zoo
 Remotes:
     github::microbiome/mia
