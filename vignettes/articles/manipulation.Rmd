@@ -176,7 +176,7 @@ sampling location, ...).
 Add time point rank per subject.
 
 ```{r}
-#| label: hours
+#| label: rank
 
 library(dplyr)
 
@@ -185,26 +185,6 @@ colData(tse) <- colData(tse) |>
    group_by(subject) |>
    mutate(rank = rank(time, ties.method = "average")) |>
    DataFrame()
-```
-
-## Subset to baseline samples
-
-```{r}
-#| label: hours
-
-# Pick samples with time point 0
-tse <- hitchip1006 |> filter(time == 0)
-# Or: tse <- tse[, tse$time==0]
-
-# Sample with the smallest time point within each subject
-colData(tse) <- colData(tse) |>
-   as.data.frame() |>
-   group_by(subject) |>
-   mutate(rank = rank(time, ties.method = "average")) |>
-   DataFrame()
-
-# Pick the subset including first time point per subject
-tse <- tse[, tse$rank == 1]
 ```
 
 # Session info
