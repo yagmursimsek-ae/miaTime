@@ -1,3 +1,16 @@
+#' \code{miaTime} Package.
+#'
+#' \code{miaTime} implements time series methods in \link[mia]{mia} ecosystem.
+#' @name miaTime-package
+#' @aliases miaTime
+#' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
+"_PACKAGE"
+NULL
+
+#' @import mia
+#' @import TreeSummarizedExperiment
+NULL
+
 #' @title HITChip Atlas with 1006 Western Adults
 #' @description This data set contains genus-level microbiota profiling with
 #' HITChip for 1006 western adults with no reported health complications,

@@ -1,9 +1,6 @@
 ---
 title: "Minimal gut bioreactor examples"
 date: "`r Sys.Date()`"
-author:
-- name: Sudarshan Shetty
-- name: Leo Lahti
 package: 
     miaTime
 output: 
@@ -20,58 +17,49 @@ vignette: >
 bibliography: references.bib
 ---
 
-```{r eval=FALSE, include=FALSE}
-library(Cairo)
-knitr::opts_chunk$set(cache = FALSE,
-                      fig.width = 9,
-                      dpi=300,
-                      dev = "png",
-                      dev.args = list(type = "cairo-png"),
-                      message = FALSE,
-                      warning = FALSE)
-```
+```{r}
+#| label: setup
+#| include: false
 
-```{r loadhide, message=FALSE, warning=FALSE, echo=FALSE}
-library(mia)
-library(miaTime)
-library(dplyr)
-library(lubridate)
 library(knitr)
-library(TreeSummarizedExperiment)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE
+)
 ```
-
 
 # Minimal gut microbiome
 
-Dense samples of the minimal gut microbiome. In the initial hours, MDb-MM was grown under batch condition and 24 h onwards, continuous feeding of media with pulse feeding cycles. This information is stored in the `colData`.   
+Dense samples of the minimal gut microbiome. In the initial hours, MDb-MM was
+grown under batch condition and 24 h onwards, continuous feeding of media with
+pulse feeding cycles. This information is stored in the `colData`.   
 
-```{r fig.width=8, fig.height=3}
+```{r}
+#| label: sample_table
+
 library(miaTime)
+
 data(minimalgut)
 tse <- minimalgut
 
-# quick check of number of samples 
-kable(table(colData(tse)$StudyIdentifier,colData(tse)$condition_1))
+# Quick check of number of samples 
+table(tse[["StudyIdentifier"]], tse[["condition_1"]])
 ```
 
 Visualize samples available for each of the bioreactors. This allows
 to identify if there are any missing samples for specific times.
 
-
 ```{r}
-library(ggplot2)
-library(tidySummarizedExperiment)
-tse |> 
-    ggplot(aes(as.factor(Time.hr), StudyIdentifier)) +
-    geom_tile(aes(fill=condition_1), color="white") +
-    scale_fill_manual("Condition Sampled", 
-                      values = c("#ff006e", "#e07a5f", "#457b9d")) +
-    theme_minimal() +
-    theme(axis.text.x = element_text(size=8, angle = 90),
-          legend.position = "top") +
-    labs(x="Time (h)", y="")
-```
+#| label: show_timepoints
 
+library(ggplot2)
+
+colData(tse) |>
+    ggplot() +
+    geom_tile(
+        aes(x = as.factor(Time.hr), y = StudyIdentifier, fill = condition_1))
+```
 
 ## Community dynamics   
 
@@ -81,229 +69,150 @@ can investigate the succession of mdbMM16 from the start of experiment
 here hour zero until the end of the experiment.
 
 ```{r}
-## Divergence from baseline i.e from hour zero.
-tse <- transformAssay(minimalgut, method = "relabundance") # get relative abundance
-tse <- addBaselineDivergence(tse,
-                             group = "StudyIdentifier",
-                             time.col = "Time.hr",
-                             name = "divergence_from_baseline",
-                             name.time = "time_from_baseline",
-                             assay.type = "relabundance",
-                             method = "bray")
+#| label: calculate_divergence
 
+# Transform data to relativeS
+tse <- transformAssay(tse, method = "relabundance")
+# Divergence from baseline i.e from hour zero
+tse <- addBaselineDivergence(
+    tse,
+    assay.type = "relabundance",
+    method = "bray",
+    group = "StudyIdentifier",
+    time.col = "Time.hr",
+    )
 ```
 
+Let's then visualize the divergence.
 
-Visualize the divergence
+```{r}
+#| label: show_divergence
 
-```{r fig.height=4, fig.width=8}
-# First define nice colors for bioreactors
-bioreac_cols <- c(`Bioreactor A`= "#b2182b",
-                  `Bioreactor B`= "#2166ac",
-                  `Bioreactor C` = "#35978f")
+library(scater)
 
-tse |>
-    ggplot(aes(x=Time.hr, y=divergence_from_baseline))+
-    geom_point(aes(color=StudyIdentifier), size=2, alpha=0.5) +
-    geom_line(aes(color=StudyIdentifier)) +
-    theme_minimal() +
-    scale_color_manual(values = bioreac_cols) +
-    labs(x="Time (h)", y="Divergence \nfrom baseline") +
-    # highlight specific timepoints
-    geom_vline(xintercept = 152, lty=2, color="#991720") + 
-    geom_vline(xintercept = 248, lty=2, color= "#0963bd")+
-    annotate("text",x=c(152, 248),y=c(0.8, 0.8),
-             label=c("Addition of\nB.hydrogenotrophica","Acetate Discontinued"),
-             hjust=c(1.05,-0.05))
+# Create a time series plot for divergence
+p <- plotColData(
+    tse, x = "Time.hr", y = "divergence", colour_by = "StudyIdentifier") +
+    # Add line between points
+    geom_line(aes(group = .data[["colour_by"]], colour =  .data[["colour_by"]]))
+p
 ```
 
 ## Visualizing selected taxa
 
-Now visualize abundance of *Blautia hydrogenotrophica* using the `miaViz::plotSeries` function.
+Now visualize abundance of _Blautia hydrogenotrophica_ using the
+`miaViz::plotSeries()` function.
 
-```{r fig.height=4, fig.width=8}
+```{r}
+#| label: plot_series
+
 library(miaViz)
-plotSeries(transformAssay(minimalgut, method = "relabundance"),
-           x = "Time.hr",
-           y = "Blautia_hydrogenotrophica",
-           colour_by = "Species",
-           assay.type = "relabundance")+
-    geom_vline(xintercept = 152, lty=2, color="#991720") + 
-    geom_vline(xintercept = 248, lty=2, color= "#0963bd")+
-    annotate("text",x=c(152, 248),y=c(0.2, 0.15),
-             label=c("Addition of\nB.hydrogenotrophica","Acetate Discontinued"),
-             hjust=c(1.05,-0.05))+
-    labs(x="Time (h)", y="B.hydrogenotrophica\nRelative Abundance") +
-    theme(legend.position = "none") 
+
+# Plot certain feature by time
+p <- plotSeries(
+    tse,
+    x = "Time.hr", y = "Blautia_hydrogenotrophica", colour_by = "Species",
+    assay.type = "relabundance")
+p
 ```
-
-
 
 ## Visualize the rate (slope) of divergence 
 
 Sample dissimilarity between consecutive time steps(step size n >= 1) within
-a group(subject, age, reaction chamber, etc.) can be calculated by `addStepwiseDivergence`. If we normalize this by the time interval, this gives an approximate slope for the change.
+a group(subject, age, reaction chamber, etc.) can be calculated by
+`addStepwiseDivergence`.
 
-
-```{r addStepwiseDivergence, fig.height=4, fig.width=8, warning=FALSE}
-# Load libraries
-library(miaTime)
-library(dplyr)
-
-# Sort samples by time (necessary for addStepwiseDivergence)
-tse <- tse[, order(colData(tse)$Time_hr_num)]
+```{r}
+#| label: stepwise_divergence
 
 # Divergence between consecutive time points
-tse <- addStepwiseDivergence(tse, group = "StudyIdentifier",
-                               time_interval = 1,
-                               time.col = "Time_hr_num",
-                               name = "divergence_from_previous_step",
-                               name.time = "time_from_previous_step",
-                               assay.type = "relabundance",
-                               method = "bray")
+tse <- addStepwiseDivergence(
+    tse,
+    assay.type = "relabundance",
+    method = "bray",
+    group = "StudyIdentifier",
+    time.interval = 1,
+    time.col = "Time.hr",
+    name = "divergence_from_previous_step",
+    name.time = "time_from_previous_step"
+    )
+```
 
-# We have now new fields added in the colData:
-# time_from_previous_step, divergence_from_previous_step
-# print(colData(tse))
+The results are again stored in `colData`. We calculate the speed of divergence
+change by dividing each divergence change by the corresponding change in time.
+Then we use similar plotting methods as previously.
 
-# Visualize the slope of dissimilarity between consecutive time points as a function of time (from baseline)
-library(ggplot2)
-theme_set(theme_bw(10))
-p <- tse |> ggplot(aes(x=time_from_baseline,
-	               y=divergence_from_previous_step/time_from_previous_step,
-	               color=StudyIdentifier)) +
-       geom_point() +
-       geom_line() +
-       labs(x="Time (hours)", y="Slope of dissimilarity (Bray-Curtis)") +
-       geom_hline(aes(yintercept=0), linetype=2)
+```{r}
+#| label: show_stepwise
 
-print(p)
+# Calculate slope for the change
+tse[["divergence_change"]] <- tse[["divergence_from_previous_step"]] /
+    tse[["time_from_previous_step"]]
+
+# Create a time series plot for divergence
+p <- plotColData(
+    tse,
+    x = "Time.hr",
+    y = "divergence_change",
+    colour_by = "StudyIdentifier"
+    ) +
+    # Add line between points
+    geom_line(aes(group = .data[["colour_by"]], colour =  .data[["colour_by"]]))
+p
 ```
 
 ## Moving average of the slope
 
-This shows how to calculate and plot moving average for the variable of interest (here: slope).
+This shows how to calculate and plot moving average for the variable of
+interest (here: slope).
 
-```{r rollmean, fig.height=4, fig.width=8, warning=FALSE}
-# Add slope explicitly in colData
-colData(tse)$slope <- colData(tse)$divergence_from_previous_step / colData(tse)$time_from_previous_step
+```{r}
+#| label: moving_average
 
-# Split by group and perform operation
-tselist <- splitOn(tse, "StudyIdentifier")
+library(dplyr)
 
-# colData(tse)$divergence_from_previous_step
-addmean <- function (x, k, field, field_name) {
-  # Calculate rolling mean
-  m <- zoo::rollmean(x[[field]], k = k)
-  # Initialize empty field
-  colData(x)[[field_name]] <- rep(NA, ncol(x))
-  # Fill in the rolling mean (length does not match with original data in rolling mean)
-  colData(x)[1:length(m), field_name] <- m
-  # Return the object with a new field added
-  x
-}
-
-# Calculate sliding average for the field "divergence_from_previous_step"
-# and store the result in a new field with the name "sliding_average"
-tselist2 <- lapply(tselist, function (x) {addmean(x, k=3, field = "slope", field_name = "sliding_average")})
-
-# Merge back
-tse <- mergeSEs(tselist2)
-
-# Visualize
-theme_set(theme_bw(10))
-p <- tse |> ggplot(aes(x = time_from_baseline,
-	               y = sliding_average,
-	               color=StudyIdentifier)) +
-     geom_point() +
-     geom_line() +
-     labs(x="Time (hours)", y="Mean slope of dissimilarity (Bray-Curtis)") +
-     geom_hline(aes(yintercept=0), linetype=2)
-print(p)
+# Calculate moving average with time window of 3 time points
+tse[["sliding_divergence"]] <- colData(tse) |>
+    as.data.frame() |>
+    # Group based on reactor
+    group_by(StudyIdentifier) |>
+    # Calculate moving average
+    mutate(sliding_avg = (
+        # We get the previous 2 samples
+        lag(divergence_change, 2) +
+        lag(divergence_change, 1) +
+        # And the current sample
+        divergence_change
+        # And take average
+        ) / 3
+    ) |>
+    # Get only the values as vector
+    ungroup() |>
+    pull(sliding_avg)
 ```
 
+After calculating the moving average of divergences, we can visualize the
+result in a similar way to our previous approach.
 
+```{r}
+#| label: show_moving_average
 
-## Error bars
-
-This shows how to visualize error bars on top of time series. In this
-example we create artificial replicates and variation for a brief example.
-
-
-```{r errorbars, fig.height=4, fig.width=8, warning=FALSE, message=FALSE}
-## Source: https://www.geeksforgeeks.org/adding-error-bars-to-a-line-graph-with-ggplot2-in-r/
-## Gives count, mean, standard deviation, standard error of the mean,
-## and confidence interval (default 95%).
-## data: a data frame.
-## measurevar: the name of a column that contains the variable to be summariezed
-## groupvars: a vector containing names of columns that contain grouping variables
-## na.rm: a boolean that indicates whether to ignore NA's
-## conf.interval: the percent range of the confidence interval (default is 95%)
-summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
-                      conf.interval=.95, .drop=TRUE) {
-    library(plyr)
-
-    # New version of length which can handle NA's: if na.rm==T, don't count them
-    length2 <- function (x, na.rm=FALSE) {
-        if (na.rm) sum(!is.na(x))
-        else       length(x)
-    }
-
-    # This does the summary. For each group's data frame, return a vector with
-    # N, mean, and sd
-    datac <- ddply(data, groupvars, .drop=.drop,
-      .fun = function(xx, col) {
-        c(N    = length2(xx[[col]], na.rm=na.rm),
-          mean = mean   (xx[[col]], na.rm=na.rm),
-          sd   = sd     (xx[[col]], na.rm=na.rm)
-        )
-      },
-      measurevar
-    )
-
-    # Rename the "mean" column    
-    datac <- rename(datac, c("mean" = measurevar))
-
-    datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
-
-    # Confidence interval multiplier for standard error
-    # Calculate t-statistic for confidence interval: 
-    # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
-    ciMult <- qt(conf.interval/2 + .5, datac$N-1)
-    datac$ci <- datac$se * ciMult
-
-    return(datac)
-}
-
-# Create artificial example on replicates because we don't have any in this demo data
-set.seed(3422)
-df <- as.data.frame(colData(tse))
-sdlevel <- 0.1*mean(df$sliding_average, na.rm=TRUE)
-df1 <- df
-df2 <- df; df2$sliding_average <- rnorm(mean=df1$sliding_average, sd = sdlevel, n=nrow(df1)) 
-df3 <- df; df3$sliding_average <- rnorm(mean=df1$sliding_average, sd = sdlevel, n=nrow(df1))
-df <- bind_rows(list(df1, df2, df3))
-
-# Calculate deviations
-df <- summarySE(df, measurevar="sliding_average", groupvars=c("StudyIdentifier", "time_from_baseline"))
-
-# Visualize
-theme_set(theme_bw(10))
-p <- ggplot(df,
-         aes(x = time_from_baseline, y = sliding_average, color=StudyIdentifier)) +
-     geom_point() +
-     geom_line() +
-     geom_errorbar(aes(ymin=sliding_average-sd, ymax=sliding_average+sd), width=.2,
-                 position=position_dodge(0.05)) +    
-     labs(x="Time (hours)", y="Mean slope of dissimilarity (Bray-Curtis)") +
-     geom_hline(aes(yintercept=0), linetype=2)
-print(p)
+# Create a time series plot for divergence
+p <- plotColData(
+    tse,
+    x = "Time.hr",
+    y = "sliding_divergence",
+    colour_by = "StudyIdentifier"
+    ) +
+    # Add line between points
+    geom_line(aes(group = .data[["colour_by"]], colour =  .data[["colour_by"]]))
+p
 ```
-
-
 
 # Session info
 
 ```{r}
+#| label: session_info
+
 sessionInfo()
 ```

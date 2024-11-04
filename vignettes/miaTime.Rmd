@@ -1,11 +1,6 @@
 ---
 title: "miaTime: Microbiome Time Series Analysis"
 date: "`r Sys.Date()`"
-author:
-- name: Leo Lahti
-  email: leo.lahti@iki.fi
-- name: Yagmur Simsek
-  email: yagmur.simsek@hsrw.org
 package: 
     miaTime
 output: 
@@ -21,45 +16,102 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
-```{r eval=FALSE, include=FALSE}
-library(Cairo)
-knitr::opts_chunk$set(cache = FALSE,
-                      fig.width = 9,
-                      dpi=300,
-                      dev = "png",
-                      dev.args = list(type = "cairo-png"),
-                      message = FALSE,
-                      warning = FALSE)
+```{r}
+#| label: setup
+#| include: false
+
+library(knitr)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE
+)
 ```
 
+## Introduction
 
-
-
-# Introduction
-
-`miaTime` implements tools for time series manipulation based on the `TreeSummarizedExperiment` data container.
+`miaTime` is a package in the `r BiocStyle::Biocpkg("mia")` family, providing
+tools for time series manipulation using the
+`r BiocStyle::Biocpkg("TreeSummarizedExperiment")` data container.
 
 ## Installation
 
-Installing the latest development version in R.
+`miaTime` is hosted on Bioconductor, and can be installed using via
+`BiocManager`.
 
-```{r, eval=FALSE}
-library(devtools)
-devtools::install_github("microbiome/miaTime")
+```{r}
+#| label: install
+#| eval: false
+
+BiocManager::install("miaTime")
 ```
 
-Loading the package:
+## Load the package
 
-```{r load-packages, message=FALSE, warning=FALSE}
+Once installed, `miaTime` is made available in the usual way.
+
+```{r}
+#| label: load_package
+
 library(miaTime)
 ```
 
+## Divergence between time points
 
-See [articles](https://microbiome.github.io/miaTime/articles/) for more detailed example workflows.
+`miaTime` offers functions to calculate divergences. These can be calculated
+based on samples and their corresponding base time point, e.g., first sample of
+time series. Moreover, divergences can be calculated in rolling basis meaning
+that a sample is compared to previous ith sample.
 
+Divergences can be calculated with `get*Divergence()` functions. In the example
+below, for each subject, we calculate the divergence of their samples by
+comparing them to the first time point.
+
+```{r}
+#| label: base_divergence
+
+data(hitchip1006)
+tse <- hitchip1006
+
+res <- getBaselineDivergence(
+    tse, time.col = "time", group = "sample", name = "baseline")
+res |> head()
+```
+
+A more convenient and preferred approach is to store the values directly in
+`colData` using the `get*Divergence()` functions. In the example below, we
+calculate stepwise divergences with a lag of 1, meaning that for each sample,
+the divergence is calculated by comparing it to the previous time point for
+the same subject.
+
+```{r}
+#| label: time_divergence
+
+tse <- addStepwiseDivergence(tse, time.col = "time")
+colData(tse)
+```
+
+## Visualize time series
+
+We can visualize time series data with `r BiocStyle::Biocpkg("miaViz")`. Below,
+we visualize 2 most abundant taxa.
+
+```{r}
+#| label: plot_series
+
+library(miaViz)
+
+p <- plotSeries(tse, x = "time", y = getTop(tse, 5))
+p
+```
+
+See [articles](https://microbiome.github.io/miaTime/articles/) for more detailed
+example workflows.
 
 ## Session info
 
 ```{r}
+#| label: session_info
+
 sessionInfo()
 ```

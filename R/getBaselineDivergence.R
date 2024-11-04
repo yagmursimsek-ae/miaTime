@@ -98,11 +98,6 @@ NULL
 
 #' @rdname addBaselineDivergence
 #' @export
-setGeneric("getBaselineDivergence", signature = "x", function(x, ...)
-    standardGeneric("getBaselineDivergence"))
-
-#' @rdname addBaselineDivergence
-#' @export
 setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     function(
         x,
@@ -162,11 +157,6 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         return(res)
     }
 )
-
-#' @rdname addBaselineDivergence
-#' @export
-setGeneric("addBaselineDivergence", signature = "x", function(x, ...)
-    standardGeneric("addBaselineDivergence"))
 
 #' @rdname addBaselineDivergence
 #' @export
