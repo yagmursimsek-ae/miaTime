@@ -36,14 +36,14 @@ grown under batch condition and 24 h onwards, continuous feeding of media with
 pulse feeding cycles. This information is stored in the `colData`.   
 
 ```{r}
-#| label: describe
+#| label: sample_table
 
 library(miaTime)
 
 data(minimalgut)
 tse <- minimalgut
 
-# quick check of number of samples 
+# Quick check of number of samples 
 table(tse[["StudyIdentifier"]], tse[["condition_1"]])
 ```
 
