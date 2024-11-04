@@ -11,7 +11,7 @@ output:
         toc_depth: 2
         number_sections: true
 vignette: >
-    %\VignetteIndexEntry{mia}
+    %\VignetteIndexEntry{miaTime}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
