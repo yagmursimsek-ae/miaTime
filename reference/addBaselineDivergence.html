@@ -19,7 +19,7 @@ similar). The corresponding time difference is returned as well."><!-- mathjax -
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">miaTime</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.22</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.23</span>
       </span>
     </div>
 
@@ -178,27 +178,26 @@ group (named list per group).</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">hitchip1006</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">hitchip1006</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># By default, reference samples are the samples from the first timepoint</span></span></span>
 <span class="r-in"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">addBaselineDivergence</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">tse</span>,</span></span>
 <span class="r-in"><span>    group <span class="op">=</span> <span class="st">"subject"</span>,</span></span>
 <span class="r-in"><span>    time.col <span class="op">=</span> <span class="st">"time"</span>,</span></span>
-<span class="r-in"><span>    name <span class="op">=</span> <span class="st">"divergence_from_baseline"</span>,</span></span>
-<span class="r-in"><span>    name.time <span class="op">=</span> <span class="st">"time_from_baseline"</span>,</span></span>
-<span class="r-in"><span>    assay.type<span class="op">=</span><span class="st">"relabundance"</span>,</span></span>
-<span class="r-in"><span>    dis.fun <span class="op">=</span> <span class="fu">vegan</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegdist</a></span>,</span></span>
-<span class="r-in"><span>    method<span class="op">=</span><span class="st">"bray"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    assay.type <span class="op">=</span> <span class="st">"relabundance"</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add reference samples to colData, if you want to specify reference</span></span></span>
+<span class="r-in"><span><span class="co"># samples manually</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">[[</span><span class="st">"reference"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"Sample-875"</span></span></span>
 <span class="r-in"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">addBaselineDivergence</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">tse</span>,</span></span>
-<span class="r-in"><span>    baseline.sample <span class="op">=</span> <span class="st">"Sample-875"</span>,</span></span>
+<span class="r-in"><span>    reference <span class="op">=</span> <span class="st">"reference"</span>,</span></span>
 <span class="r-in"><span>    group <span class="op">=</span> <span class="st">"subject"</span>,</span></span>
 <span class="r-in"><span>    time.col <span class="op">=</span> <span class="st">"time"</span>,</span></span>
 <span class="r-in"><span>    name <span class="op">=</span> <span class="st">"divergence_from_baseline"</span>,</span></span>
 <span class="r-in"><span>    name.time <span class="op">=</span> <span class="st">"time_from_baseline"</span>,</span></span>
-<span class="r-in"><span>    assay.type<span class="op">=</span><span class="st">"relabundance"</span>,</span></span>
-<span class="r-in"><span>    dis.fun <span class="op">=</span> <span class="fu">vegan</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/vegan/man/vegdist.html" class="external-link">vegdist</a></span>,</span></span>
-<span class="r-in"><span>    method<span class="op">=</span><span class="st">"bray"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following values are already present in `colData` and will be overwritten: 'divergence_from_baseline', 'time_from_baseline'. Consider using the 'name' argument to specify alternative names.</span>
+<span class="r-in"><span>    assay.type <span class="op">=</span> <span class="st">"relabundance"</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"bray"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
