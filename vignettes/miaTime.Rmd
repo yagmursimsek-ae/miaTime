@@ -99,10 +99,9 @@ we visualize 2 most abundant taxa.
 ```{r}
 #| label: plot_series
 
-# Transform data in relative scale
-tse <- transformAssay(tse, method = "relabundance")
-p <- plotSeries(
-    tse, assay.type = "relabundance", x = "time", y = getTop(tse, 5))
+library(miaViz)
+
+p <- plotSeries(tse, x = "time", y = getTop(tse, 5))
 p
 ```
 
