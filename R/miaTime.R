@@ -3,8 +3,8 @@
 #' \code{miaTime} implements time series methods in \link[mia]{mia} ecosystem.
 #' @name miaTime-package
 #' @aliases miaTime
-#' @docType package
 #' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
+"_PACKAGE"
 NULL
 
 #' @import mia

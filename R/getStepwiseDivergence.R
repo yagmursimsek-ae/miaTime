@@ -52,12 +52,6 @@ NULL
 
 #' @rdname addStepwiseDivergence
 #' @export
-#'
-setGeneric("getStepwiseDivergence", signature = c("x"), function(x, ...)
-    standardGeneric("getStepwiseDivergence"))
-
-#' @rdname addStepwiseDivergence
-#' @export
 setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
     function(
         x,
@@ -112,11 +106,6 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         return(res)
     }
 )
-
-#' @rdname addStepwiseDivergence
-#' @export
-setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
-    standardGeneric("addStepwiseDivergence"))
 
 #' @rdname addStepwiseDivergence
 #' @export
