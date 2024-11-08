@@ -54,7 +54,7 @@ setGeneric("getShortTermChange", signature = c("x"),
 
 #' @rdname getShortTermChange
 #' @export
-#' @importFrom dplyr arrange as_tibble summarize
+#' @importFrom dplyr arrange as_tibble summarize "%>%"
 #' @importFrom ggplot2 ggplot aes
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom mia rarefyAssay transformAssay
