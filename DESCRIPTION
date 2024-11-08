@@ -25,8 +25,7 @@ Depends:
     R (>= 4.4.0),
     ggplot2,
     mia,
-    SummarizedExperiment,,
-    mia
+    SummarizedExperiment
 Imports:
     dplyr,
     methods,
