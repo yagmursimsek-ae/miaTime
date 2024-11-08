@@ -1,3 +1,16 @@
+#' \code{miaTime} Package.
+#'
+#' \code{miaTime} implements time series methods in \link[mia]{mia} ecosystem.
+#' @name miaTime-package
+#' @aliases miaTime
+#' @seealso \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
+"_PACKAGE"
+NULL
+
+#' @import mia
+#' @import TreeSummarizedExperiment
+NULL
+
 #' @title HITChip Atlas with 1006 Western Adults
 #' @description This data set contains genus-level microbiota profiling with
 #' HITChip for 1006 western adults with no reported health complications,
@@ -84,7 +97,8 @@ NULL
 NULL
 
 #' @title SilvermanAGutData
-#' @description The SilvermanAGutData dataset contains 16S rRNA gene based high-throughput
+#' @description
+#' The SilvermanAGutData dataset contains 16S rRNA gene based high-throughput
 #' profiling of 4 in vitro artificial gut models. The sampling was done hourly
 #' and daily to capture sub-daily dynamics of microbial community originating
 #' from human feces. The data consists of 413 taxa from 639 samples.
