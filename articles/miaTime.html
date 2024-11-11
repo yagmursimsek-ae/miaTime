@@ -82,9 +82,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>miaTime: Microbiome Time Series Analysis</h1>
             
-            <h4 data-toc-skip class="date">2024-11-08</h4>
+            <h4 data-toc-skip class="date">2024-11-11</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/microbiome/miaTime/blob/shortTermChange/vignettes/miaTime.Rmd" class="external-link"><code>vignettes/miaTime.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/microbiome/miaTime/blob/vig/vignettes/miaTime.Rmd" class="external-link"><code>vignettes/miaTime.Rmd</code></a></small>
       <div class="hidden name"><code>miaTime.Rmd</code></div>
 
     </div>
@@ -113,7 +113,6 @@ using via <code>BiocManager</code>.</p>
 way.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/microbiome/miaTime" class="external-link">miaTime</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span><span class="co">#&gt; Loading required package: mia</span></span>
 <span><span class="co">#&gt; Loading required package: MultiAssayExperiment</span></span>
 <span><span class="co">#&gt; Loading required package: SummarizedExperiment</span></span>
@@ -276,6 +275,7 @@ by comparing it to the previous time point for the same subject.</p>
 Below, we visualize 2 most abundant taxa.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">miaViz</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span><span class="co">#&gt; Loading required package: ggraph</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attaching package: 'miaViz'</span></span>
@@ -319,15 +319,15 @@ more detailed example workflows.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt;  [1] miaViz_1.14.0                   ggraph_2.2.1                   </span></span>
-<span><span class="co">#&gt;  [3] miaTime_0.99.0                  mia_1.15.3                     </span></span>
-<span><span class="co">#&gt;  [5] TreeSummarizedExperiment_2.14.0 Biostrings_2.74.0              </span></span>
-<span><span class="co">#&gt;  [7] XVector_0.46.0                  SingleCellExperiment_1.28.0    </span></span>
-<span><span class="co">#&gt;  [9] MultiAssayExperiment_1.32.0     SummarizedExperiment_1.36.0    </span></span>
-<span><span class="co">#&gt; [11] Biobase_2.66.0                  GenomicRanges_1.58.0           </span></span>
-<span><span class="co">#&gt; [13] GenomeInfoDb_1.42.0             IRanges_2.40.0                 </span></span>
-<span><span class="co">#&gt; [15] S4Vectors_0.44.0                BiocGenerics_0.52.0            </span></span>
-<span><span class="co">#&gt; [17] MatrixGenerics_1.18.0           matrixStats_1.4.1              </span></span>
-<span><span class="co">#&gt; [19] ggplot2_3.5.1                   knitr_1.48                     </span></span>
+<span><span class="co">#&gt;  [3] ggplot2_3.5.1                   miaTime_0.99.0                 </span></span>
+<span><span class="co">#&gt;  [5] mia_1.15.3                      TreeSummarizedExperiment_2.14.0</span></span>
+<span><span class="co">#&gt;  [7] Biostrings_2.74.0               XVector_0.46.0                 </span></span>
+<span><span class="co">#&gt;  [9] SingleCellExperiment_1.28.0     MultiAssayExperiment_1.32.0    </span></span>
+<span><span class="co">#&gt; [11] SummarizedExperiment_1.36.0     Biobase_2.66.0                 </span></span>
+<span><span class="co">#&gt; [13] GenomicRanges_1.58.0            GenomeInfoDb_1.42.0            </span></span>
+<span><span class="co">#&gt; [15] IRanges_2.40.0                  S4Vectors_0.44.0               </span></span>
+<span><span class="co">#&gt; [17] BiocGenerics_0.52.0             MatrixGenerics_1.18.0          </span></span>
+<span><span class="co">#&gt; [19] matrixStats_1.4.1               knitr_1.48                     </span></span>
 <span><span class="co">#&gt; [21] BiocStyle_2.34.0               </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
