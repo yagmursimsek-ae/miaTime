@@ -55,9 +55,8 @@ BiocManager::install("miaTime")
 
 Once installed, `miaTime` is made available in the usual way.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 #| label: load_package
-
 library(miaTime)
 ```
 
@@ -86,7 +85,7 @@ number of readily available
 
 Load example data:
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 #| label: lubridate
 
 # Load packages
@@ -175,7 +174,7 @@ sampling location, ...).
 
 Add time point rank per subject.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 #| label: rank_for_subject
 
 library(dplyr)
