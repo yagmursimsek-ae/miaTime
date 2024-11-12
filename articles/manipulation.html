@@ -82,7 +82,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time series manipulation</h1>
             
-            <h4 data-toc-skip class="date">2024-11-11</h4>
+            <h4 data-toc-skip class="date">2024-11-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/microbiome/miaTime/blob/vig/vignettes/articles/manipulation.Rmd" class="external-link"><code>vignettes/articles/manipulation.Rmd</code></a></small>
       <div class="hidden name"><code>manipulation.Rmd</code></div>
@@ -114,13 +114,90 @@ using via <code>BiocManager</code>.</p>
 way.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/microbiome/miaTime" class="external-link">miaTime</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Loading required package: mia</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: MultiAssayExperiment</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: SummarizedExperiment</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: MatrixGenerics</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: matrixStats</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'MatrixGenerics'</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:matrixStats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,</span></span>
+<span><span class="co">##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,</span></span>
+<span><span class="co">##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,</span></span>
+<span><span class="co">##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,</span></span>
+<span><span class="co">##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,</span></span>
+<span><span class="co">##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,</span></span>
+<span><span class="co">##     colWeightedMeans, colWeightedMedians, colWeightedSds,</span></span>
+<span><span class="co">##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,</span></span>
+<span><span class="co">##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,</span></span>
+<span><span class="co">##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,</span></span>
+<span><span class="co">##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,</span></span>
+<span><span class="co">##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,</span></span>
+<span><span class="co">##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,</span></span>
+<span><span class="co">##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,</span></span>
+<span><span class="co">##     rowWeightedSds, rowWeightedVars</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: GenomicRanges</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: stats4</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: BiocGenerics</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'BiocGenerics'</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     IQR, mad, sd, var, xtabs</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     anyDuplicated, aperm, append, as.data.frame, basename, cbind,</span></span>
+<span><span class="co">##     colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,</span></span>
+<span><span class="co">##     get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,</span></span>
+<span><span class="co">##     match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,</span></span>
+<span><span class="co">##     Position, rank, rbind, Reduce, rownames, sapply, saveRDS, setdiff,</span></span>
+<span><span class="co">##     table, tapply, union, unique, unsplit, which.max, which.min</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: S4Vectors</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'S4Vectors'</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:utils':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     findMatches</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     expand.grid, I, unname</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: IRanges</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: GenomeInfoDb</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: Biobase</span></span></code></pre>
+<pre><code><span><span class="co">## Welcome to Bioconductor</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     Vignettes contain introductory material; view with</span></span>
+<span><span class="co">##     'browseVignettes()'. To cite Bioconductor, see</span></span>
+<span><span class="co">##     'citation("Biobase")', and for packages 'citation("pkgname")'.</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'Biobase'</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:MatrixGenerics':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     rowMedians</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:matrixStats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     anyMissing, rowMedians</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: SingleCellExperiment</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: TreeSummarizedExperiment</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: Biostrings</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: XVector</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'Biostrings'</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     strsplit</span></span></code></pre>
+<pre><code><span><span class="co">## This is mia version 1.15.3</span></span>
+<span><span class="co">## - Online documentation and vignettes: https://microbiome.github.io/mia/</span></span>
+<span><span class="co">## - Online book 'Orchestrating Microbiome Analysis (OMA)': https://microbiome.github.io/OMA/docs/devel/</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="sorting-samples">Sorting samples<a class="anchor" aria-label="anchor" href="#sorting-samples"></a>
 </h3>
 <p>To sort data based on subject and time point in base R, you can use
 the <code><a href="https://rdrr.io/r/base/order.html" class="external-link">order()</a></code> function.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">hitchip1006</span><span class="op">)</span></span>
 <span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="va">hitchip1006</span></span>
 <span></span>
@@ -136,18 +213,41 @@ the <code><a href="https://rdrr.io/r/base/order.html" class="external-link">orde
 readily available <a href="https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html" class="external-link">time
 series manipulation tools</a>.</p>
 <p>Load example data:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Time is given in days in the demo data.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'lubridate'</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:Biostrings':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:GenomicRanges':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:GenomeInfoDb':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:IRanges':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     %within%, intersect, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:S4Vectors':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, second, second&lt;-, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:BiocGenerics':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     date, intersect, setdiff, union</span></span></code></pre>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Time is given in days in the demo data.</span></span>
 <span><span class="co"># Convert days to seconds</span></span>
 <span><span class="va">time_in_seconds</span> <span class="op">&lt;-</span> <span class="fl">60</span><span class="op">*</span><span class="fl">60</span><span class="op">*</span><span class="fl">24</span><span class="op">*</span><span class="va">tse</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co"># Convert the time data to period class</span></span>
 <span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as.period.html" class="external-link">as.period</a></span><span class="op">(</span><span class="va">time_in_seconds</span>, unit <span class="op">=</span> <span class="st">"sec"</span><span class="op">)</span></span>
 <span><span class="co"># Check the output</span></span>
-<span><span class="va">seconds</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "0S" "0S" "0S" "0S" "0S" "0S"</span></span></code></pre></div>
+<span><span class="va">seconds</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "0S" "0S" "0S" "0S" "0S" "0S"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="conversion-between-time-units">Conversion between time units<a class="anchor" aria-label="anchor" href="#conversion-between-time-units"></a>
@@ -155,104 +255,104 @@ series manipulation tools</a>.</p>
 <p>The time field in days is now shown in seconds. It can then be
 converted to many different units using the <code>lubridate</code>
 package.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hours</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as.period.html" class="external-link">as.period</a></span><span class="op">(</span><span class="va">seconds</span>, unit <span class="op">=</span> <span class="st">"hour"</span><span class="op">)</span></span>
-<span><span class="va">hours</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "0S" "0S" "0S" "0S" "0S" "0S"</span></span></code></pre></div>
+<span><span class="va">hours</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "0S" "0S" "0S" "0S" "0S" "0S"</span></span></code></pre>
 <p>The updated time information can then be added to the
 <code>SummarizedExperiment</code> data object as a new
 <code>colData</code> (sample data) field.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">$</span><span class="va">time_sec</span> <span class="op">&lt;-</span> <span class="va">seconds</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 1151 rows and 11 columns</span></span>
-<span><span class="co">#&gt;                   age      sex nationality DNA_extraction_method  project</span></span>
-<span><span class="co">#&gt;             &lt;integer&gt; &lt;factor&gt;    &lt;factor&gt;              &lt;factor&gt; &lt;factor&gt;</span></span>
-<span><span class="co">#&gt; Sample-1           28   male            US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-2           24   female          US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-3           52   male            US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-4           22   female          US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-5           25   female          US                    NA        1</span></span>
-<span><span class="co">#&gt; ...               ...      ...         ...                   ...      ...</span></span>
-<span><span class="co">#&gt; Sample-1002        40   male          UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1003        26   female        UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1004        45   male          UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1005        26   male          UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1006        23   female        UKIE                     r       28</span></span>
-<span><span class="co">#&gt;             diversity   bmi_group  subject      time      sample time_sec</span></span>
-<span><span class="co">#&gt;             &lt;numeric&gt;    &lt;factor&gt; &lt;factor&gt; &lt;numeric&gt; &lt;character&gt; &lt;Period&gt;</span></span>
-<span><span class="co">#&gt; Sample-1         5.76 severeobese        1         0    Sample-1       0S</span></span>
-<span><span class="co">#&gt; Sample-2         6.06 obese              2         0    Sample-2       0S</span></span>
-<span><span class="co">#&gt; Sample-3         5.50 lean               3         0    Sample-3       0S</span></span>
-<span><span class="co">#&gt; Sample-4         5.87 underweight        4         0    Sample-4       0S</span></span>
-<span><span class="co">#&gt; Sample-5         5.89 lean               5         0    Sample-5       0S</span></span>
-<span><span class="co">#&gt; ...               ...         ...      ...       ...         ...      ...</span></span>
-<span><span class="co">#&gt; Sample-1002      5.87 lean            1002         0 Sample-1002       0S</span></span>
-<span><span class="co">#&gt; Sample-1003      6.02 severeobese     1003         0 Sample-1003       0S</span></span>
-<span><span class="co">#&gt; Sample-1004      5.85 lean            1004         0 Sample-1004       0S</span></span>
-<span><span class="co">#&gt; Sample-1005      5.71 overweight      1005         0 Sample-1005       0S</span></span>
-<span><span class="co">#&gt; Sample-1006      6.07 lean            1006         0 Sample-1006       0S</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## DataFrame with 1151 rows and 11 columns</span></span>
+<span><span class="co">##                   age      sex nationality DNA_extraction_method  project</span></span>
+<span><span class="co">##             &lt;integer&gt; &lt;factor&gt;    &lt;factor&gt;              &lt;factor&gt; &lt;factor&gt;</span></span>
+<span><span class="co">## Sample-1           28   male            US                    NA        1</span></span>
+<span><span class="co">## Sample-2           24   female          US                    NA        1</span></span>
+<span><span class="co">## Sample-3           52   male            US                    NA        1</span></span>
+<span><span class="co">## Sample-4           22   female          US                    NA        1</span></span>
+<span><span class="co">## Sample-5           25   female          US                    NA        1</span></span>
+<span><span class="co">## ...               ...      ...         ...                   ...      ...</span></span>
+<span><span class="co">## Sample-1002        40   male          UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1003        26   female        UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1004        45   male          UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1005        26   male          UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1006        23   female        UKIE                     r       28</span></span>
+<span><span class="co">##             diversity   bmi_group  subject      time      sample time_sec</span></span>
+<span><span class="co">##             &lt;numeric&gt;    &lt;factor&gt; &lt;factor&gt; &lt;numeric&gt; &lt;character&gt; &lt;Period&gt;</span></span>
+<span><span class="co">## Sample-1         5.76 severeobese        1         0    Sample-1       0S</span></span>
+<span><span class="co">## Sample-2         6.06 obese              2         0    Sample-2       0S</span></span>
+<span><span class="co">## Sample-3         5.50 lean               3         0    Sample-3       0S</span></span>
+<span><span class="co">## Sample-4         5.87 underweight        4         0    Sample-4       0S</span></span>
+<span><span class="co">## Sample-5         5.89 lean               5         0    Sample-5       0S</span></span>
+<span><span class="co">## ...               ...         ...      ...       ...         ...      ...</span></span>
+<span><span class="co">## Sample-1002      5.87 lean            1002         0 Sample-1002       0S</span></span>
+<span><span class="co">## Sample-1003      6.02 severeobese     1003         0 Sample-1003       0S</span></span>
+<span><span class="co">## Sample-1004      5.85 lean            1004         0 Sample-1004       0S</span></span>
+<span><span class="co">## Sample-1005      5.71 overweight      1005         0 Sample-1005       0S</span></span>
+<span><span class="co">## Sample-1006      6.07 lean            1006         0 Sample-1006       0S</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="calculating-time-differences">Calculating time differences<a class="anchor" aria-label="anchor" href="#calculating-time-differences"></a>
 </h3>
 <p>The <code><a href="https://lubridate.tidyverse.org/reference/as.duration.html" class="external-link">lubridate::as.duration()</a></code> function helps to specify
 time points as duration.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">duration</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as.duration.html" class="external-link">as.duration</a></span><span class="op">(</span><span class="va">seconds</span><span class="op">)</span></span>
-<span><span class="va">duration</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "0s" "0s" "0s" "0s" "0s" "0s"</span></span></code></pre></div>
+<span><span class="va">duration</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "0s" "0s" "0s" "0s" "0s" "0s"</span></span></code></pre>
 <p>The difference between subsequent time points can then be
 calculated.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">time_diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">duration</span><span class="op">)</span></span>
 <span><span class="va">time_diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">time_diff</span><span class="op">)</span></span>
-<span><span class="va">time_diff</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0 0 0 0 0 0</span></span></code></pre></div>
+<span><span class="va">time_diff</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0 0 0 0 0 0</span></span></code></pre>
 <p>The time difference from a selected point to the other time points
 can be calculated as follows.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Difference from second time point</span></span>
 <span><span class="va">time_diff</span> <span class="op">&lt;-</span> <span class="va">hours</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">hours</span><span class="op">)</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">time_diff</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "-1.16415321826935e-10S" "-1.16415321826935e-10S" "-1.16415321826935e-10S"</span></span>
-<span><span class="co">#&gt; [4] "-1.16415321826935e-10S" "-1.16415321826935e-10S" "-1.16415321826935e-10S"</span></span></code></pre></div>
+<span><span class="va">time_diff</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "-1.16415321826935e-10S" "-1.16415321826935e-10S" "-1.16415321826935e-10S"</span></span>
+<span><span class="co">## [4] "-1.16415321826935e-10S" "-1.16415321826935e-10S" "-1.16415321826935e-10S"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="time-point-rank">Time point rank<a class="anchor" aria-label="anchor" href="#time-point-rank"></a>
 </h3>
 <p>Rank of the time points can be calculated by <code>rank</code>
 function provided in base R.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rank.html" class="external-link">rank</a></span><span class="op">(</span><span class="va">tse</span><span class="op">[[</span><span class="st">"time"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 1151 rows and 11 columns</span></span>
-<span><span class="co">#&gt;                   age      sex nationality DNA_extraction_method  project</span></span>
-<span><span class="co">#&gt;             &lt;integer&gt; &lt;factor&gt;    &lt;factor&gt;              &lt;factor&gt; &lt;factor&gt;</span></span>
-<span><span class="co">#&gt; Sample-1           28   male            US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-2           24   female          US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-3           52   male            US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-4           22   female          US                    NA        1</span></span>
-<span><span class="co">#&gt; Sample-5           25   female          US                    NA        1</span></span>
-<span><span class="co">#&gt; ...               ...      ...         ...                   ...      ...</span></span>
-<span><span class="co">#&gt; Sample-1002        40   male          UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1003        26   female        UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1004        45   male          UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1005        26   male          UKIE                     r       28</span></span>
-<span><span class="co">#&gt; Sample-1006        23   female        UKIE                     r       28</span></span>
-<span><span class="co">#&gt;             diversity   bmi_group  subject      time      sample time_sec</span></span>
-<span><span class="co">#&gt;             &lt;numeric&gt;    &lt;factor&gt; &lt;factor&gt; &lt;numeric&gt; &lt;character&gt; &lt;Period&gt;</span></span>
-<span><span class="co">#&gt; Sample-1         5.76 severeobese        1     503.5    Sample-1       0S</span></span>
-<span><span class="co">#&gt; Sample-2         6.06 obese              2     503.5    Sample-2       0S</span></span>
-<span><span class="co">#&gt; Sample-3         5.50 lean               3     503.5    Sample-3       0S</span></span>
-<span><span class="co">#&gt; Sample-4         5.87 underweight        4     503.5    Sample-4       0S</span></span>
-<span><span class="co">#&gt; Sample-5         5.89 lean               5     503.5    Sample-5       0S</span></span>
-<span><span class="co">#&gt; ...               ...         ...      ...       ...         ...      ...</span></span>
-<span><span class="co">#&gt; Sample-1002      5.87 lean            1002     503.5 Sample-1002       0S</span></span>
-<span><span class="co">#&gt; Sample-1003      6.02 severeobese     1003     503.5 Sample-1003       0S</span></span>
-<span><span class="co">#&gt; Sample-1004      5.85 lean            1004     503.5 Sample-1004       0S</span></span>
-<span><span class="co">#&gt; Sample-1005      5.71 overweight      1005     503.5 Sample-1005       0S</span></span>
-<span><span class="co">#&gt; Sample-1006      6.07 lean            1006     503.5 Sample-1006       0S</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## DataFrame with 1151 rows and 11 columns</span></span>
+<span><span class="co">##                   age      sex nationality DNA_extraction_method  project</span></span>
+<span><span class="co">##             &lt;integer&gt; &lt;factor&gt;    &lt;factor&gt;              &lt;factor&gt; &lt;factor&gt;</span></span>
+<span><span class="co">## Sample-1           28   male            US                    NA        1</span></span>
+<span><span class="co">## Sample-2           24   female          US                    NA        1</span></span>
+<span><span class="co">## Sample-3           52   male            US                    NA        1</span></span>
+<span><span class="co">## Sample-4           22   female          US                    NA        1</span></span>
+<span><span class="co">## Sample-5           25   female          US                    NA        1</span></span>
+<span><span class="co">## ...               ...      ...         ...                   ...      ...</span></span>
+<span><span class="co">## Sample-1002        40   male          UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1003        26   female        UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1004        45   male          UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1005        26   male          UKIE                     r       28</span></span>
+<span><span class="co">## Sample-1006        23   female        UKIE                     r       28</span></span>
+<span><span class="co">##             diversity   bmi_group  subject      time      sample time_sec</span></span>
+<span><span class="co">##             &lt;numeric&gt;    &lt;factor&gt; &lt;factor&gt; &lt;numeric&gt; &lt;character&gt; &lt;Period&gt;</span></span>
+<span><span class="co">## Sample-1         5.76 severeobese        1     503.5    Sample-1       0S</span></span>
+<span><span class="co">## Sample-2         6.06 obese              2     503.5    Sample-2       0S</span></span>
+<span><span class="co">## Sample-3         5.50 lean               3     503.5    Sample-3       0S</span></span>
+<span><span class="co">## Sample-4         5.87 underweight        4     503.5    Sample-4       0S</span></span>
+<span><span class="co">## Sample-5         5.89 lean               5     503.5    Sample-5       0S</span></span>
+<span><span class="co">## ...               ...         ...      ...       ...         ...      ...</span></span>
+<span><span class="co">## Sample-1002      5.87 lean            1002     503.5 Sample-1002       0S</span></span>
+<span><span class="co">## Sample-1003      6.02 severeobese     1003     503.5 Sample-1003       0S</span></span>
+<span><span class="co">## Sample-1004      5.85 lean            1004     503.5 Sample-1004       0S</span></span>
+<span><span class="co">## Sample-1005      5.71 overweight      1005     503.5 Sample-1005       0S</span></span>
+<span><span class="co">## Sample-1006      6.07 lean            1006     503.5 Sample-1006       0S</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="operations-per-unit">Operations per unit<a class="anchor" aria-label="anchor" href="#operations-per-unit"></a>
@@ -260,10 +360,48 @@ function provided in base R.</p>
 <p>Sometimes we need to operate on time series per unit (subject,
 reaction chamber, sampling location, …).</p>
 <p>Add time point rank per subject.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'dplyr'</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:mia':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     full_join, inner_join, left_join, right_join</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:Biostrings':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     collapse, intersect, setdiff, setequal, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:XVector':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     slice</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:Biobase':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     combine</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:GenomicRanges':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:GenomeInfoDb':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:IRanges':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     collapse, desc, intersect, setdiff, slice, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:S4Vectors':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     first, intersect, rename, setdiff, setequal, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:BiocGenerics':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     combine, intersect, setdiff, union</span></span></code></pre>
+<pre><code><span><span class="co">## The following object is masked from 'package:matrixStats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     count</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     filter, lag</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, setequal, union</span></span></code></pre>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">subject</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>rank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rank.html" class="external-link">rank</a></span><span class="op">(</span><span class="va">time</span>, ties.method <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -275,112 +413,111 @@ reaction chamber, sampling location, …).</p>
 <p><code>TreeSE</code> consists of rows for features and columns for
 samples. If we are specifically interested in baseline samples, we can
 easily subset the data as follows.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="va">tse</span><span class="op">[</span>, <span class="va">tse</span><span class="op">$</span><span class="va">time</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.4.1 (2024-06-14)</span></span>
-<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 22.04.5 LTS</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
-<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
-<span><span class="co">#&gt;  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
-<span><span class="co">#&gt;  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
-<span><span class="co">#&gt;  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 </span></span>
-<span><span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
-<span><span class="co">#&gt; [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; time zone: UTC</span></span>
-<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; attached base packages:</span></span>
-<span><span class="co">#&gt; [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
-<span><span class="co">#&gt; [8] base     </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] dplyr_1.1.4                     lubridate_1.9.3                </span></span>
-<span><span class="co">#&gt;  [3] miaTime_0.99.0                  mia_1.15.3                     </span></span>
-<span><span class="co">#&gt;  [5] TreeSummarizedExperiment_2.14.0 Biostrings_2.74.0              </span></span>
-<span><span class="co">#&gt;  [7] XVector_0.46.0                  SingleCellExperiment_1.28.0    </span></span>
-<span><span class="co">#&gt;  [9] MultiAssayExperiment_1.32.0     SummarizedExperiment_1.36.0    </span></span>
-<span><span class="co">#&gt; [11] Biobase_2.66.0                  GenomicRanges_1.58.0           </span></span>
-<span><span class="co">#&gt; [13] GenomeInfoDb_1.42.0             IRanges_2.40.0                 </span></span>
-<span><span class="co">#&gt; [15] S4Vectors_0.44.0                BiocGenerics_0.52.0            </span></span>
-<span><span class="co">#&gt; [17] MatrixGenerics_1.18.0           matrixStats_1.4.1              </span></span>
-<span><span class="co">#&gt; [19] knitr_1.48                      BiocStyle_2.34.0               </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] rstudioapi_0.17.1           jsonlite_1.8.9             </span></span>
-<span><span class="co">#&gt;   [3] magrittr_2.0.3              ggbeeswarm_0.7.2           </span></span>
-<span><span class="co">#&gt;   [5] nloptr_2.1.1                rmarkdown_2.28             </span></span>
-<span><span class="co">#&gt;   [7] fs_1.6.4                    zlibbioc_1.52.0            </span></span>
-<span><span class="co">#&gt;   [9] ragg_1.3.3                  vctrs_0.6.5                </span></span>
-<span><span class="co">#&gt;  [11] minqa_1.2.8                 DelayedMatrixStats_1.28.0  </span></span>
-<span><span class="co">#&gt;  [13] base64enc_0.1-3             htmltools_0.5.8.1          </span></span>
-<span><span class="co">#&gt;  [15] S4Arrays_1.6.0              BiocNeighbors_2.0.0        </span></span>
-<span><span class="co">#&gt;  [17] SparseArray_1.6.0           Formula_1.2-5              </span></span>
-<span><span class="co">#&gt;  [19] sass_0.4.9                  bslib_0.8.0                </span></span>
-<span><span class="co">#&gt;  [21] htmlwidgets_1.6.4           desc_1.4.3                 </span></span>
-<span><span class="co">#&gt;  [23] sandwich_3.1-1              plyr_1.8.9                 </span></span>
-<span><span class="co">#&gt;  [25] DECIPHER_3.2.0              zoo_1.8-12                 </span></span>
-<span><span class="co">#&gt;  [27] cachem_1.1.0                igraph_2.1.1               </span></span>
-<span><span class="co">#&gt;  [29] lifecycle_1.0.4             pkgconfig_2.0.3            </span></span>
-<span><span class="co">#&gt;  [31] rsvd_1.0.5                  Matrix_1.7-1               </span></span>
-<span><span class="co">#&gt;  [33] R6_2.5.1                    fastmap_1.2.0              </span></span>
-<span><span class="co">#&gt;  [35] GenomeInfoDbData_1.2.13     digest_0.6.37              </span></span>
-<span><span class="co">#&gt;  [37] colorspace_2.1-1            scater_1.34.0              </span></span>
-<span><span class="co">#&gt;  [39] irlba_2.3.5.1               textshaping_0.4.0          </span></span>
-<span><span class="co">#&gt;  [41] Hmisc_5.2-0                 vegan_2.6-8                </span></span>
-<span><span class="co">#&gt;  [43] beachmat_2.22.0             timechange_0.3.0           </span></span>
-<span><span class="co">#&gt;  [45] fansi_1.0.6                 mgcv_1.9-1                 </span></span>
-<span><span class="co">#&gt;  [47] httr_1.4.7                  abind_1.4-8                </span></span>
-<span><span class="co">#&gt;  [49] compiler_4.4.1              htmlTable_2.4.3            </span></span>
-<span><span class="co">#&gt;  [51] backports_1.5.0             BiocParallel_1.40.0        </span></span>
-<span><span class="co">#&gt;  [53] viridis_0.6.5               DBI_1.2.3                  </span></span>
-<span><span class="co">#&gt;  [55] MASS_7.3-61                 DelayedArray_0.32.0        </span></span>
-<span><span class="co">#&gt;  [57] bluster_1.16.0              permute_0.9-7              </span></span>
-<span><span class="co">#&gt;  [59] tools_4.4.1                 vipor_0.4.7                </span></span>
-<span><span class="co">#&gt;  [61] foreign_0.8-87              beeswarm_0.4.0             </span></span>
-<span><span class="co">#&gt;  [63] ape_5.8                     nnet_7.3-19                </span></span>
-<span><span class="co">#&gt;  [65] glue_1.8.0                  nlme_3.1-166               </span></span>
-<span><span class="co">#&gt;  [67] grid_4.4.1                  checkmate_2.3.2            </span></span>
-<span><span class="co">#&gt;  [69] cluster_2.1.6               reshape2_1.4.4             </span></span>
-<span><span class="co">#&gt;  [71] lpSolve_5.6.21              generics_0.1.3             </span></span>
-<span><span class="co">#&gt;  [73] gtable_0.3.6                mediation_4.5.0            </span></span>
-<span><span class="co">#&gt;  [75] tidyr_1.3.1                 data.table_1.16.2          </span></span>
-<span><span class="co">#&gt;  [77] BiocSingular_1.22.0         ScaledMatrix_1.14.0        </span></span>
-<span><span class="co">#&gt;  [79] utf8_1.2.4                  ggrepel_0.9.6              </span></span>
-<span><span class="co">#&gt;  [81] pillar_1.9.0                stringr_1.5.1              </span></span>
-<span><span class="co">#&gt;  [83] yulab.utils_0.1.7           splines_4.4.1              </span></span>
-<span><span class="co">#&gt;  [85] treeio_1.30.0               lattice_0.22-6             </span></span>
-<span><span class="co">#&gt;  [87] tidyselect_1.2.1            DirichletMultinomial_1.48.0</span></span>
-<span><span class="co">#&gt;  [89] scuttle_1.16.0              gridExtra_2.3              </span></span>
-<span><span class="co">#&gt;  [91] bookdown_0.41               xfun_0.48                  </span></span>
-<span><span class="co">#&gt;  [93] rbiom_1.0.3                 stringi_1.8.4              </span></span>
-<span><span class="co">#&gt;  [95] UCSC.utils_1.2.0            lazyeval_0.2.2             </span></span>
-<span><span class="co">#&gt;  [97] yaml_2.3.10                 boot_1.3-31                </span></span>
-<span><span class="co">#&gt;  [99] evaluate_1.0.1              codetools_0.2-20           </span></span>
-<span><span class="co">#&gt; [101] tibble_3.2.1                BiocManager_1.30.25        </span></span>
-<span><span class="co">#&gt; [103] cli_3.6.3                   RcppParallel_5.1.9         </span></span>
-<span><span class="co">#&gt; [105] rpart_4.1.23                systemfonts_1.1.0          </span></span>
-<span><span class="co">#&gt; [107] munsell_0.5.1               jquerylib_0.1.4            </span></span>
-<span><span class="co">#&gt; [109] Rcpp_1.0.13                 parallel_4.4.1             </span></span>
-<span><span class="co">#&gt; [111] pkgdown_2.1.1               ggplot2_3.5.1              </span></span>
-<span><span class="co">#&gt; [113] sparseMatrixStats_1.18.0    lme4_1.1-35.5              </span></span>
-<span><span class="co">#&gt; [115] slam_0.1-54                 mvtnorm_1.3-1              </span></span>
-<span><span class="co">#&gt; [117] decontam_1.26.0             viridisLite_0.4.2          </span></span>
-<span><span class="co">#&gt; [119] tidytree_0.4.6              scales_1.3.0               </span></span>
-<span><span class="co">#&gt; [121] purrr_1.0.2                 crayon_1.5.3               </span></span>
-<span><span class="co">#&gt; [123] rlang_1.1.4</span></span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
+<span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">## Running under: Ubuntu 22.04.5 LTS</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Matrix products: default</span></span>
+<span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## locale:</span></span>
+<span><span class="co">##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
+<span><span class="co">##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
+<span><span class="co">##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
+<span><span class="co">##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 </span></span>
+<span><span class="co">##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
+<span><span class="co">## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## time zone: UTC</span></span>
+<span><span class="co">## tzcode source: system (glibc)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## attached base packages:</span></span>
+<span><span class="co">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
+<span><span class="co">## [8] base     </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## other attached packages:</span></span>
+<span><span class="co">##  [1] dplyr_1.1.4                     lubridate_1.9.3                </span></span>
+<span><span class="co">##  [3] miaTime_0.99.0                  mia_1.15.3                     </span></span>
+<span><span class="co">##  [5] TreeSummarizedExperiment_2.14.0 Biostrings_2.74.0              </span></span>
+<span><span class="co">##  [7] XVector_0.46.0                  SingleCellExperiment_1.28.0    </span></span>
+<span><span class="co">##  [9] MultiAssayExperiment_1.32.0     SummarizedExperiment_1.36.0    </span></span>
+<span><span class="co">## [11] Biobase_2.66.0                  GenomicRanges_1.58.0           </span></span>
+<span><span class="co">## [13] GenomeInfoDb_1.42.0             IRanges_2.40.0                 </span></span>
+<span><span class="co">## [15] S4Vectors_0.44.0                BiocGenerics_0.52.0            </span></span>
+<span><span class="co">## [17] MatrixGenerics_1.18.0           matrixStats_1.4.1              </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## loaded via a namespace (and not attached):</span></span>
+<span><span class="co">##   [1] rstudioapi_0.17.1           jsonlite_1.8.9             </span></span>
+<span><span class="co">##   [3] magrittr_2.0.3              ggbeeswarm_0.7.2           </span></span>
+<span><span class="co">##   [5] nloptr_2.1.1                rmarkdown_2.28             </span></span>
+<span><span class="co">##   [7] fs_1.6.4                    zlibbioc_1.52.0            </span></span>
+<span><span class="co">##   [9] ragg_1.3.3                  vctrs_0.6.5                </span></span>
+<span><span class="co">##  [11] minqa_1.2.8                 DelayedMatrixStats_1.28.0  </span></span>
+<span><span class="co">##  [13] base64enc_0.1-3             htmltools_0.5.8.1          </span></span>
+<span><span class="co">##  [15] S4Arrays_1.6.0              BiocNeighbors_2.0.0        </span></span>
+<span><span class="co">##  [17] SparseArray_1.6.0           Formula_1.2-5              </span></span>
+<span><span class="co">##  [19] sass_0.4.9                  bslib_0.8.0                </span></span>
+<span><span class="co">##  [21] htmlwidgets_1.6.4           desc_1.4.3                 </span></span>
+<span><span class="co">##  [23] sandwich_3.1-1              plyr_1.8.9                 </span></span>
+<span><span class="co">##  [25] DECIPHER_3.2.0              zoo_1.8-12                 </span></span>
+<span><span class="co">##  [27] cachem_1.1.0                igraph_2.1.1               </span></span>
+<span><span class="co">##  [29] lifecycle_1.0.4             pkgconfig_2.0.3            </span></span>
+<span><span class="co">##  [31] rsvd_1.0.5                  Matrix_1.7-1               </span></span>
+<span><span class="co">##  [33] R6_2.5.1                    fastmap_1.2.0              </span></span>
+<span><span class="co">##  [35] GenomeInfoDbData_1.2.13     digest_0.6.37              </span></span>
+<span><span class="co">##  [37] colorspace_2.1-1            scater_1.34.0              </span></span>
+<span><span class="co">##  [39] irlba_2.3.5.1               textshaping_0.4.0          </span></span>
+<span><span class="co">##  [41] Hmisc_5.2-0                 vegan_2.6-8                </span></span>
+<span><span class="co">##  [43] beachmat_2.22.0             timechange_0.3.0           </span></span>
+<span><span class="co">##  [45] fansi_1.0.6                 mgcv_1.9-1                 </span></span>
+<span><span class="co">##  [47] httr_1.4.7                  abind_1.4-8                </span></span>
+<span><span class="co">##  [49] compiler_4.4.1              htmlTable_2.4.3            </span></span>
+<span><span class="co">##  [51] backports_1.5.0             BiocParallel_1.40.0        </span></span>
+<span><span class="co">##  [53] viridis_0.6.5               DBI_1.2.3                  </span></span>
+<span><span class="co">##  [55] MASS_7.3-61                 DelayedArray_0.32.0        </span></span>
+<span><span class="co">##  [57] bluster_1.16.0              permute_0.9-7              </span></span>
+<span><span class="co">##  [59] tools_4.4.1                 vipor_0.4.7                </span></span>
+<span><span class="co">##  [61] foreign_0.8-87              beeswarm_0.4.0             </span></span>
+<span><span class="co">##  [63] ape_5.8                     nnet_7.3-19                </span></span>
+<span><span class="co">##  [65] glue_1.8.0                  nlme_3.1-166               </span></span>
+<span><span class="co">##  [67] grid_4.4.1                  checkmate_2.3.2            </span></span>
+<span><span class="co">##  [69] cluster_2.1.6               reshape2_1.4.4             </span></span>
+<span><span class="co">##  [71] lpSolve_5.6.21              generics_0.1.3             </span></span>
+<span><span class="co">##  [73] gtable_0.3.6                mediation_4.5.0            </span></span>
+<span><span class="co">##  [75] tidyr_1.3.1                 data.table_1.16.2          </span></span>
+<span><span class="co">##  [77] BiocSingular_1.22.0         ScaledMatrix_1.14.0        </span></span>
+<span><span class="co">##  [79] utf8_1.2.4                  ggrepel_0.9.6              </span></span>
+<span><span class="co">##  [81] pillar_1.9.0                stringr_1.5.1              </span></span>
+<span><span class="co">##  [83] yulab.utils_0.1.7           splines_4.4.1              </span></span>
+<span><span class="co">##  [85] treeio_1.30.0               lattice_0.22-6             </span></span>
+<span><span class="co">##  [87] tidyselect_1.2.1            DirichletMultinomial_1.48.0</span></span>
+<span><span class="co">##  [89] scuttle_1.16.0              knitr_1.48                 </span></span>
+<span><span class="co">##  [91] gridExtra_2.3               xfun_0.48                  </span></span>
+<span><span class="co">##  [93] rbiom_1.0.3                 stringi_1.8.4              </span></span>
+<span><span class="co">##  [95] UCSC.utils_1.2.0            lazyeval_0.2.2             </span></span>
+<span><span class="co">##  [97] yaml_2.3.10                 boot_1.3-31                </span></span>
+<span><span class="co">##  [99] evaluate_1.0.1              codetools_0.2-20           </span></span>
+<span><span class="co">## [101] tibble_3.2.1                BiocManager_1.30.25        </span></span>
+<span><span class="co">## [103] cli_3.6.3                   RcppParallel_5.1.9         </span></span>
+<span><span class="co">## [105] rpart_4.1.23                systemfonts_1.1.0          </span></span>
+<span><span class="co">## [107] munsell_0.5.1               jquerylib_0.1.4            </span></span>
+<span><span class="co">## [109] Rcpp_1.0.13                 parallel_4.4.1             </span></span>
+<span><span class="co">## [111] pkgdown_2.1.1               ggplot2_3.5.1              </span></span>
+<span><span class="co">## [113] sparseMatrixStats_1.18.0    lme4_1.1-35.5              </span></span>
+<span><span class="co">## [115] slam_0.1-54                 mvtnorm_1.3-1              </span></span>
+<span><span class="co">## [117] decontam_1.26.0             viridisLite_0.4.2          </span></span>
+<span><span class="co">## [119] tidytree_0.4.6              scales_1.3.0               </span></span>
+<span><span class="co">## [121] purrr_1.0.2                 crayon_1.5.3               </span></span>
+<span><span class="co">## [123] BiocStyle_2.34.0            rlang_1.1.4</span></span></code></pre>
 </div>
   </div>
 
