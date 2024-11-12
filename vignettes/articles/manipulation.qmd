@@ -1,33 +1,20 @@
 ---
 title: "Time series manipulation"
 date: "`r Sys.Date()`"
-package: 
-    miaTime
-output: 
-    BiocStyle::html_document:
-        fig_height: 7
-        fig_width: 10
-        toc: yes
-        toc_depth: 2
-        number_sections: true
-vignette: >
-    %\VignetteIndexEntry{miaTime}
-    %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}
+package: miaTime
+format: 
+  html:
+    fig-height: 7
+    fig-width: 10
+    toc: true
+    toc-depth: 2
+    number-sections: true
+knitr:
+  opts_chunk:
+    message: false
+    warning: false
 bibliography: references.bib
 ---
-
-```{r}
-#| label: setup
-#| include: false
-
-library(knitr)
-knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    cache = TRUE
-)
-```
 
 ## Introduction
 
@@ -55,7 +42,7 @@ BiocManager::install("miaTime")
 
 Once installed, `miaTime` is made available in the usual way.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: load_package
 library(miaTime)
 ```
@@ -85,7 +72,7 @@ number of readily available
 
 Load example data:
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: lubridate
 
 # Load packages
@@ -174,7 +161,7 @@ sampling location, ...).
 
 Add time point rank per subject.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: rank_for_subject
 
 library(dplyr)

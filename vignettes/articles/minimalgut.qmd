@@ -1,33 +1,20 @@
 ---
 title: "Minimal gut bioreactor examples"
 date: "`r Sys.Date()`"
-package: 
-    miaTime
-output: 
-    BiocStyle::html_document:
-        fig_height: 7
-        fig_width: 10
-        toc: yes
-        toc_depth: 2
-        number_sections: true
-vignette: >
-    %\VignetteIndexEntry{miaTime}
-    %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}
+package: miaTime
+format: 
+  html:
+    fig-height: 7
+    fig-width: 10
+    toc: true
+    toc-depth: 2
+    number-sections: true
+knitr:
+  opts_chunk:
+    message: false
+    warning: false
 bibliography: references.bib
 ---
-
-```{r}
-#| label: setup
-#| include: false
-
-library(knitr)
-knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    cache = TRUE
-)
-```
 
 # Minimal gut microbiome
 
@@ -35,10 +22,9 @@ Dense samples of the minimal gut microbiome. In the initial hours, MDb-MM was
 grown under batch condition and 24 h onwards, continuous feeding of media with
 pulse feeding cycles. This information is stored in the `colData`.   
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: sample_table
 library(miaTime)
-
 data(minimalgut)
 tse <- minimalgut
 
@@ -49,7 +35,7 @@ table(tse[["StudyIdentifier"]], tse[["condition_1"]])
 Visualize samples available for each of the bioreactors. This allows
 to identify if there are any missing samples for specific times.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: show_timepoints
 
 library(ggplot2)
@@ -67,7 +53,7 @@ The `minimalgut` dataset, mucus-diet based minimal microbiome
 can investigate the succession of mdbMM16 from the start of experiment
 here hour zero until the end of the experiment.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: calculate_divergence
 
 # Transform data to relativeS
@@ -84,7 +70,7 @@ tse <- addBaselineDivergence(
 
 Let's then visualize the divergence.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: show_divergence
 
 library(scater)
@@ -102,7 +88,7 @@ p
 Now visualize abundance of _Blautia hydrogenotrophica_ using the
 `miaViz::plotSeries()` function.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: plot_series
 
 library(miaViz)
@@ -121,7 +107,7 @@ Sample dissimilarity between consecutive time steps(step size n >= 1) within
 a group(subject, age, reaction chamber, etc.) can be calculated by
 `addStepwiseDivergence`.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: stepwise_divergence
 
 # Divergence between consecutive time points
@@ -141,7 +127,7 @@ The results are again stored in `colData`. We calculate the speed of divergence
 change by dividing each divergence change by the corresponding change in time.
 Then we use similar plotting methods as previously.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: show_stepwise
 
 # Calculate slope for the change
@@ -165,7 +151,7 @@ p
 This shows how to calculate and plot moving average for the variable of
 interest (here: slope).
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: moving_average
 
 library(dplyr)
@@ -193,7 +179,7 @@ tse[["sliding_divergence"]] <- colData(tse) |>
 After calculating the moving average of divergences, we can visualize the
 result in a similar way to our previous approach.
 
-```{r, message = FALSE, warning = FALSE}
+```{r}
 #| label: show_moving_average
 
 # Create a time series plot for divergence
