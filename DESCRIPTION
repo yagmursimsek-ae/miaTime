@@ -30,7 +30,8 @@ Imports:
     S4Vectors,
     SingleCellExperiment,
     SummarizedExperiment,
-    TreeSummarizedExperiment
+    TreeSummarizedExperiment,
+    quarto
 Suggests:
     BiocStyle,
     devtools,
@@ -47,4 +48,4 @@ BugReports: https://github.com/microbiome/miaTime/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr
+VignetteBuilder: quarto
