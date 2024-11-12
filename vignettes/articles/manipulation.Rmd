@@ -1,20 +1,36 @@
 ---
 title: "Time series manipulation"
 date: "`r Sys.Date()`"
-package: miaTime
-format: 
-  html:
-    fig-height: 7
-    fig-width: 10
-    toc: true
-    toc-depth: 2
-    number-sections: true
-knitr:
-  opts_chunk:
-    message: false
-    warning: false
+package: 
+    miaTime
+output: 
+    BiocStyle::html_document:
+        fig_height: 7
+        fig_width: 10
+        toc: yes
+        toc_depth: 2
+        number_sections: true
+vignette: >
+    %\VignetteIndexEntry{miaTime}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
+
+```{r}
+#| label: setup
+#| include: false
+library(knitr)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    cache = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    echo = TRUE
+)
+```
+
 
 ## Introduction
 
