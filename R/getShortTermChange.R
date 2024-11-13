@@ -6,17 +6,16 @@
 #' @param x a \code{\link{SummarizedExperiment}} object.
 #' @param assay.type \code{Character scalar}. Specifies the name of assay 
 #'   used in calculation. (Default: \code{"counts"})
-#' @param rarefy \code{Logical scalar}. Whether to rarefy counts.
-#' (Default: \code{FALSE})
-#' @param compositional \code{Logical scalar}. Whether to transform counts.
-#' (Default: \code{FALSE})
-#' @param depth \code{Integer scalar}. Specifies the depth used in rarefying. 
-#' (Default: \code{min(assay(x, assay.type)}))
+#' @param name \code{Character scalar}. Specifies a name for storing
+#' short term results. (Default: \code{"short_term_change"})
 #' @param ... additional arguments.
 #' 
 #' 
-#' @return \code{dataframe} with \code{short term change} 
-#' calculations.
+#' @return code{getShortTermChange} returns \code{DataFrame} object containing 
+#' the short term change in abundance over time for a microbe. 
+#' \code{addShortTermChange}, on the other hand, returns a
+#' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
+#' object with these results in its \code{metadata}.
 #' 
 #' @details This approach is used by Wisnoski NI and colleagues
 #'          \url{https://github.com/nwisnoski/ul-seedbank}. Their approach is based on
@@ -26,7 +25,7 @@
 #'          \url{https://www.nature.com/articles/s41564-020-0685-1} can be used.
 #'          This approach is useful for identifying short term growth behaviors of taxa.
 #'          
-#' @name getShortTermChange
+#' @name addShortTermChange
 #' 
 #' 
 #' @examples
@@ -37,22 +36,21 @@
 #' 
 #' short_time_labels <- c("74.5h", "173h", "438h", "434h", "390h")
 #' 
-#' # Subset samples by Time_lable and StudyIdentifier
+#' # Subset samples by Time_label and StudyIdentifier
 #' tse <- tse[, !(tse$Time_label %in% short_time_labels)]
 #' tse <- tse[, (tse$StudyIdentifier == "Bioreactor A")]
 #' 
 #' # Get short term change
-#' getShortTermChange(tse, rarefy = TRUE, time.col = "Time.hr")
+#' # Case of rarefying counts
+#' tse <- transformAssay(tse, method = "relabundance")
+#' getShortTermChange(tse, assay.type = relabundance, time.col = "Time.hr")
+#' 
+#' # Case of transforming counts
+#' tse <- rarefyAssay(tse, assay.type = "counts")
+#' getShortTermChange(tse, assay.type = subsampled, time.col = "Time.hr")
 NULL
 
-#' @rdname getShortTermChange
-#' @export
-setGeneric("getShortTermChange", signature = c("x"),
-    function( x, assay.type = "counts", rarefy = FALSE, compositional = FALSE, 
-        depth = min(assay(x, assay.type)), ...)
-        standardGeneric("getShortTermChange"))
-
-#' @rdname getShortTermChange
+#' @rdname addShortTermChange
 #' @export
 #' @importFrom dplyr arrange as_tibble summarize "%>%"
 #' @importFrom ggplot2 ggplot aes
@@ -60,61 +58,46 @@ setGeneric("getShortTermChange", signature = c("x"),
 #' @importFrom mia rarefyAssay transformAssay
 #' @importFrom SummarizedExperiment colData
 setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
-    function(x, assay.type = "counts", rarefy = FALSE, compositional = FALSE, 
-        depth = min(assay(x, assay.type)), ...){
+    function(x, assay.type = "counts", ...){
         ############################## Input check #############################
         # Check validity of object
-        if(nrow(x) == 0L){
+        if (nrow(x) == 0L){
             stop("No data available in `x` ('x' has nrow(x) == 0L.)",
                  call. = FALSE)
         }
         # Check assay.type
         .check_assay_present(assay.type, x)
-        if(!.is_a_bool(rarefy)){
-            stop("'rarefy' must be TRUE or FALSE.", call. = FALSE)
-        }
-        if(!.is_a_bool(compositional)){
-            stop("'compositional' must be TRUE or FALSE.", call. = FALSE)
-        }
-        # Ensure that the provided depth is valid
-        if ( !is.null(depth) && depth > min(assay(x, assay.type), na.rm = TRUE) ) {
-            stop("Depth cannot be greater than the minimum number of counts in your data", call. = FALSE)
-        
-        }
         ########################### Growth Metrics ############################
-        grwt <- .calculate_growth_metrics(x, assay.type = assay.type, 
-                                          rarefy = rarefy, 
-                                          compositional = compositional, 
-                                          depth = depth, ...)
-        # Clean and format growth matrics
+        grwt <- .calculate_growth_metrics(x, assay.type = assay.type, ...)
+        # Clean and format growth metrics
         grs.all <- .clean_growth_metrics(grwt, ...)
         return(grs.all)
     }
 )
+
+#' @rdname addShortTermChange
+#' @export
+setMethod("addShortTermChange", signature = c(x = "SummarizedExperiment"),
+          function(x, assay.type = "counts", name = "short_term_change", ...){
+              # Calculate short term change
+              res <- getShortTermChange(x, ...)
+              # Add to metadata
+              x <- .add_values_to_metadata(x, name, res, ...)
+              return(x)
+          }
+)
+
+################################ HELP FUNCTIONS ################################
+
 # wrapper to calculate growth matrix
-.calculate_growth_metrics <- function(x, assay.type, time.col = NULL, 
-                                      rarefy, compositional, depth, ...) {
-    ############################ Data Preparation ##############################
-    # Initialize the filtered object based on rarefy and compositional arguments
-    if (rarefy == TRUE && compositional == FALSE) {
-        message("rarefy is set to TRUE, calculating short term change using counts")
-        x <- rarefyAssay(x, assay.type = assay.type, depth = depth)
-        assay.type <- "subsampled"
-    } else if (rarefy == FALSE && compositional == FALSE) {
-        message("rarefy is set to FALSE, compositional==FALSE, using raw counts")
-        x <- x
-    } else if (rarefy == FALSE && compositional == TRUE) {
-        message("rarefy is set to FALSE, compositional==TRUE, using relative abundances")
-        x <- transformAssay(x, method = "relabundance", assay.type = assay.type)
-        assay.type <- "relabundance"
-    } else if (rarefy == TRUE && compositional == TRUE) {
-        stop("Both rarefy and compositional cannot be TRUE simultaneously", call. = FALSE)
-    }
-    # Reshape data and calcualte grwoth metrics
-    assay_data <- meltSE(x, assay.type = assay.type, add.col = time.col)
+.calculate_growth_metrics <- function(x, assay.type, time.col = NULL, ...) {
+
+    # Reshape data and calculate growth metrics
+    assay_data <- meltSE(x, assay.type = assay.type, 
+                         add.col = time.col, row.name = "Feature_ID")
     assay_data <- assay_data %>%
         arrange( !!sym(time.col) ) %>%
-        group_by(FeatureID) %>%
+        group_by(Feature_ID) %>%
         mutate(
             time_lag = !!sym(time.col) - lag( !!sym(time.col) ), 
             growth_diff =!!sym(assay.type) - lag(!!sym(assay.type)),
@@ -127,19 +110,18 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
 .clean_growth_metrics <- function(grwt, time.col = NULL, ...) {
     # Calculate max growth
     maxgrs <- grwt %>%
-        summarize(max.growth = max(growth_diff, na.rm = TRUE))
+        summarize(max_growth = max(growth_diff, na.rm = TRUE))
     # Merge growth data with max growth
-    grs.all <- merge(grwt, maxgrs, by = "FeatureID")
+    grs.all <- merge(grwt, maxgrs, by = "Feature_ID")
     # Add 'ismax' column indicating if the growth is the maximum
     grs.all <- grs.all %>%
-        mutate(ismax = ifelse(growth_diff == max.growth, TRUE, FALSE))
+        mutate(ismax = ifelse(growth_diff == max_growth, TRUE, FALSE))
     # Clean and abbreviate FeatureID names
-    grs.all$FeatureID <- gsub("_", " ", grs.all$FeatureID)
-    grs.all$FeatureIDabb <- toupper(abbreviate(grs.all$FeatureID, 
+    grs.all$Feature_IDabb <- toupper(abbreviate(grs.all$Feature_ID, 
                                                minlength = 3, 
                                                method = "both.sides"))
     # Create 'Feature.time' column combining abbreviation and time information
-    grs.all$Feature.time <- paste0(grs.all$FeatureIDabb, " ", 
+    grs.all$Feature_time <- paste0(grs.all$Feature_IDabb, " ", 
                                    grs.all[[time.col]], "h")
     
     return(grs.all)
