@@ -20,3 +20,15 @@ setGeneric("getStepwiseDivergence", signature = c("x"), function(x, ...)
 #' @export
 setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
     standardGeneric("addStepwiseDivergence"))
+
+#' @rdname addShortTermChange
+#' @export
+setGeneric("addShortTermChange", signature = "x", function(x, ...)
+    standardGeneric("addShortTermChange"))
+
+#' @rdname addShortTermChange
+#' @export
+setGeneric("getShortTermChange", signature = "x", function(x, ...)
+    standardGeneric("getShortTermChange"))
+
+
