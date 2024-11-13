@@ -27,7 +27,7 @@ used in calculation. (Default: \code{"counts"})}
 short term results. (Default: \code{"short_term_change"})}
 }
 \value{
-code{getShortTermChange} returns \code{DataFrame} object containing
+\code{getShortTermChange} returns \code{DataFrame} object containing
 the short term change in abundance over time for a microbe.
 \code{addShortTermChange}, on the other hand, returns a
 \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}

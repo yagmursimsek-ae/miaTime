@@ -11,7 +11,7 @@
 #' @param ... additional arguments.
 #' 
 #' 
-#' @return code{getShortTermChange} returns \code{DataFrame} object containing 
+#' @return \code{getShortTermChange} returns \code{DataFrame} object containing 
 #' the short term change in abundance over time for a microbe. 
 #' \code{addShortTermChange}, on the other hand, returns a
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
