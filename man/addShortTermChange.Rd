@@ -61,9 +61,9 @@ tse <- tse[, (tse$StudyIdentifier == "Bioreactor A")]
 # Get short term change
 # Case of rarefying counts
 tse <- transformAssay(tse, method = "relabundance")
-getShortTermChange(tse, assay.type = relabundance, time.col = "Time.hr")
+getShortTermChange(tse, assay.type = "relabundance", time.col = "Time.hr")
 
 # Case of transforming counts
 tse <- rarefyAssay(tse, assay.type = "counts")
-getShortTermChange(tse, assay.type = subsampled, time.col = "Time.hr")
+getShortTermChange(tse, assay.type = "subsampled", time.col = "Time.hr")
 }
