@@ -31,7 +31,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ## Introduction
 
 `miaTime` implements tools for time series manipulation based on the
