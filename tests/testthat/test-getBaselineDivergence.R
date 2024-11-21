@@ -4,7 +4,8 @@ test_that("addBaselineDivergence output", {
     tse <- hitchip1006
     tse2 <- addBaselineDivergence(
         tse, group = "subject", time.col = "time",
-        name = "divergence_from_baseline", name.time = "time_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     # Input and output classes should match
     expect_equal(class(tse), class(tse2))
     # A subject to check time difference calculation
@@ -29,7 +30,8 @@ test_that("Divergence in baseline other than 0", {
     inds <- which(tse[["subject"]] == "843")[2:5]
     tse2 <- addBaselineDivergence(
         tse[, inds], group = "subject", time.col = "time",
-        name = "divergence_from_baseline", name.time = "time_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     time2 <- tse[, inds][["time"]] - min(tse[, inds][["time"]])
     time_diff_2 <- tse2[["time_from_baseline"]]
     expect_true( all(time2 == time_diff_2) )
@@ -46,10 +48,12 @@ test_that("addBaselineDivergence reference", {
     # Define the baseline sample manually
     tse3 <- addBaselineDivergence(
         tse, time.col = "time", group = "subject", reference = "Sample-843",
-        name.time = "time_from_baseline", name = "divergence_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     tse4 <- addBaselineDivergence(
         tse, time.col = "time", group = "subject", reference = "Sample-1075",
-        name.time = "time_from_baseline", name = "divergence_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     # Now the times from baseline should be shifted and dissimilarities differ
     # Sample baseline when the zero time baseline is automatically checked or 
     # manually set
@@ -59,14 +63,17 @@ test_that("addBaselineDivergence reference", {
     
     tse5 <- addBaselineDivergence(
         tse[, tse[["subject"]] == "843"], group = "subject",
-        time.col = "time", name.time = "time_from_baseline",
-        name = "divergence_from_baseline")      
+        time.col = "time", name = c("divergence_from_baseline", 
+                                    "time_from_baseline", 
+                                    "reference_samples"))      
     tse6 <- addBaselineDivergence(
         tse, group = "subject", time.col = "time",
-        name.time = "time_from_baseline", name = "divergence_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     tse7 <- addBaselineDivergence(
         tse, group = "subject", time.col = "time", reference = "Sample-1075", 
-        name.time = "time_from_baseline", name = "divergence_from_baseline")  
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))  
     expect_identical(
         colData(tse5)["Sample-843", "time_from_baseline"], 
         colData(tse6)["Sample-843", "time_from_baseline"])
@@ -83,14 +90,16 @@ test_that("addBaselineDivergence reference", {
         "Sample-1075"
     tse8 <- addBaselineDivergence(
         tse, group = "subject", time.col = "time", reference = baselines, 
-        name.time = "time_from_baseline", name = "divergence_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     expect_identical(
         colData(tse7)["Sample-843", "time_from_baseline"], 
         colData(tse8)["Sample-843", "time_from_baseline"])
     tse[["reference_sam"]] <- baselines[ match(tse$subject, names(baselines)) ]
     res <- addBaselineDivergence(
         tse, group = "subject", time.col = "time", reference = "reference_sam", 
-        name.time = "time_from_baseline", name = "divergence_from_baseline")
+        name = c("divergence_from_baseline", "time_from_baseline", 
+                 "reference_samples"))
     ref <- getDivergence(tse, reference = "reference_sam")
     expect_equal(res[["divergence_from_baseline"]], ref)
 })
@@ -120,7 +129,7 @@ test_that(".get_reference_samples with different time intervals", {
     res <- getBaselineDivergence(
         tse, group = "subject", time.col = "time",
         assay.type = "counts", method = "euclidean")
-    expect_equal(colData(tse)[, c("divergence", "time_diff")], res)
+    expect_equal(colData(tse)[, c("divergence", "time_diff", "ref_samples")], res)
 })
 
 # Basic SummarizedExperiment for testing
@@ -164,8 +173,8 @@ test_that("addBaselineDivergence adds columns to colData", {
 # Custom column naming test for addBaselineDivergence
 test_that("addBaselineDivergence handles custom column names", {
     se_result <- addBaselineDivergence(
-        se, time.col = "time", name = "custom_div",
-        name.time = "custom_time_diff")
+        se, time.col = "time", name = c("custom_div", "custom_time_diff", 
+                                        "custom_ref_samples"))
     expect_true("custom_div" %in% colnames(colData(se_result)))
     expect_true("custom_time_diff" %in% colnames(colData(se_result)))
 })
@@ -200,11 +209,16 @@ test_that(".get_time_difference calculates correct time diff", {
 test_that(".convert_divergence_to_df formats correctly", {
     divergence <- c(0.1, 0.2, 0.3, 0, NA, 2)
     time_diff <- c(0, 1, 2, 1, 0, NA)
+    reference <- c("sample1", "sample2", 
+                   "sample3", "sample4", "sample5", "sample6")
     df <- .convert_divergence_to_df(
-        se, divergence, time_diff, name = "test_div",
-        name.time = "test_time_diff")
+        se, divergence, reference, time_diff, name = c("test_div", 
+                                            "test_time_diff", 
+                                            "test_reference_samples"))
     expect_s4_class(df, "DataFrame")
-    expect_equal(colnames(df), c("test_div", "test_time_diff"))
+    expect_equal(colnames(df), c("test_div", 
+                                 "test_time_diff", 
+                                 "test_reference_samples"))
     expect_equal(df$test_div, divergence)
     expect_equal(df$test_time_diff, time_diff)
 })
@@ -235,9 +249,12 @@ test_that("addBaselineDivergence with custom reference sample", {
 test_that(".convert_divergence_to_df with NA divergence values", {
     divergence <- c(0.1, NA, 0.3, NA, 0.5, 0.6)
     time_diff <- c(0, 1, 2, 1, 0, NA)
+    reference <- c("sample1", "sample2", 
+                   "sample3", "sample4", "sample5", "sample6")
     df <- .convert_divergence_to_df(
-        se, divergence, time_diff, name = "test_div",
-        name.time = "test_time_diff")
+        se, divergence, reference, time_diff, name = c("test_div", 
+                                            "test_time_diff", 
+                                            "test_reference_samples"))
     expect_s4_class(df, "DataFrame")
     expect_true(all(is.na(df$test_div[is.na(divergence)])))
 })

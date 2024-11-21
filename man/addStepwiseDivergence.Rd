@@ -21,7 +21,11 @@ addStepwiseDivergence(x, ...)
   ...
 )
 
-\S4method{addStepwiseDivergence}{SummarizedExperiment}(x, name = "divergence", name.time = "time_diff", ...)
+\S4method{addStepwiseDivergence}{SummarizedExperiment}(
+  x,
+  name = c("divergence", "time_diff", "ref_samples"),
+  ...
+)
 }
 \arguments{
 \item{x}{A
@@ -50,11 +54,8 @@ step, then increase this accordingly. (Default: \code{1L})}
 Method is passed to the function that is specified by \code{dis.fun}.
 (Default: \code{"bray"})}
 
-\item{name}{\code{Character scalar}. Specifies a column name for storing
+\item{name}{\code{Character vector}. Specifies a column name for storing
 divergence results. (Default: \code{"divergence"})}
-
-\item{name.time}{\code{Character scalar}. Specifies a column name for storing
-time differences. (Default: \code{"time_diff"})}
 }
 \value{
 \code{getStepwiseDivergence} returns \code{DataFrame} object

@@ -5,7 +5,8 @@ test_that("Basic functionality of addStepwiseDivergence", {
     tse2 <- addStepwiseDivergence(
         tse, group = "subject", time.interval = 1, time.col = "time",
         assay.type="counts", dis.fun = vegan::vegdist, method = "bray",
-        name.time = "time_difference")
+        name = c("divergence", 
+                 "time_diff", "ref_samples"))
     expect_equal(class(tse), class(tse2))
 })
 
@@ -16,7 +17,8 @@ test_that("Adding new colData field with existing name generates warning", {
   tse[["time_difference"]] <- NA
   expect_warning(addStepwiseDivergence(
       tse, group = "subject", time.interval = 1, time.col = "time",
-      name.time = "time_difference"))
+      name = c("divergence", 
+               "time_difference", "ref_samples")))
 })
 
 # Test: Time difference calculation for a specific subject
@@ -26,7 +28,8 @@ test_that("Time difference calculation is correct for a specific subject", {
   tse2 <- addStepwiseDivergence(
     tse, group = "subject", time.interval = 1, time.col = "time",
     assay.type="counts", dis.fun = vegan::vegdist, method = "bray",
-    name.time = "time_difference")
+    name = c("divergence", 
+             "time_difference", "ref_samples"))
   obs_diff <- colData(tse2)[
       which(tse2[["subject"]] == "843"), "time_difference"]
   exp_diff <- c(NA, diff(colData(tse)[
@@ -41,7 +44,8 @@ test_that("addStepwiseDivergence with n > 1 calculates divergences correctly", {
   tse2 <- addStepwiseDivergence(
       tse, group = "subject", time.interval = 2, time.col = "time",
       assay.type = "counts", dis.fun = vegan::vegdist, method = "bray",
-      name.time = "time_difference")
+      name = c("divergence", 
+               "time_difference", "ref_samples"))
   time_interval <- 2
   time <- colData(tse2)[which(tse2[["subject"]] == "843"), "time"]
   time_diff <- colData(tse2)[which(tse2[["subject"]] == "843"), "time_difference"]
@@ -57,7 +61,8 @@ test_that("Interval check for divergence calculation", {
   tse2 <- addStepwiseDivergence(
     tse, group = "subject", time.interval = 2, time.col = "time",
     assay.type = "counts", dis.fun = vegan::vegdist, method = "bray",
-    name.time = "time_difference")
+    name = c("divergence", 
+             "time_difference", "ref_samples"))
   time <- colData(tse2)[which(tse2[["subject"]] == "843"), "time"]
   calculated_diff <- time[(1 + 2):length(time)] -
       time[seq_len(length(time) - 2)]
@@ -75,8 +80,8 @@ test_that("Single time point results in NA divergence values", {
   tse2 <- addStepwiseDivergence(
       tse2, group = "subject", time.interval = 1, time.col = "time",
       assay.type = "counts", dis.fun = vegan::vegdist, method = "bray",
-      name = "time_divergence",
-      name.time = "time_difference")
+      name = c("time_divergence", 
+               "time_diff", "ref_samples"))
   expect_true(all(is.na(colData(tse2)[
       which(duplicated(tse2[["subject"]]) == FALSE),
       "time_divergence"])))
@@ -89,11 +94,13 @@ test_that("Comparing vegan distances (bray vs euclidean)", {
   tse2 <- addStepwiseDivergence(
       tse, group = "subject", time.interval = 1, time.col = "time",
       assay.type = "counts", dis.fun = vegan::vegdist, method = "bray",
-      name.time = "timedifference", name = "timedivergence")
+      name = c("timedivergence", 
+               "timedifference", "ref_samples"))
   tse2 <- addStepwiseDivergence(
       tse2, group = "subject", time.interval = 1, time.col = "time",
       assay.type = "counts", dis.fun = vegan::vegdist, method = "euclidean",
-      name.time = "timedifference2", name = "timedivergence2")
+      name = c("timedivergence2", 
+               "timedifference2", "ref_samples"))
   expect_true(identical(tse2$timedifference, tse2$timedifference2))
   expect_true(!identical(tse2$timedivergence, tse2$timedivergence2))
 })
@@ -108,7 +115,8 @@ test_that("AltExp functionality in addStepwiseDivergence", {
       altexp = "Family")
   altExp(tse, "Family_test") <- addStepwiseDivergence(
     altExp(tse, "Family"), group = "subject", time.interval = 1,
-    time.col = "time", name.time = "timedifference", name = "timedivergence")
+    time.col = "time", name = c("timedivergence", 
+                                "timedifference", "ref_samples"))
   expect_equal(
       altExp(tse, "Family")$time_diff,
       altExp(tse, "Family_test")$timedifference)
@@ -176,7 +184,7 @@ test_that(".get_reference_samples with different time intervals", {
     res <- getStepwiseDivergence(
         tse, group = "subject", time.interval = 2, time.col = "time",
         assay.type = "counts", method = "euclidean")
-    expect_equal(colData(tse)[, c("divergence", "time_diff")], res)
+    expect_equal(colData(tse)[, c("divergence", "time_diff", "ref_samples")], res)
 })
 
 # Basic SummarizedExperiment for testing
@@ -201,7 +209,7 @@ test_that("getStepwiseDivergence input validations", {
 test_that("getStepwiseDivergence dissimilarity calculation", {
     result <- getStepwiseDivergence(se, time.col = "time", method = "bray")
     expect_s4_class(result, "DataFrame")
-    expect_true(all(c("divergence", "time_diff") %in% colnames(result)))
+    expect_true(all(c("divergence", "time_diff", "ref_samples") %in% colnames(result)))
 })
 
 # Correct time difference calculation test
@@ -220,8 +228,8 @@ test_that("addStepwiseDivergence adds columns to colData", {
 # Custom column naming test for addStepwiseDivergence
 test_that("addStepwiseDivergence handles custom column names", {
     se_result <- addStepwiseDivergence(
-        se, time.col = "time", name = "custom_div",
-        name.time = "custom_time_diff")
+        se, time.col = "time", name = c("custom_div", 
+                                         "custom_time_diff", "ref_samples"))
     expect_true("custom_div" %in% colnames(colData(se_result)))
     expect_true("custom_time_diff" %in% colnames(colData(se_result)))
 })
