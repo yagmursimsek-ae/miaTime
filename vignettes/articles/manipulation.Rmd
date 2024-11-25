@@ -25,7 +25,10 @@ library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    cache = TRUE
+    cache = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    echo = TRUE
 )
 ```
 
