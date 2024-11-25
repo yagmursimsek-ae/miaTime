@@ -20,3 +20,8 @@ setGeneric("getStepwiseDivergence", signature = c("x"), function(x, ...)
 #' @export
 setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
     standardGeneric("addStepwiseDivergence"))
+
+#' @rdname addMetrics
+#' @export
+setGeneric("addMetrics", signature = "x", function(x, ...)
+    standardGeneric("addMetrics"))

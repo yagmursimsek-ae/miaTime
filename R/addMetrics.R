@@ -1,3 +1,7 @@
+#' @name addMetrics
+#' @export
+#' 
+#' @title
 #' Add Multiple Metrics (e.g., CRT) to a \code{\link{SummarizedExperiment}} object
 #' 
 #' @param x a \code{\link{SummarizedExperiment}} object.
@@ -17,13 +21,6 @@
 #' 
 NULL
 
-#' @export
-setGeneric("addMetrics", function(
-    x, assay.type = "counts", 
-    metrics = c("CRT"), thresholds = list(CRT = 2), split.by = NULL, ...) {
-    standardGeneric("addMetrics")
-})
-
 #' @rdname addMetrics
 #' @export
 setMethod("addMetrics", signature = c(x = "SummarizedExperiment"),
@@ -32,64 +29,76 @@ setMethod("addMetrics", signature = c(x = "SummarizedExperiment"),
         metrics = c("CRT"), thresholds = list(CRT = 2), split.by = NULL, ...){
 
         ############################## Input checks ############################
-        # Validate 'metrics'
-        if (!.is_non_empty_character(metrics)) {
-            stop("'metrics' should be a non-empty character vector.", 
-                 call. = FALSE)
-        }
+        # check assay
+        .check_assay_present(assay.type, x)
+        # check 'metrics'
+        temp <- .check_input( metrics, list("character vector"))
         # Check if 'split.by' exists in colData, otherwise do not split
         if (!is.null(split.by) && !split.by %in% colnames(colData(x))) {
             stop("The 'split.by' column does not exist in colData(x).", 
                  call. = FALSE)
         }
 
-        ############################## Calculate metrics #######################
-        # Split the data by subject (or other grouping variable) if required
-        if (!is.null(split.by)) {
-            split_data <- split(x, f = colData(x)[[split.by]])
+        ########################### Grouped Calculation ########################
+        # Extract assay matrix
+        assay_data <- assay(x, assay.type)
+        
+        # Determine grouping structure
+        se_list <- if (!is.null(split.by)) {
+            splitOn(x, group = split.by)
         } else {
-            split_data <- list(x)  
+            SimpleList(All = x)
         }
-
-        # Calculate metrics for each split subject/group
-        results_list <- lapply(split_data, function(sub_data) {
-            # Initialize a list to hold results for each metric
-            metric_results <- list()
+        # Initialize a result data.frame to hold computed metrics
+        metric_results <- lapply(se_list, function(sub_se) {
+            # Extract assay matrix for the group
+            assay_data <- assay(sub_se, assay.type)
+            group_results <- list()
             
-            # Loop through each metric and calculate it
+            # Compute each metric
             for (metric in metrics) {
-                # Check if the metric is supported and calculate accordingly
                 if (metric == "CRT") {
-                    crt_results <- .calculateCRT(sub_data, thresholds[["CRT"]])
-                    metric_results[["CRT"]] <- crt_results
+                    group_results[[metric]] <- .calculate_crt(
+                        assay_data, threshold = thresholds[["CRT"]])
                 } else {
-                    stop(paste("Metric", metric, "is not supported yet."), 
+                    stop(paste0("Metric '", metric, "' is not supported yet."),
                          call. = FALSE)
                 }
             }
-
-            # Add the calculated metrics to the metadata (colData or rowData)
-            for (metric in names(metric_results)) {
-                colData(sub_data)[[metric]] <- metric_results[[metric]]
-            }
-            
-            return(sub_data)
+            return(group_results)
         })
-
-        # add results to metadata
-        x <- do.call(cbind, results_list)
+        browser()
+        ######################## Combine and Add to colData ####################
+        # Combine results into a single data.frame
+        combined_results <- do.call(rbind, 
+            lapply(seq_along(metric_results), 
+            function(i) {
+            group_name <- names(metric_results)[i]
+            group_result <- metric_results[[i]]
+            data.frame(
+                Sample = colnames(se_list[[i]]),
+                Group = group_name,
+                do.call(cbind, group_result)
+            )
+        }))
+        
+        # Sort by sample names
+        combined_results <- combined_results[order(combined_results$Sample), ]
+        # Add metrics to colData
+        for (metric in metrics) {
+            x <- .add_values_to_colData(x, 
+                combined_results[[metric]], metric, ...)
+        }
         
         return(x)
     }
 )
 
 # Internal function to calculate Conditional Rare Taxa (CRT)
-.calculateCRT <- function(data, threshold = 2) {
-    # Extract the counts/abundance data
-    counts <- assay(data)
+.calculate_crt <- function(assay_data, threshold = 2) {
     # Calculate the max and min relative abundance for each taxa/feature
-    max_abundance <- apply(counts, 1, max)
-    min_abundance <- apply(counts, 1, min)
+    max_abundance <- apply(assay_data, 1, max, na.rm = TRUE)
+    min_abundance <- apply(assay_data, 1, min, na.rm = TRUE)
     
     # Compute the max/min ratio
     ratio <- max_abundance / min_abundance
