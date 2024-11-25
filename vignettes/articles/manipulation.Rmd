@@ -20,6 +20,7 @@ bibliography: references.bib
 ```{r}
 #| label: setup
 #| include: false
+
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
@@ -59,6 +60,7 @@ Once installed, `miaTime` is made available in the usual way.
 
 ```{r}
 #| label: load_package
+
 library(miaTime)
 ```
 

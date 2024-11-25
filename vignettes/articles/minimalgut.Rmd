@@ -20,6 +20,7 @@ bibliography: references.bib
 ```{r}
 #| label: setup
 #| include: false
+
 library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
@@ -30,7 +31,6 @@ knitr::opts_chunk$set(
     echo = TRUE
 )
 ```
-
 
 # Minimal gut microbiome
 
