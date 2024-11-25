@@ -74,7 +74,8 @@ data(hitchip1006)
 tse <- hitchip1006
 
 res <- getBaselineDivergence(
-    tse, time.col = "time", group = "sample", name = c("baseline", "time_diff", "ref_samples"))
+    tse, time.col = "time", group = "sample", 
+    name = c("baseline", "time_diff", "ref_samples"))
 res |> head()
 ```
 

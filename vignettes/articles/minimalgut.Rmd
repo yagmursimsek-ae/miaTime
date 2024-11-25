@@ -133,7 +133,8 @@ tse <- addStepwiseDivergence(
     group = "StudyIdentifier",
     time.interval = 1,
     time.col = "Time.hr",
-    name = c("divergence_from_previous_step", "time_from_previous_step", "reference_samples")
+    name = c("divergence_from_previous_step", 
+        "time_from_previous_step", "reference_samples")
     )
 ```
 

@@ -102,7 +102,7 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         reference <- args[["reference"]]
         time_res <- .get_time_difference(x, time.col, reference)
         # Create a DF to return
-        res <- .convert_divergence_to_df(x, res, reference, time_res, ...)
+        res <- .convert_divergence_to_df(x, res, time_res, reference, ...)
         return(res)
     }
 )
@@ -110,8 +110,9 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
 #' @rdname addStepwiseDivergence
 #' @export
 setMethod("addStepwiseDivergence", signature = c(x = "SummarizedExperiment"),
-    function(x, name = c("divergence", 
-                         "time_diff", "ref_samples"), ...){
+    function(x, name = c("divergence", "time_diff", "ref_samples"), 
+        ...){
+        ########################################################################
         # Calculate divergence
         res <- getStepwiseDivergence(x,  ...)
         # Add to colData

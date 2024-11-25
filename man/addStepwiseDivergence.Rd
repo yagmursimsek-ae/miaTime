@@ -55,7 +55,8 @@ Method is passed to the function that is specified by \code{dis.fun}.
 (Default: \code{"bray"})}
 
 \item{name}{\code{Character vector}. Specifies a column name for storing
-divergence results. (Default: \code{"divergence"})}
+divergence results.
+(Default: \code{c("divergence", "time_diff", "ref_samples")})}
 }
 \value{
 \code{getStepwiseDivergence} returns \code{DataFrame} object

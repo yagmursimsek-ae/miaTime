@@ -54,7 +54,8 @@ Method is passed to the function that is specified by \code{dis.fun}.
 (Default: \code{"bray"})}
 
 \item{name}{\code{Character vector}. Specifies a column name for storing
-divergence results. (Default: \code{"divergence"})}
+divergence results.
+(Default: \code{c("divergence", "time_diff", "ref_samples")})}
 }
 \value{
 \code{getBaselineDivergence} returns \code{DataFrame} object
@@ -108,7 +109,7 @@ tse <- addBaselineDivergence(
     group = "subject",
     time.col = "time",
     name = c("divergence_from_baseline", 
-    "time_from_baseline", "reference_samples"),
+        "time_from_baseline", "reference_samples"),
     assay.type = "relabundance",
     method = "bray")
 
