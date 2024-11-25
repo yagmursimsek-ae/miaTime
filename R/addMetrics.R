@@ -76,14 +76,11 @@ setMethod("addMetrics", signature = c(x = "SummarizedExperiment"),
             group_name <- names(metric_results)[i]
             group_result <- metric_results[[i]]
             data.frame(
-                Sample = colnames(se_list[[i]]),
                 Group = group_name,
                 do.call(cbind, group_result)
             )
         }))
         
-        # Sort by sample names
-        combined_results <- combined_results[order(combined_results$Sample), ]
         # Add metrics to colData
         for (metric in metrics) {
             x <- .add_values_to_colData(x, 
