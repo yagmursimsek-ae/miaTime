@@ -148,12 +148,12 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         )
         # Calculate divergences
         res <- do.call(getDivergence, args)
-        # Add time difference
-        x <- args[["x"]]
-        reference <- args[["reference"]]
-        time_res <- .get_time_difference(x, time.col, reference)
+        # Get time difference
+        args[["time.col"]] <- time.col
+        time_res <- do.call(.get_time_difference, args)
         # Create a DF to return
-        res <- .convert_divergence_to_df(x, res, time_res, ...)
+        args <- c(args, list(x_orig = x, res = res, time_res = time_res))
+        res <- do.call(.convert_divergence_to_df, args)
         return(res)
     }
 )
@@ -231,7 +231,16 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     if( is.null(reference) ){
         ref <- .get_reference_samples(
             cd, time.col, time.interval, group, reference.method)
-        cd[[ref.name]] <- ref
+        # If the data includes repeated timepoints, the data has multiple
+        # reference samples for each sample. That is why we make sure that
+        # the data is expanded accordingly.
+        if( length(ref) != nrow(cd) ){
+            x <- x[, names(ref)]
+            cd <- cd[names(ref), ]
+        } else{
+            ref <- ref[ rownames(cd) ]
+        }
+        cd[[ref.name]] <- unname(ref)
         reference <- ref.name
     }
     # If reference was specified, check that it is specifying samples
@@ -270,9 +279,15 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     
     # Add modified colData back to TreeSE
     colData(x) <- cd
+    # Add original sample names (if there are duplicated timepoints, certain
+    # samples are duplicated). And make column names unique.
+    orig_sample_col <- "original_sample_names"
+    colData(x)[[orig_sample_col]] <- colnames(x)
+    colnames(x) <- make.unique(colnames(x))
     # The returned value includes the TreeSE along with reference
     # column name because it might be that we have modified it.
-    res <- list(x = x, reference = reference)
+    res <- list(
+        x = x, reference = reference, orig.sample.names = orig_sample_col)
     return(res)
 }
 
@@ -280,12 +295,18 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 # Alternatively, it returns the previous ith sample for each sample in each
 # group.
 #' @importFrom dplyr group_by mutate arrange ungroup lag
+#' @importFrom tidyr unnest
 .get_reference_samples <- function(
         df, time.col, time.interval, group, reference.method){
     rowname_col <- "temporary_rownames_column"
     reference_col <- "temporary_reference_column"
-    # Store rownames and add rownames as a column
-    df[[rowname_col]] <- original_order <- rownames(df)
+    # Give warning if the data includes replicated timepoints.
+    if( anyDuplicated(df[, c(time.col, group)]) ){
+        warning("The data includes duplicated timepoints. Average is applied.",
+                call. = FALSE)
+    }
+    # Add rownames as a column
+    df[[rowname_col]] <- rownames(df)
     # Convert to data.frame and group data based on group
     df <- df |>
         as.data.frame() |>
@@ -301,24 +322,41 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         # For each sample, get the previous ith sample.
         # For each subject, get previous sample based on time.
         df <- df |>
-            mutate(!!reference_col := lag(
-                .data[[rowname_col]], n = time.interval,
-                order_by = .data[[time.col]]))
+            mutate(!!reference_col := .get_previous_samples(
+                .data, time.col, rowname_col, time.interval))
     }
-    # Ungroup to revert to the original structure and convert to DataFrame
+    # Ungroup to revert to the original structure, make sure that
+    # each cell includes single value (takes action when there are repeated
+    # timepoints) and convert to DataFrame
     df <- df |>
         ungroup() |>
+        unnest(cols = .data[[reference_col]]) |>
         DataFrame()
-    # Put the data into original order
-    rownames(df) <- df[[rowname_col]]
-    df <- df[original_order, ]
     # Get only reference samples
     res <- df[[reference_col]]
+    names(res) <- df[[rowname_col]]
     return(res)
 }
 
-# This function get time difference between a sample and its referene sample
-.get_time_difference <- function(x, time.col, reference){
+# This function gets df as input. The data must be already grouped if grouping
+# exists. For each sample, this function finds previous timepoint. If there
+# are multiple samples from previous timepoint, all are returned.
+#' @importFrom dplyr lag
+.get_previous_samples <- function(.data, time.col, rowname_col, time.interval){
+    # Get timepoints and corresponding previous timepoints
+    current_time <- unique(sort(.data[[time.col]]))
+    prev_time <- lag(current_time, n = time.interval)
+    prev_time <- prev_time[match(.data[[time.col]], current_time)]
+    # Split sample names so that they are grouped into timepoints
+    timepoint_samples <- split(.data[[rowname_col]], .data[[time.col]])
+    # For each sample, assign previous samples
+    prev_samples <- prev_samples[ match(prev_time, names(timepoint_samples)) ]
+    prev_samples[ lengths(prev_samples) == 0L ] <- NA_character_
+    return(prev_samples)
+}
+
+# This function get time difference between a sample and its reference sample
+.get_time_difference <- function(x, time.col, reference, ...){
     # Get timepoints
     time_point <- x[[time.col]]
     # Get reference time points
@@ -329,14 +367,26 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 }
 
 # This function converts time divergence results to DF object
+#' @importFrom dplyr summarize
 .convert_divergence_to_df <- function(
-        x, res, time_res, name = "divergence", name.time = "time_diff", ...){
+        x_orig, x, res, time_res, reference, orig.sample.names,
+        name = "divergence", name.time = "time_diff", ...){
     #
     temp <- .check_input(name, list("character scalar"))
-    #
     temp <- .check_input(name.time, list("character scalar"))
     #
-    df <- DataFrame(res, time_res, row.names = colnames(x))
+    df <- data.frame(res, time_res, sample = x[[orig.sample.names]])
+    # If data includes replicated samples, each time point might have multiple
+    # samples. We take average of these repeated time points.
+    df <- df |>
+        group_by(sample) |>
+        summarize(res = mean(res, ...), time_res = mean(time_res, ...)) |>
+        DataFrame()
+    # Wrangle names
+    rownames(df) <- df[["sample"]]
+    df[["sample"]] <- NULL
     colnames(df) <- c(name, name.time)
+    # Ensure that the order is correct, i.e., matches with the original input
+    df <- df[colnames(x_orig), ]
     return(df)
 }
