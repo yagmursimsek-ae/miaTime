@@ -159,9 +159,8 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 #' @rdname addBaselineDivergence
 #' @export
 setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
-    function(x, name = c("divergence", "time_diff", "ref_samples"), 
-        ...){
-        ########################################################################
+    function(
+        x, name = c("divergence", "time_diff", "ref_samples"), ...){
         # Calculate divergence
         res <- getBaselineDivergence(x, ...)
         # Add to colData
@@ -329,11 +328,12 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 }
 
 # This function converts time divergence results to DF object
-.convert_divergence_to_df <- function( x, res, time_res, reference,
-    name = c("divergence", "time_diff", "ref_samples"),
-    ...){
+.convert_divergence_to_df <- function(
+        x, res, time_res, reference,
+        name = c("divergence", "time_diff", "ref_samples"), ...){
     # Validate 'name' param
     temp <- .check_input(name, list("character vector"), length = 3)
+    #
     df <- DataFrame(res, time_res, x[[reference]], row.names = colnames(x))
     colnames(df) <- name
     return(df)

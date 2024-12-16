@@ -110,9 +110,8 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
 #' @rdname addStepwiseDivergence
 #' @export
 setMethod("addStepwiseDivergence", signature = c(x = "SummarizedExperiment"),
-    function(x, name = c("divergence", "time_diff", "ref_samples"), 
-        ...){
-        ########################################################################
+    function(
+        x, name = c("divergence", "time_diff", "ref_samples"), ...){
         # Calculate divergence
         res <- getStepwiseDivergence(x,  ...)
         # Add to colData
