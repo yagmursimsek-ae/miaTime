@@ -12,18 +12,18 @@
 \link[TreeSummarizedExperiment:TreeSummarizedExperiment-class]{TreeSummarizedExperiment} class
 }
 \author{
-\strong{Maintainer}: Yagmur Simsek \email{yagmur.simsek@hsrw.org}
+\strong{Maintainer}: Tuomas Borman \email{tuomas.v.borman@utu.fi} (\href{https://orcid.org/0000-0002-8563-8884}{ORCID})
 
 Authors:
 \itemize{
   \item Leo Lahti \email{leo.lahti@iki.fi} (\href{https://orcid.org/0000-0001-5537-637X}{ORCID})
+  \item Yagmur Simsek \email{yagmur.simsek@hsrw.org}
 }
 
 Other contributors:
 \itemize{
   \item Sudarshan Shetty \email{sudarshanshetty9@gmail.com} [contributor]
   \item Chouaib Benchraka [contributor]
-  \item Tuomas Borman \email{tuomas.v.borman@utu.fi} (\href{https://orcid.org/0000-0002-8563-8884}{ORCID}) [contributor]
   \item Muluh Muluh [contributor]
 }
 
