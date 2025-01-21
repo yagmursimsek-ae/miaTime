@@ -25,3 +25,8 @@ setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
 #' @export
 setGeneric("getBimodality", signature = "x", function(x, ...)
     standardGeneric("getBimodality"))
+
+#' @rdname getBimodality
+#' @export
+setGeneric("addBimodality", signature = "x", function(x, ...)
+    standardGeneric("addBimodality"))

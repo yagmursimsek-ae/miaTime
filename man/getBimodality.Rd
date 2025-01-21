@@ -2,10 +2,16 @@
 % Please edit documentation in R/AllGenerics.R, R/getBimodality.R
 \name{getBimodality}
 \alias{getBimodality}
+\alias{addBimodality}
+\alias{addBimodality,SummarizedExperiment-method}
 \alias{getBimodality,SummarizedExperiment-method}
 \title{Calculate coefficient of bimodality.}
 \usage{
 getBimodality(x, ...)
+
+addBimodality(x, ...)
+
+\S4method{addBimodality}{SummarizedExperiment}(x, name = "bimodality", ...)
 
 \S4method{getBimodality}{SummarizedExperiment}(x, assay.type = "counts", ...)
 }
@@ -21,12 +27,14 @@ from \code{colData} that identifies the grouping of the samples.
 (Default: \code{NULL})
 }}
 
+\item{name}{\code{Character scalar}. Specifies a column name for storing
+bimodality results. (Default: \code{"bimodality"})}
+
 \item{assay.type}{\code{Character scalar}. Specifies which assay values are
 used in the dissimilarity estimation. (Default: \code{"counts"})}
 }
 \value{
-\code{Numeric vector} or \code{DataFrame} depending on whether grouping was
-applied or not.
+\code{DataFrame} or \code{x} with results added to its \code{rowData}.
 }
 \description{
 This function calculates coefficient of bimodality for each taxa.
@@ -53,14 +61,13 @@ where skewness is calculated as follows
 and kurtosis as follows
 
 \deqn{kurtosis = \frac{\sum_{i=1}^{n}(x_{i}-\overline{x})^{4}/n}{
-\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}/n]^{2}}}
+(\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}/n)^{2}}}
 
 The coefficient ranges from 0-1, where 1 means high bimodality. The
 coefficient was introduced in the paper Shade A et al. 2014, where they used
 bimodality and abundance to determine conditionally rare taxa (CRT).
 }
 \examples{
-
 library(miaTime)
 library(mia)
 
@@ -71,12 +78,14 @@ tse <- SilvermanAGutData
 tse <- tse[, tse[["Vessel"]] == 1]
 tse <- transformAssay(tse, method = "relabundance")
 
-# Calculate bimodality for each system
-b <- getBimodality(tse, group = "Vessel")
-Determine taxa with high bimodality.
+# Calculate bimodality
+b <- getBimodality(tse)
+# Determine taxa with high bimodality
 bimodal_taxa <- names(b)[ which(b[[1]] > 0.95) ]
-# Determine taxa with abundance > 0.01
-abundant <- getAbundant(tse, abundant.th = 0.01)
+
+# Determine taxa with abundance > 0.5\%
+abundant <- getAbundant(
+    tse, assay.type = "relabundance", abundant.th = 0.005)
 
 # The detected CRT
 crt <- intersect(bimodal_taxa, abundant)
@@ -89,5 +98,5 @@ Conditionally Rare Taxa Disproportionately Contribute to Temporal Changes in
 Microbial Diversity. doi: 10.1128/mbio.01371-14
 }
 \seealso{
-\code{\link[mia:getAbundant]{mia::getConditionallyRare()}}
+\code{\link[mia:getAbundant]{mia::getConditionallyLowAbundant()}}
 }
