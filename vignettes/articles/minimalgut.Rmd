@@ -25,7 +25,10 @@ library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    cache = TRUE
+    cache = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    echo = TRUE
 )
 ```
 
@@ -39,7 +42,6 @@ pulse feeding cycles. This information is stored in the `colData`.
 #| label: sample_table
 
 library(miaTime)
-
 data(minimalgut)
 tse <- minimalgut
 
