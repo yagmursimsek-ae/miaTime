@@ -6,7 +6,7 @@
 # Borrowed from HoloFoodR.
 .check_input <- function(
         variable, supported_class, supported_values = NULL, limits = NULL,
-        variable_name = .get_name_in_parent(variable)){
+        length = NULL, variable_name = .get_name_in_parent(variable)){
     # Convert supported classes to character
     classes_char <- lapply(supported_class, function(class){
         if( is.null(class) ){
@@ -52,6 +52,11 @@
             msg <- paste0(msg, "x>=", limits$lower_include)
         }
         msg <- paste0(msg, ")")
+    }
+
+    # If length was provided
+    if( !is.null(length) ){
+        msg <- paste0(msg, " The length must be ", length, ".")
     }
 
     # List all the input types. Run the check if the variable must be that type.
@@ -127,6 +132,10 @@
             limits$upper_include) && variable < limits$upper_include ){
             input_correct <- FALSE
         }
+    }
+    # Check length if provided
+    if( !is.null(length) && length(variable) != length ){
+        input_correct <- FALSE
     }
     # Give error if variable was not correct type
     if( !input_correct ){
