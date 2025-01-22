@@ -43,8 +43,6 @@ Suggests:
     scater,
     testthat,
     vegan
-Remotes:
-    github::microbiome/mia
 URL: https://github.com/microbiome/miaTime
 BugReports: https://github.com/microbiome/miaTime/issues
 Encoding: UTF-8
