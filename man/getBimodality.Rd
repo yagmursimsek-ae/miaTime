@@ -83,13 +83,15 @@ b <- getBimodality(tse)
 # Determine taxa with high bimodality
 bimodal_taxa <- names(b)[ which(b[[1]] > 0.95) ]
 
+\dontrun{
 # Determine taxa with abundance > 0.5\%
 abundant <- getAbundant(
-    tse, assay.type = "relabundance", abundant.th = 0.005)
+    tse, assay.type = "relabundance", abundant.th = 0.5/100)
 
 # The detected CRT
 crt <- intersect(bimodal_taxa, abundant)
 head(crt)
+}
 
 }
 \references{

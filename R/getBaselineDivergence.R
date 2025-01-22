@@ -1,14 +1,14 @@
 #' @name addBaselineDivergence
 #' @export
-#' 
+#'
 #' @title
-#' Beta diversity between the baseline and later time steps 
-#' 
+#' Beta diversity between the baseline and later time steps
+#'
 #' @description
 #' Calculates sample dissimilarity between the given baseline and other
 #' time points, optionally within a group (subject, reaction chamber, or
 #' similar). The corresponding time difference is returned as well.
-#' 
+#'
 #' @details
 #' The group argument allows calculating divergence per group. If given, the
 #' divergence is calculated per group.  e.g. subject, chamber, group etc.
@@ -19,47 +19,47 @@
 #' applying this function. The reason is that they need to have comparable
 #' sample data, at least some time point
 #' information for calculating time differences w.r.t. baseline sample.
-#' 
+#'
 #' The baseline time point is by default defined as the smallest time point
 #' (per group). Alternatively,
 #' the user can provide the baseline vector, or a list of baseline vectors per
 #' group (named list per group).
-#' 
+#'
 #' @return
 #' \code{getBaselineDivergence} returns \code{DataFrame} object
 #' containing the sample dissimilarity and corresponding time difference between
 #' samples. \code{addBaselineDivergence}, on the other hand, returns a
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 #' object with these results in its \code{colData}.
-#' 
+#'
 #' @param x A
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 #' object.
-#' 
-#' @param assay.type \code{Character scalar}. Specifies which assay values are 
+#'
+#' @param assay.type \code{Character scalar}. Specifies which assay values are
 #' used in the dissimilarity estimation. (Default: \code{"counts"})
-#' 
+#'
 #' @param group \code{Character scalar}. Specifies a name of the column from
 #' \code{colData} that identifies the grouping of the samples.
 #' (Default: \code{NULL})
-#' 
+#'
 #' @param time.col \code{Character scalar}. Specifies a name of the column from
 #' \code{colData} that identifies the sampling time points for the samples.
-#' 
-#' @param method \code{Character scalar}. Used to calculate the dissimilarity 
-#' Method is passed to the function that is specified by \code{dis.fun}. 
+#'
+#' @param method \code{Character scalar}. Used to calculate the dissimilarity
+#' Method is passed to the function that is specified by \code{dis.fun}.
 #' (Default: \code{"bray"})
-#' 
+#'
 #' @param reference \code{Character scalar}. Specifies a name of the column from
 #' \code{colData} that identifies the baseline samples to be used.
 #' (Default: \code{NULL})
-#' 
+#'
 #' @param name \code{Character scalar}. Specifies a column name for storing
 #' divergence results. (Default: \code{"divergence"})
-#' 
+#'
 #' @param name.time \code{Character scalar}. Specifies a column name for storing
 #' time differences. (Default: \code{"time_diff"})
-#' 
+#'
 #' @param ... Optional arguments passed into
 #' \code{\link[mia:addDivergence]{mia::addDivergence()}}.
 #'
@@ -69,7 +69,7 @@
 #'
 #' data(hitchip1006)
 #' tse <- transformAssay(hitchip1006, method = "relabundance")
-#' 
+#'
 #' # By default, reference samples are the samples from the first timepoint
 #' tse <- addBaselineDivergence(
 #'     tse,
@@ -77,7 +77,7 @@
 #'     time.col = "time",
 #'     assay.type = "relabundance",
 #'     method = "bray")
-#' 
+#'
 #' # Add reference samples to colData, if you want to specify reference
 #' # samples manually
 #' colData(tse)[["reference"]] <- "Sample-875"
@@ -90,10 +90,10 @@
 #'     name.time = "time_from_baseline",
 #'     assay.type = "relabundance",
 #'     method = "bray")
-#' 
+#'
 #' @seealso
 #' \code{\link[mia:addDivergence]{mia::addDivergence()}}
-#' 
+#'
 NULL
 
 #' @rdname addBaselineDivergence
@@ -203,7 +203,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     }
     # Get colData
     cd <- colData(x)
-    
+
     # Check that group is correctly defined. It can be either NULL, a column
     # from colData or a vector that has group information for all samples.
     # If it is NULL, add group info --> all samples are in same group
@@ -225,7 +225,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         cd[[group.name]] <- group
         group <- group.name
     }
-    
+
     # If the reference is NULL, it means that user did not specify it.
     # Get the reference samples.
     if( is.null(reference) ){
@@ -267,7 +267,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         cd[[ref.name]] <- reference
         reference <- ref.name
     }
-    
+
     # Add modified colData back to TreeSE
     colData(x) <- cd
     # The returned value includes the TreeSE along with reference
@@ -282,6 +282,10 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 #' @importFrom dplyr group_by mutate arrange ungroup lag
 .get_reference_samples <- function(
         df, time.col, time.interval, group, reference.method){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    .data <- ":=" <- NULL
+
     rowname_col <- "temporary_rownames_column"
     reference_col <- "temporary_reference_column"
     # Store rownames and add rownames as a column
@@ -290,7 +294,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     df <- df |>
         as.data.frame() |>
         group_by(.data[[group]])
-    
+
     # Determine the method and perform the respective operations
     if( reference.method == "baseline" ){
         # Find first timepoint within a group

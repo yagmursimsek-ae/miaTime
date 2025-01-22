@@ -72,13 +72,15 @@
 #' # Determine taxa with high bimodality
 #' bimodal_taxa <- names(b)[ which(b[[1]] > 0.95) ]
 #'
+#' \dontrun{
 #' # Determine taxa with abundance > 0.5%
 #' abundant <- getAbundant(
-#'     tse, assay.type = "relabundance", abundant.th = 0.005)
+#'     tse, assay.type = "relabundance", abundant.th = 0.5/100)
 #'
 #' # The detected CRT
 #' crt <- intersect(bimodal_taxa, abundant)
 #' head(crt)
+#' }
 #'
 #' @seealso
 #' \code{\link[mia:getAbundant]{mia::getConditionallyLowAbundant()}}
@@ -115,6 +117,10 @@ setMethod("getBimodality", signature = c(x = "SummarizedExperiment"),
 #' @importFrom tidyr pivot_wider
 .calculate_bimodality <- function(
         tse, assay.type, name = "bimodality", group = NULL, ...){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    .data <- b <- NULL
+
     .check_input(name, "character scalar")
     .check_input(group, c("character scalar", "NULL"), colnames(colData(tse)))
     # Get data as long format
