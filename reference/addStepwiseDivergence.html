@@ -18,7 +18,7 @@ time difference."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">miaTime</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.2</span>
       </span>
     </div>
 
@@ -84,7 +84,11 @@ time difference.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SummarizedExperiment'</span></span>
-<span><span class="fu">addStepwiseDivergence</span><span class="op">(</span><span class="va">x</span>, name <span class="op">=</span> <span class="st">"divergence"</span>, name.time <span class="op">=</span> <span class="st">"time_diff"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">addStepwiseDivergence</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"divergence"</span>, <span class="st">"time_diff"</span>, <span class="st">"ref_samples"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -132,13 +136,9 @@ Method is passed to the function that is specified by <code>dis.fun</code>.
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p><code>Character scalar</code>. Specifies a column name for storing
-divergence results. (Default: <code>"divergence"</code>)</p></dd>
-
-
-<dt id="arg-name-time">name.time<a class="anchor" aria-label="anchor" href="#arg-name-time"></a></dt>
-<dd><p><code>Character scalar</code>. Specifies a column name for storing
-time differences. (Default: <code>"time_diff"</code>)</p></dd>
+<dd><p><code>Character vector</code>. Specifies a column name for storing
+divergence results.
+(Default: <code>c("divergence", "time_diff", "ref_samples")</code>)</p></dd>
 
 </dl></div>
     <div id="value">

@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">miaTime</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.2</span>
       </span>
     </div>
 
@@ -181,8 +181,8 @@ calculated by <code>addStepwiseDivergence</code>.</p>
 <span>    group <span class="op">=</span> <span class="st">"StudyIdentifier"</span>,</span>
 <span>    time.interval <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    time.col <span class="op">=</span> <span class="st">"Time.hr"</span>,</span>
-<span>    name <span class="op">=</span> <span class="st">"divergence_from_previous_step"</span>,</span>
-<span>    name.time <span class="op">=</span> <span class="st">"time_from_previous_step"</span></span>
+<span>    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"divergence_from_previous_step"</span>, </span>
+<span>        <span class="st">"time_from_previous_step"</span>, <span class="st">"reference_samples"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
 <p>The results are again stored in <code>colData</code>. We calculate
 the speed of divergence change by dividing each divergence change by the
@@ -279,7 +279,7 @@ the result in a similar way to our previous approach.</p>
 <span><span class="co">#&gt;  [1] dplyr_1.1.4                     miaViz_1.15.2                  </span></span>
 <span><span class="co">#&gt;  [3] ggraph_2.2.1                    scater_1.35.0                  </span></span>
 <span><span class="co">#&gt;  [5] scuttle_1.17.0                  ggplot2_3.5.1                  </span></span>
-<span><span class="co">#&gt;  [7] miaTime_0.99.1                  mia_1.15.17                    </span></span>
+<span><span class="co">#&gt;  [7] miaTime_0.99.2                  mia_1.15.17                    </span></span>
 <span><span class="co">#&gt;  [9] TreeSummarizedExperiment_2.15.0 Biostrings_2.75.3              </span></span>
 <span><span class="co">#&gt; [11] XVector_0.47.2                  SingleCellExperiment_1.29.1    </span></span>
 <span><span class="co">#&gt; [13] MultiAssayExperiment_1.33.4     SummarizedExperiment_1.37.0    </span></span>
