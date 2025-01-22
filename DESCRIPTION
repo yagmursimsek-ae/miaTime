@@ -14,8 +14,8 @@ Authors@R:
        person(given = "Sudarshan", family = "Shetty", role = c("ctb"),
               email = "sudarshanshetty9@gmail.com"),
        person(given = "Chouaib", family = "Benchraka", role = c("ctb")),
-      person(given = "Muluh", family = "Muluh", role = c("ctb"))
-        )
+       person(given = "Muluh", family = "Muluh", role = c("ctb"))
+      )
 Description:
     The `miaTime` package provides tools for microbiome time series analysis
     based on (Tree)SummarizedExperiment infrastructure.
@@ -30,6 +30,7 @@ Imports:
     S4Vectors,
     SingleCellExperiment,
     SummarizedExperiment,
+    tidyr,
     TreeSummarizedExperiment
 Suggests:
     BiocStyle,
