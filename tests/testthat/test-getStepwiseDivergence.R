@@ -93,7 +93,7 @@ test_that("Comparing vegan distances (bray vs euclidean)", {
   tse2 <- addStepwiseDivergence(
       tse2, group = "subject", time.interval = 1, time.col = "time",
       assay.type = "counts", dis.fun = vegan::vegdist, method = "euclidean",
-      name = c("timedivergence2", "timedifference2", "ref_samples"))
+      name = c("timedivergence2", "timedifference2", "ref_samples2"))
   expect_true(identical(tse2$timedifference, tse2$timedifference2))
   expect_true(!identical(tse2$timedivergence, tse2$timedivergence2))
 })
@@ -107,16 +107,16 @@ test_that("AltExp functionality in addStepwiseDivergence", {
       tse, group = "subject", time.interval = 1, time.col = "time",
       altexp = "Family")
 
-  altExp(tse, "Family_test") <- addStepwiseDivergence(
+  altExp(tse, "Family") <- addStepwiseDivergence(
       altExp(tse, "Family"), group = "subject", time.interval = 1,
       time.col = "time",
-      name = c("timedivergence", "timedifference", "ref_samples"))
+      name = c("timedivergence", "timedifference", "ref_samples2"))
   expect_equal(
       altExp(tse, "Family")$time_diff,
-      altExp(tse, "Family_test")$timedifference)
+      altExp(tse, "Family")$timedifference)
   expect_equal(
       altExp(tse, "Family")$divergence,
-      altExp(tse, "Family_test")$timedivergence)
+      altExp(tse, "Family")$timedivergence)
 })
 
 # Test: getStepwiseDivergence output type

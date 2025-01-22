@@ -113,7 +113,7 @@ test_that("Test altExp", {
         tse, group = "subject", time.col = "time", altexp = "Family")
     altExp(tse, "Family_test") <-  addBaselineDivergence(
         altExp(tse, "Family"), group = "subject", time.col = "time",
-        name = "val", name.time = "time_val")
+        name = c("val", "time_val", "ref"))
     # Time differences should still match
     expect_equal(
         altExp(tse, "Family")$divergence, altExp(tse, "Family_test")$val)
