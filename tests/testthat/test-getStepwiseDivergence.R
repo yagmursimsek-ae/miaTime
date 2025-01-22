@@ -44,7 +44,7 @@ test_that("addStepwiseDivergence with n > 1 calculates divergences correctly", {
       name = c("divergence", "time_difference", "ref_samples"))
   time_interval <- 2
   time <- colData(tse2)[which(tse2[["subject"]] == "843"), "time"]
-  time_diff <- colData(tse2)[which(tse2[["subject"]] == "843"), 
+  time_diff <- colData(tse2)[which(tse2[["subject"]] == "843"),
                              "time_difference"]
   divergence_number <- length(time) - time_interval
   divergence_calculated <- length(which(!is.na(time_diff) == TRUE))
@@ -106,10 +106,10 @@ test_that("AltExp functionality in addStepwiseDivergence", {
   tse <- addStepwiseDivergence(
       tse, group = "subject", time.interval = 1, time.col = "time",
       altexp = "Family")
-  
+
   altExp(tse, "Family_test") <- addStepwiseDivergence(
       altExp(tse, "Family"), group = "subject", time.interval = 1,
-      time.col = "time", 
+      time.col = "time",
       name = c("timedivergence", "timedifference", "ref_samples"))
   expect_equal(
       altExp(tse, "Family")$time_diff,
@@ -178,25 +178,24 @@ test_that(".get_reference_samples with different time intervals", {
     res <- getStepwiseDivergence(
         tse, group = "subject", time.interval = 2, time.col = "time",
         assay.type = "counts", method = "euclidean")
-    expect_equal(colData(tse)[, c("divergence", 
-                                  "time_diff", 
-                                  "ref_samples")], res)
+    expect_equal(
+        colData(tse)[, c("divergence", "time_diff", "ref_samples")], res)
 })
 
 # Basic SummarizedExperiment for testing
 col_data <- DataFrame(
     time = c(0, 1, 2, 1, 2, 0),
     group = c("A", "A", "A", "B", "B", "B"),
-    row.names = c("Sample1", "Sample2", "Sample3", "Sample4", 
+    row.names = c("Sample1", "Sample2", "Sample3", "Sample4",
         "Sample5", "Sample6"))
 count_data <- matrix(c(10, 20, 30, 40, 50, 60), ncol = 6, byrow = TRUE)
-se <- SummarizedExperiment(assays = list(counts = count_data), 
+se <- SummarizedExperiment(assays = list(counts = count_data),
                            colData = col_data)
 
 # Input validation for getStepwiseDivergence
 test_that("getStepwiseDivergence input validations", {
     expect_error(getStepwiseDivergence(se, time.col = "nonexistent"))
-    expect_error(getStepwiseDivergence(se, time.col = "time", 
+    expect_error(getStepwiseDivergence(se, time.col = "time",
         assay.type = "unknown"))
     expect_error(getStepwiseDivergence(se, group = "nonexistent"))
     expect_error(getStepwiseDivergence(se, reference = "nonexistent"))
@@ -209,7 +208,7 @@ test_that("getStepwiseDivergence dissimilarity calculation", {
     result <- getStepwiseDivergence(se, time.col = "time", method = "bray")
     expect_s4_class(result, "DataFrame")
     expect_true(
-        all(c("divergence", "time_diff", "ref_samples") %in% 
+        all(c("divergence", "time_diff", "ref_samples") %in%
         colnames(result)))
 })
 
@@ -229,7 +228,7 @@ test_that("addStepwiseDivergence adds columns to colData", {
 # Custom column naming test for addStepwiseDivergence
 test_that("addStepwiseDivergence handles custom column names", {
     se_result <- addStepwiseDivergence(
-        se, time.col = "time", 
+        se, time.col = "time",
         name = c("custom_div", "custom_time_diff", "ref_samples"))
     # Test
     expect_true("custom_div" %in% colnames(colData(se_result)))
@@ -241,7 +240,7 @@ test_that(".add_reference_samples_to_coldata assigns correct baselines", {
     res <- .add_reference_samples_to_coldata(
         se, time.col = "time", group = "group")
     expect_true(
-        "temporal_reference_for_divergence" %in% 
+        "temporal_reference_for_divergence" %in%
         colnames(colData(res[[1]])))
 })
 

@@ -53,12 +53,12 @@
         }
         msg <- paste0(msg, ")")
     }
-    
+
     # If length was provided
     if( !is.null(length) ){
         msg <- paste0(msg, " The length must be ", length, ".")
     }
-  
+
     # List all the input types. Run the check if the variable must be that type.
     # If correct type was found, change the result to TRUE.
     input_correct <- FALSE

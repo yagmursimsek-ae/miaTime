@@ -55,9 +55,9 @@
 #' (Default: \code{NULL})
 #'
 #' @param name \code{Character vector}. Specifies a column name for storing
-#' divergence results. 
+#' divergence results.
 #' (Default: \code{c("divergence", "time_diff", "ref_samples")})
-#' 
+#'
 #' @param ... Optional arguments passed into
 #' \code{\link[mia:addDivergence]{mia::addDivergence()}}.
 #'
@@ -84,7 +84,7 @@
 #'     reference = "reference",
 #'     group = "subject",
 #'     time.col = "time",
-#'     name = c("divergence_from_baseline", 
+#'     name = c("divergence_from_baseline",
 #'         "time_from_baseline", "reference_samples"),
 #'     assay.type = "relabundance",
 #'     method = "bray")
@@ -161,6 +161,7 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     function(
         x, name = c("divergence", "time_diff", "ref_samples"), ...){
+        .check_input(name, c("character vector"), length = 3L)
         # Calculate divergence
         res <- getBaselineDivergence(x, ...)
         # Add to colData
@@ -336,7 +337,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         x, res, time_res, reference,
         name = c("divergence", "time_diff", "ref_samples"), ...){
     # Validate 'name' param
-    temp <- .check_input(name, list("character vector"), length = 3)
+    temp <- .check_input(name, list("character vector"), length = 3L)
     #
     df <- DataFrame(res, time_res, x[[reference]], row.names = colnames(x))
     colnames(df) <- name
