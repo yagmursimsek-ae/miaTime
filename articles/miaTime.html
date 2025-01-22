@@ -84,7 +84,7 @@
             
             <h4 data-toc-skip class="date">2025-01-22</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/microbiome/miaTime/blob/devel/vignettes/miaTime.Rmd" class="external-link"><code>vignettes/miaTime.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/microbiome/miaTime/blob/refsam/vignettes/miaTime.Rmd" class="external-link"><code>vignettes/miaTime.Rmd</code></a></small>
       <div class="hidden name"><code>miaTime.Rmd</code></div>
 
     </div>
@@ -215,17 +215,18 @@ point.</p>
 <span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="va">hitchip1006</span></span>
 <span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addBaselineDivergence.html">getBaselineDivergence</a></span><span class="op">(</span></span>
-<span>    <span class="va">tse</span>, time.col <span class="op">=</span> <span class="st">"time"</span>, group <span class="op">=</span> <span class="st">"sample"</span>, name <span class="op">=</span> <span class="st">"baseline"</span><span class="op">)</span></span>
+<span>    <span class="va">tse</span>, time.col <span class="op">=</span> <span class="st">"time"</span>, group <span class="op">=</span> <span class="st">"sample"</span>, </span>
+<span>    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span>, <span class="st">"time_diff"</span>, <span class="st">"ref_samples"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 6 rows and 2 columns</span></span>
-<span><span class="co">#&gt;           baseline time_diff</span></span>
-<span><span class="co">#&gt;          &lt;numeric&gt; &lt;numeric&gt;</span></span>
-<span><span class="co">#&gt; Sample-1         0         0</span></span>
-<span><span class="co">#&gt; Sample-2         0         0</span></span>
-<span><span class="co">#&gt; Sample-3         0         0</span></span>
-<span><span class="co">#&gt; Sample-4         0         0</span></span>
-<span><span class="co">#&gt; Sample-5         0         0</span></span>
-<span><span class="co">#&gt; Sample-6         0         0</span></span></code></pre></div>
+<span><span class="co">#&gt; DataFrame with 6 rows and 3 columns</span></span>
+<span><span class="co">#&gt;           baseline time_diff ref_samples</span></span>
+<span><span class="co">#&gt;          &lt;numeric&gt; &lt;numeric&gt; &lt;character&gt;</span></span>
+<span><span class="co">#&gt; Sample-1         0         0    Sample-1</span></span>
+<span><span class="co">#&gt; Sample-2         0         0    Sample-2</span></span>
+<span><span class="co">#&gt; Sample-3         0         0    Sample-3</span></span>
+<span><span class="co">#&gt; Sample-4         0         0    Sample-4</span></span>
+<span><span class="co">#&gt; Sample-5         0         0    Sample-5</span></span>
+<span><span class="co">#&gt; Sample-6         0         0    Sample-6</span></span></code></pre></div>
 <p>A more convenient and preferred approach is to store the values
 directly in <code>colData</code> using the <code>get*Divergence()</code>
 functions. In the example below, we calculate stepwise divergences with
@@ -234,7 +235,7 @@ by comparing it to the previous time point for the same subject.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addStepwiseDivergence.html">addStepwiseDivergence</a></span><span class="op">(</span><span class="va">tse</span>, time.col <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 1151 rows and 12 columns</span></span>
+<span><span class="co">#&gt; DataFrame with 1151 rows and 13 columns</span></span>
 <span><span class="co">#&gt;                   age      sex nationality DNA_extraction_method  project</span></span>
 <span><span class="co">#&gt;             &lt;integer&gt; &lt;factor&gt;    &lt;factor&gt;              &lt;factor&gt; &lt;factor&gt;</span></span>
 <span><span class="co">#&gt; Sample-1           28   male            US                    NA        1</span></span>
@@ -261,19 +262,19 @@ by comparing it to the previous time point for the same subject.</p>
 <span><span class="co">#&gt; Sample-1170      5.92 overweight       245       8.2 Sample-1170   0.531075</span></span>
 <span><span class="co">#&gt; Sample-1171      6.04 overweight       246       2.1 Sample-1171   0.306739</span></span>
 <span><span class="co">#&gt; Sample-1172      5.74 overweight       246       7.9 Sample-1172   0.485427</span></span>
-<span><span class="co">#&gt;             time_diff</span></span>
-<span><span class="co">#&gt;             &lt;numeric&gt;</span></span>
-<span><span class="co">#&gt; Sample-1           NA</span></span>
-<span><span class="co">#&gt; Sample-2            0</span></span>
-<span><span class="co">#&gt; Sample-3            0</span></span>
-<span><span class="co">#&gt; Sample-4            0</span></span>
-<span><span class="co">#&gt; Sample-5            0</span></span>
-<span><span class="co">#&gt; ...               ...</span></span>
-<span><span class="co">#&gt; Sample-1168       0.0</span></span>
-<span><span class="co">#&gt; Sample-1169       0.0</span></span>
-<span><span class="co">#&gt; Sample-1170       0.0</span></span>
-<span><span class="co">#&gt; Sample-1171       0.7</span></span>
-<span><span class="co">#&gt; Sample-1172       0.1</span></span></code></pre></div>
+<span><span class="co">#&gt;             time_diff ref_samples</span></span>
+<span><span class="co">#&gt;             &lt;numeric&gt; &lt;character&gt;</span></span>
+<span><span class="co">#&gt; Sample-1           NA          NA</span></span>
+<span><span class="co">#&gt; Sample-2            0    Sample-1</span></span>
+<span><span class="co">#&gt; Sample-3            0    Sample-2</span></span>
+<span><span class="co">#&gt; Sample-4            0    Sample-3</span></span>
+<span><span class="co">#&gt; Sample-5            0    Sample-4</span></span>
+<span><span class="co">#&gt; ...               ...         ...</span></span>
+<span><span class="co">#&gt; Sample-1168       0.0 Sample-1127</span></span>
+<span><span class="co">#&gt; Sample-1169       0.0 Sample-1167</span></span>
+<span><span class="co">#&gt; Sample-1170       0.0 Sample-1166</span></span>
+<span><span class="co">#&gt; Sample-1171       0.7 Sample-1086</span></span>
+<span><span class="co">#&gt; Sample-1172       0.1 Sample-1162</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="visualize-time-series">Visualize time series<a class="anchor" aria-label="anchor" href="#visualize-time-series"></a>
