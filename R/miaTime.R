@@ -8,6 +8,10 @@
 NULL
 
 #' @import mia
+#' @import methods
+#' @import S4Vectors
+#' @import SingleCellExperiment
+#' @import SummarizedExperiment
 #' @import TreeSummarizedExperiment
 NULL
 

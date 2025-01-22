@@ -1,7 +1,7 @@
 Package: miaTime
 Type: Package
 Title: Microbiome Time Series Analysis
-Version: 0.99.0
+Version: 0.99.1
 Authors@R:
      c(person(given = "Leo", family = "Lahti", role = c("aut"),
               email = "leo.lahti@iki.fi",
@@ -14,8 +14,8 @@ Authors@R:
        person(given = "Sudarshan", family = "Shetty", role = c("ctb"),
               email = "sudarshanshetty9@gmail.com"),
        person(given = "Chouaib", family = "Benchraka", role = c("ctb")),
-      person(given = "Muluh", family = "Muluh", role = c("ctb"))
-        )
+       person(given = "Muluh", family = "Muluh", role = c("ctb"))
+      )
 Description:
     The `miaTime` package provides tools for microbiome time series analysis
     based on (Tree)SummarizedExperiment infrastructure.
@@ -30,6 +30,7 @@ Imports:
     S4Vectors,
     SingleCellExperiment,
     SummarizedExperiment,
+    tidyr,
     TreeSummarizedExperiment
 Suggests:
     BiocStyle,
@@ -42,6 +43,8 @@ Suggests:
     scater,
     testthat,
     vegan
+Remotes:
+    github::microbiome/mia
 URL: https://github.com/microbiome/miaTime
 BugReports: https://github.com/microbiome/miaTime/issues
 Encoding: UTF-8

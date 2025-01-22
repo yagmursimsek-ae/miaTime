@@ -19,7 +19,7 @@
     class_txt <- .create_msg_from_list(classes_char)
     # Create a message
     msg <- paste0("'", variable_name, "' must be ", class_txt, "." )
-    
+
     # If supported values were provided
     if( !is.null(supported_values) ){
         # Convert supported values to character
@@ -36,7 +36,7 @@
         msg <- paste0(
             msg, " It must be one of the following options: ", values_txt)
     }
-    
+
     # If limits were provided
     if( !is.null(limits) ){
         msg <- paste0(msg, " (Numeric constrains: ")
@@ -53,7 +53,7 @@
         }
         msg <- paste0(msg, ")")
     }
-    
+
     # List all the input types. Run the check if the variable must be that type.
     # If correct type was found, change the result to TRUE.
     input_correct <- FALSE
@@ -120,7 +120,7 @@
             limits$upper_include) && variable > limits$upper_include ){
             input_correct <- FALSE
         }
-        
+
         if( !is.null(limits$lower) && variable <= limits$lower ){
             input_correct <- FALSE
         } else if( !is.null(
@@ -158,6 +158,7 @@
 .is_a_bool <- mia:::.is_a_bool
 .is_non_empty_character <- mia:::.is_non_empty_character
 .is_non_empty_string <- mia:::.is_non_empty_string
+.is_integer <- mia:::.is_integer
 .is_an_integer <- mia:::.is_an_integer
 .is_a_numeric <- mia:::.is_a_numeric
 .get_name_in_parent <- mia:::.get_name_in_parent
