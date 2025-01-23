@@ -314,12 +314,6 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
             mutate(!!reference_col := .get_previous_samples(
                 .data, time.col, rowname_col, time.interval))
     }
-    # Give warning if the data includes replicated timepoints.
-    if( any(lengths(df[[reference_col]]) > 1L) ){
-        warning("Some samples are associated with multiple reference samples. ",
-                "In these cases, the reference time point includes multiple ",
-                "samples, and their average is used.", call. = FALSE)
-    }
     res <- df[[reference_col]]
     names(res) <- df[[rowname_col]]
     return(res)

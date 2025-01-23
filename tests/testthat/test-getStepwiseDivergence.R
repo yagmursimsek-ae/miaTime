@@ -161,10 +161,10 @@ test_that(".get_reference_samples with different time intervals", {
     tse <- hitchip1006
     interval_1 <- .get_reference_samples(
         colData(tse), time.col = "time", group = "subject",
-        reference.method = "stepwise", time.interval = 1)
+        reference.method = "stepwise", time.interval = 1) |> unlist()
     interval_2 <- .get_reference_samples(
         colData(tse), time.col = "time", group = "subject",
-        reference.method = "stepwise", time.interval = 2)
+        reference.method = "stepwise", time.interval = 2) |> unlist()
     expect_false(all(interval_1 == interval_2))
 })
 
