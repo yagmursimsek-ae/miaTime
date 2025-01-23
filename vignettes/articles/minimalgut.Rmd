@@ -25,7 +25,10 @@ library(knitr)
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    cache = TRUE
+    cache = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    echo = TRUE
 )
 ```
 
@@ -39,7 +42,6 @@ pulse feeding cycles. This information is stored in the `colData`.
 #| label: sample_table
 
 library(miaTime)
-
 data(minimalgut)
 tse <- minimalgut
 
@@ -133,8 +135,8 @@ tse <- addStepwiseDivergence(
     group = "StudyIdentifier",
     time.interval = 1,
     time.col = "Time.hr",
-    name = "divergence_from_previous_step",
-    name.time = "time_from_previous_step"
+    name = c("divergence_from_previous_step", 
+        "time_from_previous_step", "reference_samples")
     )
 ```
 

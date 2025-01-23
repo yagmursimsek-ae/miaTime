@@ -54,11 +54,9 @@
 #' \code{colData} that identifies the baseline samples to be used.
 #' (Default: \code{NULL})
 #'
-#' @param name \code{Character scalar}. Specifies a column name for storing
-#' divergence results. (Default: \code{"divergence"})
-#'
-#' @param name.time \code{Character scalar}. Specifies a column name for storing
-#' time differences. (Default: \code{"time_diff"})
+#' @param name \code{Character vector}. Specifies a column name for storing
+#' divergence results.
+#' (Default: \code{c("divergence", "time_diff", "ref_samples")})
 #'
 #' @param ... Optional arguments passed into
 #' \code{\link[mia:addDivergence]{mia::addDivergence()}}.
@@ -86,8 +84,8 @@
 #'     reference = "reference",
 #'     group = "subject",
 #'     time.col = "time",
-#'     name = "divergence_from_baseline",
-#'     name.time = "time_from_baseline",
+#'     name = c("divergence_from_baseline",
+#'         "time_from_baseline", "reference_samples"),
 #'     assay.type = "relabundance",
 #'     method = "bray")
 #'
@@ -152,7 +150,7 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         args[["time.col"]] <- time.col
         time_res <- do.call(.get_time_difference, args)
         # Create a DF to return
-        args <- c(args, list(x_orig = x, res = res, time_res = time_res))
+        args <- c(args, list(x_orig = x, res = res, time_res = time_res, reference = reference))
         res <- do.call(.convert_divergence_to_df, args)
         return(res)
     }
@@ -161,12 +159,14 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 #' @rdname addBaselineDivergence
 #' @export
 setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
-    function(x, name = "divergence", name.time = "time_diff", ...){
+    function(
+        x, name = c("divergence", "time_diff", "ref_samples"), ...){
+        .check_input(name, c("character vector"), length = 3L)
         # Calculate divergence
         res <- getBaselineDivergence(x, ...)
         # Add to colData
         res <- as.list(res) |> unname()
-        x <- .add_values_to_colData(x, res, list(name, name.time), ...)
+        x <- .add_values_to_colData(x, res, name, ...)
         return(x)
     }
 )
@@ -374,10 +374,9 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 #' @importFrom dplyr summarize
 .convert_divergence_to_df <- function(
         x_orig, x, res, time_res, reference, orig.sample.names,
-        name = "divergence", name.time = "time_diff", ...){
-    #
-    temp <- .check_input(name, list("character scalar"))
-    temp <- .check_input(name.time, list("character scalar"))
+        name = c("divergence", "time_diff", "ref_samples"), ...){
+    # Validate 'name' param
+    temp <- .check_input(name, list("character vector"), length = 3L)
     #
     df <- data.frame(res, time_res, sample = x[[orig.sample.names]])
     # If data includes replicated samples, each time point might have multiple
@@ -389,7 +388,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     # Wrangle names
     rownames(df) <- df[["sample"]]
     df[["sample"]] <- NULL
-    colnames(df) <- c(name, name.time)
+    colnames(df) <- name
     # Ensure that the order is correct, i.e., matches with the original input
     df <- df[colnames(x_orig), ]
     return(df)
