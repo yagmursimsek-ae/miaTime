@@ -184,7 +184,7 @@ test_that(".get_reference_samples with different time intervals", {
 
 # Basic SummarizedExperiment for testing
 col_data <- DataFrame(
-    time = c(0, 1, 2, 1, 2, 0),
+    time = c(0, 1, 2, 4, 10, 3),
     group = c("A", "A", "A", "B", "B", "B"),
     row.names = c("Sample1", "Sample2", "Sample3", "Sample4",
         "Sample5", "Sample6"))
@@ -250,7 +250,8 @@ test_that(".get_reference_samples stepwise", {
         colData(se), time.col = "time", group = "group",
         reference.method = "stepwise", time.interval = 1)
     expect_equal(stepwise, c(
-        NA, "Sample1", "Sample2", "Sample6", "Sample4", NA))
+        NA, "Sample1", "Sample2", "Sample6", "Sample4", NA),
+        check.attributes = FALSE)
 })
 
 
@@ -275,8 +276,49 @@ test_that("addStepwiseDivergence with custom reference sample", {
         se, time.col = "time", group = "group")
     #
     se[["reference"]] <- c(NA, "Sample1", "Sample2", "Sample6", "Sample4", NA)
-    time_diff <- c(NA, 1, 1, 1, 1, NA)
+    time_diff <- c(NA, 1, 1, 1, 6, NA)
     ref <- getDivergence(se, reference = "reference")
     expect_equal(res[["divergence"]], ref)
     expect_equal(res[["time_diff"]], time_diff)
+})
+
+# Test that the function works correctly with replicated samples
+test_that("getStepwiseDivergence with replicated samples", {
+    tse <- makeTSE(nrow = 1000, ncol = 20)
+    assayNames(tse) <- "counts"
+    colData(tse)[["time"]] <- sample(c(1, 3, 6, 100), 20, replace = TRUE)
+    res <- getStepwiseDivergence(
+        tse, time.col = "time", group = "group", method = "euclidean") |>
+        expect_warning()
+    res <- res[, c(1, 2)]
+    #
+    sams <- colnames(tse)
+    ref <- lapply(sams, function(sam){
+        # Get data on sample
+        sam_dat <- colData(tse[, sam])
+        # Get its reference samples
+        group_dat <- colData(tse)[tse[["group"]] == sam_dat[["group"]], ]
+        time_points <- unique(sort(group_dat[["time"]]))
+        ref_time <- time_points[ which(time_points == sam_dat[["time"]])-1 ]
+        temp_res <- c(NA, NA)
+        # Calculate distance if reference samples were found
+        if( length(ref_time) > 0 ){
+            # Loop through each reference sample, calculate its distance to
+            # the sample, and take mean
+            ref_sams <- rownames(group_dat[ group_dat[["time"]] == ref_time, ])
+            ref_vals <- vapply(ref_sams, function(ref_sam){
+                dist(t( assay(tse, "counts")[, c(sam, ref_sam)] ),
+                    method = "euclidean")
+            }, numeric(1))
+            ref_vals <- mean(ref_vals)
+            # Return divergence and time difference
+            temp_res <- c(ref_vals, sam_dat[["time"]] - ref_time)
+        }
+        return(temp_res)
+    })
+    ref <- do.call(rbind, ref)
+    ref <- DataFrame(ref)
+    colnames(ref) <- colnames(res)
+    rownames(ref) <- rownames(res)
+    expect_equal(res, ref)
 })

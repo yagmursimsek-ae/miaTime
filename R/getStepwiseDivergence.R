@@ -101,7 +101,7 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         args[["time.col"]] <- time.col
         time_res <- do.call(.get_time_difference, args)
         # Create a DF to return
-        args <- c(args, list(x_orig = x, res = res, time_res = time_res, reference = reference))
+        args <- c(args, list(x_orig = x, res = res, time_res = time_res))
         res <- do.call(.convert_divergence_to_df, args)
         return(res)
     }

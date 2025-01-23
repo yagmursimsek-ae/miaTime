@@ -135,8 +135,7 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         ########################### INPUT CHECK END ############################
         # Add baseline samples to colData
         args <- .add_reference_samples_to_coldata(
-            x, time.col, group, reference, assay.type, method,
-            reference.method = "baseline", ...)
+            x, time.col, group, reference, reference.method = "baseline", ...)
         # Create an argument list. Do not include altexp as it is already taken
         # into account.
         args <- c(
@@ -150,7 +149,7 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         args[["time.col"]] <- time.col
         time_res <- do.call(.get_time_difference, args)
         # Create a DF to return
-        args <- c(args, list(x_orig = x, res = res, time_res = time_res, reference = reference))
+        args <- c(args, list(x_orig = x, res = res, time_res = time_res))
         res <- do.call(.convert_divergence_to_df, args)
         return(res)
     }
@@ -304,11 +303,6 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 
     rowname_col <- "temporary_rownames_column"
     reference_col <- "temporary_reference_column"
-    # Give warning if the data includes replicated timepoints.
-    if( anyDuplicated(df[, c(time.col, group)]) ){
-        warning("The data includes duplicated timepoints. Average is applied.",
-                call. = FALSE)
-    }
     # Add rownames as a column
     df[[rowname_col]] <- rownames(df)
     # Convert to data.frame and group data based on group
@@ -320,14 +314,20 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     if( reference.method == "baseline" ){
         # Find first timepoint within a group
         df <- df |>
-            mutate(!!reference_col :=
-                .data[[rowname_col]][which.min(.data[[time.col]])])
+            mutate(!!reference_col := .get_baseline_samples(
+                .data, time.col, rowname_col))
     } else if( reference.method == "stepwise" ){
         # For each sample, get the previous ith sample.
         # For each subject, get previous sample based on time.
         df <- df |>
             mutate(!!reference_col := .get_previous_samples(
                 .data, time.col, rowname_col, time.interval))
+    }
+    # Give warning if the data includes replicated timepoints.
+    if( any(lengths(df[[reference_col]]) > 1L) ){
+        warning("Some samples are associated with multiple reference samples. ",
+                "In these cases, the reference time point includes multiple ",
+                "samples, and their average is used.", call. = FALSE)
     }
     # Ungroup to revert to the original structure, make sure that
     # each cell includes single value (takes action when there are repeated
@@ -343,6 +343,22 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 }
 
 # This function gets df as input. The data must be already grouped if grouping
+# exists. For each sample, this function finds baseline timepoint. If there
+# are multiple samples from baseline timepoint, all are returned.
+.get_baseline_samples <- function(.data, time.col, rowname_col){
+    # Get timepoints and corresponding baseline timepoints
+    time_points <- unique(sort(.data[[time.col]]))
+    baseline_time <- min(time_points, na.rm = TRUE)
+    baseline_time <- rep(baseline_time, length(.data[[time.col]]))
+    # Split sample names so that they are grouped into timepoints
+    timepoint_samples <- split(.data[[rowname_col]], .data[[time.col]])
+    # For each sample, assign baseline samples
+    baseline_samples <- timepoint_samples[
+        match(baseline_time, names(timepoint_samples)) ]
+    return(baseline_samples)
+}
+
+# This function gets df as input. The data must be already grouped if grouping
 # exists. For each sample, this function finds previous timepoint. If there
 # are multiple samples from previous timepoint, all are returned.
 #' @importFrom dplyr lag
@@ -354,7 +370,8 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     # Split sample names so that they are grouped into timepoints
     timepoint_samples <- split(.data[[rowname_col]], .data[[time.col]])
     # For each sample, assign previous samples
-    prev_samples <- prev_samples[ match(prev_time, names(timepoint_samples)) ]
+    prev_samples <- timepoint_samples[
+        match(prev_time, names(timepoint_samples)) ]
     prev_samples[ lengths(prev_samples) == 0L ] <- NA_character_
     return(prev_samples)
 }
@@ -373,7 +390,7 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 # This function converts time divergence results to DF object
 #' @importFrom dplyr summarize
 .convert_divergence_to_df <- function(
-        x_orig, x, res, time_res, reference, orig.sample.names,
+        x_orig, x, res, time_res, orig.sample.names, reference,
         name = c("divergence", "time_diff", "ref_samples"), ...){
     # Validate 'name' param
     temp <- .check_input(name, list("character vector"), length = 3L)
@@ -385,6 +402,12 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
         group_by(sample) |>
         summarize(res = mean(res, ...), time_res = mean(time_res, ...)) |>
         DataFrame()
+    # Add reference samples
+    ref_samples <- split(x[[reference]], x[[orig.sample.names]]) |> unname()
+    if( all(lengths(ref_samples) == 1L) ){
+        ref_samples <- unlist(ref_samples)
+    }
+    df[["reference_samples"]] <- ref_samples
     # Wrangle names
     rownames(df) <- df[["sample"]]
     df[["sample"]] <- NULL

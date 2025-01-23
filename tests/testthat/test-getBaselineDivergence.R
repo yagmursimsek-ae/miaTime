@@ -2,6 +2,7 @@
 test_that("addBaselineDivergence output", {
     data(hitchip1006)
     tse <- hitchip1006
+    tse <- tse[, !duplicated(colData(tse)[, c("time", "subject")])]
     tse2 <- addBaselineDivergence(
         tse, group = "subject", time.col = "time",
         name = c("divergence_from_baseline", "time_from_baseline",
@@ -135,7 +136,7 @@ test_that(".get_reference_samples with different time intervals", {
 
 # Basic SummarizedExperiment for testing
 col_data <- DataFrame(
-    time = c(0, 1, 2, 1, 2, 0),
+    time = c(0, 1, 2, 4, 10, 3),
     group = c("A", "A", "A", "B", "B", "B"),
     row.names = c("Sample1", "Sample2",
         "Sample3", "Sample4", "Sample5", "Sample6"))
@@ -199,7 +200,8 @@ test_that(".get_reference_samples baseline", {
         colData(se), time.col = "time", group = "group",
         reference.method = "stepwise", time.interval = 1)
     expect_equal(stepwise, c(
-        NA, "Sample1", "Sample2", "Sample6", "Sample4", NA))
+        NA, "Sample1", "Sample2", "Sample6", "Sample4", NA),
+        check.attributes = FALSE)
 })
 
 # Time difference calculation
@@ -209,7 +211,7 @@ test_that(".get_time_difference calculates correct time diff", {
     colData(se2)[["ref"]] <- reference
     time_diffs <- .get_time_difference(
         se2, time.col = "time", reference = "ref")
-    expect_equal(time_diffs, c(-1, 1, 2, -1, NA, -1))
+    expect_equal(time_diffs, c(-1, 1, 2, 2, NA, -1))
 })
 
 # Convert divergence to DataFrame
@@ -225,9 +227,11 @@ test_that(".convert_divergence_to_df formats correctly", {
         assays = list(),
         colData = col_data
     )
+    colnames(se) <- se[["sam"]] <- paste0("sample", seq(1, 6))
     reference <- "reference"
     df <- .convert_divergence_to_df(
-        se, divergence, time_diff, reference,
+        x_orig = se, x = se, res = divergence, time_res = time_diff,
+        reference = reference, orig.sample.names = "sam",
         name = c("test_div", "test_time_diff", "test_reference_samples"))
     expect_s4_class(df, "DataFrame")
     expect_equal(colnames(df),
@@ -272,9 +276,46 @@ test_that(".convert_divergence_to_df with NA divergence values", {
         colData = col_data
     )
     reference <- "reference"
+    colnames(se) <- se[["sam"]] <- paste0("sample", seq(1, 6))
     df <- .convert_divergence_to_df(
-        se, divergence, time_diff, reference,
+        se, se, divergence, time_diff, reference, "sam",
         name = c("test_div", "test_time_diff", "test_reference_samples"))
     expect_s4_class(df, "DataFrame")
     expect_true(all(is.na(df$test_div[is.na(divergence)])))
+})
+
+# Test that the function works correctly with replicated samples
+test_that("getBaselineDivergence with replicated samples", {
+    tse <- makeTSE(nrow = 1000, ncol = 20)
+    assayNames(tse) <- "counts"
+    colData(tse)[["time"]] <- sample(c(1, 3, 6, 100), 20, replace = TRUE)
+    res <- getBaselineDivergence(
+        tse, time.col = "time", group = "group", method = "euclidean") |>
+        expect_warning()
+    res <- res[, c(1, 2)]
+    # For all samples, calculate divergence
+    sams <- colnames(tse)
+    ref <- lapply(sams, function(sam){
+        # Get data on sample
+        sam_dat <- colData(tse[, sam])
+        # Get its reference samples
+        group_dat <- colData(tse)[tse[["group"]] == sam_dat[["group"]], ]
+        ref_time <- sort(group_dat[["time"]])[[1]]
+        # Loop through each reference sample, calculate its distance to
+        # the sample, and take mean
+        ref_sams <- rownames(group_dat[ group_dat[["time"]] == ref_time, ])
+        ref_vals <- vapply(ref_sams, function(ref_sam){
+            dist(t( assay(tse, "counts")[, c(sam, ref_sam)] ),
+                 method = "euclidean")
+        }, numeric(1))
+        ref_vals <- mean(ref_vals)
+        # Return divergence and time difference
+        temp_res <- c(ref_vals, sam_dat[["time"]] - ref_time)
+        return(temp_res)
+    })
+    ref <- do.call(rbind, ref)
+    ref <- DataFrame(ref)
+    colnames(ref) <- colnames(res)
+    rownames(ref) <- rownames(res)
+    expect_equal(res, ref)
 })
