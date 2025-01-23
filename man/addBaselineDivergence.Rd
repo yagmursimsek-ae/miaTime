@@ -108,7 +108,7 @@ tse <- addBaselineDivergence(
     reference = "reference",
     group = "subject",
     time.col = "time",
-    name = c("divergence_from_baseline", 
+    name = c("divergence_from_baseline",
         "time_from_baseline", "reference_samples"),
     assay.type = "relabundance",
     method = "bray")

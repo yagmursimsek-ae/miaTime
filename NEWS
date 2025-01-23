@@ -1,3 +1,6 @@
+Changes in version 0.99.3
++ Handle repeated samples in divergence functions by calculating average
+
 Changes in version 0.99.1
 + Added bimodality functions
 
