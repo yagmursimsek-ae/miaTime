@@ -278,7 +278,7 @@ test_that(".convert_divergence_to_df with NA divergence values", {
     reference <- "reference"
     colnames(se) <- se[["sam"]] <- paste0("sample", seq(1, 6))
     df <- .convert_divergence_to_df(
-        se, se, divergence, time_diff, reference, "sam",
+        se, divergence, time_diff, reference,
         name = c("test_div", "test_time_diff", "test_reference_samples"))
     expect_s4_class(df, "DataFrame")
     expect_true(all(is.na(df$test_div[is.na(divergence)])))
