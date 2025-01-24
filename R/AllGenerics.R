@@ -30,3 +30,13 @@ setGeneric("getBimodality", signature = "x", function(x, ...)
 #' @export
 setGeneric("addBimodality", signature = "x", function(x, ...)
     standardGeneric("addBimodality"))
+
+#' @rdname addShortTermChange
+#' @export
+setGeneric("addShortTermChange", signature = "x", function(x, ...)
+    standardGeneric("addShortTermChange"))
+
+#' @rdname addShortTermChange
+#' @export
+setGeneric("getShortTermChange", signature = "x", function(x, ...)
+    standardGeneric("getShortTermChange"))

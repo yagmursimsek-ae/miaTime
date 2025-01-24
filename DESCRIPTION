@@ -23,7 +23,9 @@ biocViews: Microbiome, Software, Sequencing
 License: Artistic-2.0 | file LICENSE
 Depends:
     R (>= 4.4.0),
-    mia
+    ggplot2,
+    mia,
+    SummarizedExperiment
 Imports:
     dplyr,
     methods,
@@ -35,7 +37,6 @@ Imports:
 Suggests:
     BiocStyle,
     devtools,
-    ggplot2,
     knitr,
     lubridate,
     miaViz,
