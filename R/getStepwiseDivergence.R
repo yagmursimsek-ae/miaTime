@@ -1,13 +1,13 @@
 #' @name addStepwiseDivergence
 #' @export
-#' 
+#'
 #' @title
 #' Beta diversity between consecutive time steps
-#' 
+#'
 #' @description
 #' Calculates sample dissimilarity between consecutive time points along with
 #' time difference.
-#' 
+#'
 #' @details
 #' These functions calculate time-wise divergence, meaning each sample is
 #' compared to the previous i-th sample, where i is the specified time
@@ -15,17 +15,17 @@
 #' divergence by comparing all samples with each other. However, it is often
 #' more meaningful to calculate divergence within a specific patient or group
 #' (see the \code{group} parameter).
-#' 
+#'
 #' @return
 #' \code{getStepwiseDivergence} returns \code{DataFrame} object
 #' containing the sample dissimilarity and corresponding time difference between
 #' samples. \code{addStepwiseDivergence}, on the other hand, returns a
 #' \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment}}
 #' object with these results in its \code{colData}.
-#' 
+#'
 #' @inheritParams addBaselineDivergence
-#' 
-#' @param time.interval \code{Integer scalar}. Indicates the increment between 
+#'
+#' @param time.interval \code{Integer scalar}. Indicates the increment between
 #' time steps. By default, the function compares each sample to the
 #' previous one. If you need to take every second, every third, or so, time
 #' step, then increase this accordingly. (Default: \code{1L})
@@ -35,7 +35,7 @@
 #'
 #' data(hitchip1006)
 #' tse <- transformAssay(hitchip1006, method = "relabundance")
-#' 
+#'
 #' # Calculate divergence
 #' tse <- addStepwiseDivergence(
 #'     tse,
@@ -44,10 +44,10 @@
 #'     time.col = "time",
 #'     assay.type = "relabundance"
 #'     )
-#' 
+#'
 #' @seealso
 #' \code{\link[mia:addDivergence]{mia::addDivergence()}}
-#' 
+#'
 NULL
 
 #' @rdname addStepwiseDivergence
@@ -97,12 +97,12 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
         )
         # Calculate divergences
         res <- do.call(getDivergence, args)
-        # Add time difference
-        x <- args[["x"]]
-        reference <- args[["reference"]]
-        time_res <- .get_time_difference(x, time.col, reference)
+        # Get time difference
+        args[["time.col"]] <- time.col
+        time_res <- do.call(.get_time_difference, args)
         # Create a DF to return
-        res <- .convert_divergence_to_df(x, res, time_res, ...)
+        args <- c(args, list(res = res, time_res = time_res))
+        res <- do.call(.convert_divergence_to_df, args)
         return(res)
     }
 )
@@ -110,12 +110,14 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
 #' @rdname addStepwiseDivergence
 #' @export
 setMethod("addStepwiseDivergence", signature = c(x = "SummarizedExperiment"),
-    function(x, name = "divergence", name.time = "time_diff", ...){
+    function(
+        x, name = c("divergence", "time_diff", "ref_samples"), ...){
+        .check_input(name, c("character vector"), length = 3L)
         # Calculate divergence
         res <- getStepwiseDivergence(x,  ...)
         # Add to colData
         res <- as.list(res) |> unname()
-        x <- .add_values_to_colData(x, res, list(name, name.time), ...)
+        x <- .add_values_to_colData(x, res, name, ...)
         return(x)
     }
 )

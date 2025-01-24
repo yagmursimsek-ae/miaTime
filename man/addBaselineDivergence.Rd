@@ -21,7 +21,11 @@ addBaselineDivergence(x, ...)
   ...
 )
 
-\S4method{addBaselineDivergence}{SummarizedExperiment}(x, name = "divergence", name.time = "time_diff", ...)
+\S4method{addBaselineDivergence}{SummarizedExperiment}(
+  x,
+  name = c("divergence", "time_diff", "ref_samples"),
+  ...
+)
 }
 \arguments{
 \item{x}{A
@@ -49,11 +53,9 @@ used in the dissimilarity estimation. (Default: \code{"counts"})}
 Method is passed to the function that is specified by \code{dis.fun}.
 (Default: \code{"bray"})}
 
-\item{name}{\code{Character scalar}. Specifies a column name for storing
-divergence results. (Default: \code{"divergence"})}
-
-\item{name.time}{\code{Character scalar}. Specifies a column name for storing
-time differences. (Default: \code{"time_diff"})}
+\item{name}{\code{Character vector}. Specifies a column name for storing
+divergence results.
+(Default: \code{c("divergence", "time_diff", "ref_samples")})}
 }
 \value{
 \code{getBaselineDivergence} returns \code{DataFrame} object
@@ -106,8 +108,8 @@ tse <- addBaselineDivergence(
     reference = "reference",
     group = "subject",
     time.col = "time",
-    name = "divergence_from_baseline",
-    name.time = "time_from_baseline",
+    name = c("divergence_from_baseline",
+        "time_from_baseline", "reference_samples"),
     assay.type = "relabundance",
     method = "bray")
 

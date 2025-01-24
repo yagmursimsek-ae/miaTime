@@ -1,3 +1,9 @@
+Changes in version 0.99.3
++ Handle repeated samples in divergence functions by calculating average
+
+Changes in version 0.99.1
++ Added bimodality functions
+
 Changes in version 0.99.0
 + Take into account Bioconductor requirements
 
@@ -19,3 +25,4 @@ Changes in version 0.1.5
 + Changed the function name getTimeDivergence (deprecated) into getStepwiseDivergence
 + Added internal utility functions
 + Added SilvermanAGutData
+

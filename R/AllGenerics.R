@@ -21,6 +21,16 @@ setGeneric("getStepwiseDivergence", signature = c("x"), function(x, ...)
 setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
     standardGeneric("addStepwiseDivergence"))
 
+#' @rdname getBimodality
+#' @export
+setGeneric("getBimodality", signature = "x", function(x, ...)
+    standardGeneric("getBimodality"))
+
+#' @rdname getBimodality
+#' @export
+setGeneric("addBimodality", signature = "x", function(x, ...)
+    standardGeneric("addBimodality"))
+
 #' @rdname addShortTermChange
 #' @export
 setGeneric("addShortTermChange", signature = "x", function(x, ...)
@@ -30,5 +40,3 @@ setGeneric("addShortTermChange", signature = "x", function(x, ...)
 #' @export
 setGeneric("getShortTermChange", signature = "x", function(x, ...)
     standardGeneric("getShortTermChange"))
-
-
