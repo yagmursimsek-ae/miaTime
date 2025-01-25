@@ -1,4 +1,6 @@
-#' @name addBaselineDivergence
+#' @name
+#' getBaselineDivergence
+#'
 #' @export
 #'
 #' @title
@@ -94,7 +96,7 @@
 #'
 NULL
 
-#' @rdname addBaselineDivergence
+#' @rdname getBaselineDivergence
 #' @export
 setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     function(
@@ -155,7 +157,7 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     }
 )
 
-#' @rdname addBaselineDivergence
+#' @rdname getBaselineDivergence
 #' @export
 setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     function(

@@ -11,16 +11,19 @@
 #' abundance data.
 #'
 #' @details
-#' This approach is used by Wisnoski NI and colleagues
-#' \url{https://github.com/nwisnoski/ul-seedbank}. Their approach is based on
-#' the following calculation log(present abundance/past abundance).
-#' Also a compositional version using relative abundance similar to
-#' Brian WJi, Sheth R et al
-#' \url{https://www.nature.com/articles/s41564-020-0685-1} can be used.
-#' This approach is useful for identifying short term growth behaviors of taxa.
+#' These functions can be utilized to calculate growth metrics for short term
+#' change. In specific, the functions calculate the metrics with the following
+#' equations:
+#'
+#' \deqn{time\_diff = time_{t} - time_{t-1}}
+#'
+#' \deqn{abundance\_diff = abundance_{t} - abundance_{t-1}}
+#'
+#' \deqn{growth\_rate = abundance\_diff - abundance_{t-1}}
+#'
+#' \deqn{rate\_of\_change = abundance\_diff - time\_diff}
 #'
 #' @references
-#'
 #' Ji, B.W., et al. (2020) Macroecological dynamics of gut microbiota.
 #' Nat Microbiol 5, 768–775 . doi: https://doi.org/10.1038/s41564-020-0685-1
 #'
@@ -37,6 +40,12 @@
 #' short term results. (Default: \code{"short_term_change"})
 #'
 #' @param ... additional arguments.
+#' \itemize{
+#'   \item \code{time.interval}: \code{Integer scalar}. Indicates the increment
+#'   between time steps. By default, the function compares each sample to the
+#'   previous one. If you need to take every second, every third, or so, time
+#'   step, then increase this accordingly. (Default: \code{1L})
+#' }
 #
 #' @examples
 #' library(miaTime)
@@ -48,7 +57,15 @@
 #' # Get relative abundances
 #' tse <- transformAssay(tse, method = "relabundance")
 #' # Calculate short term changes
-#' df <- getShortTermChange(tse, assay.type = "relabundance", time.col = "Time.hr", group = "StudyIdentifier")
+#' df <- getShortTermChange(
+#'   tse, assay.type = "relabundance", time.col = "Time.hr",
+#'   group = "StudyIdentifier")
+#'
+#' # Calculate the logarithm of the ratio described in Ji, B.W., et al. (2020)
+#' tse <- transformAssay(
+#'     tse, assay.type = "relabundance", method = "log10", pseudocount = TRUE)
+#' df <- getShortTermChange(
+#'   tse, assay.type = "log10", time.col = "Time.hr", group = "StudyIdentifier")
 #'
 #' # Select certain bacteria
 #' select <- df[["FeatureID"]] %in% c(
@@ -84,9 +101,7 @@ setMethod("addShortTermChange", signature = c(x = "SummarizedExperiment"),
 #' @rdname getShortTermChange
 #' @export
 setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
-    function(
-        x, time.col, assay.type = "counts", time.interval = 1L, group = NULL,
-        ...){
+    function(x, time.col, assay.type = "counts", group = NULL, ...){
         ############################## Input check #############################
         x <- .check_and_get_altExp(x, ...)
         temp <- .check_input(
@@ -101,20 +116,21 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
         temp <- .check_input(
             group, list(NULL, "character scalar"), colnames(colData(x)))
         ########################### Input check end ############################
-        res <- .calculate_growth_metrics(
-            x, assay.type, time.col, group, time.interval, ...)
+        # Get data in long format
+        df <- meltSE(x, assay.type, add.col = c(time.col, group))
+        # Calculate metrics
+        res <- .calculate_growth_metrics(df, assay.type, time.col, group, ...)
         return(res)
     }
 )
 
 ################################ HELP FUNCTIONS ################################
 
-# wrapper to calculate growth matrix
+# This function calculates the growth metrics from the data.frame.
 #' @importFrom dplyr arrange group_by summarise mutate select
 .calculate_growth_metrics <- function(
-        x, assay.type, time.col, group, time.interval, ...) {
-    # Get data in long format
-    df <- meltSE(x, assay.type, add.col = c(time.col, group))
+        df, assay.type, time.col, group, time.interval = 1L, ...) {
+    temp <- .check_input(time.interval, list("numeric scalar"))
     # If there are replicated samples, give warning that average is calculated
     if( anyDuplicated(df[, c("FeatureID", group, time.col)]) ){
         warning("The dataset contains replicated samples. The average is ",
@@ -134,12 +150,11 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
         summarise(value = mean(.data[[assay.type]], na.rm = TRUE)) |>
         # For each feature in a sample group, calculate growth metrics
         mutate(
-            time_lag = !!sym(time.col) -
+            time_diff = !!sym(time.col) -
                 lag(!!sym(time.col), n = time.interval),
-            growth_diff = value - lag(value, n = time.interval),
-            growth_rate = (value - lag(value, n = time.interval)) /
-                lag(value, n = time.interval),
-            var_abund = (value - lag(value, n = time.interval)) / time_lag
+            abundance_diff = value - lag(value, n = time.interval),
+            growth_rate = abundance_diff / lag(value, n = time.interval),
+            rate_of_change = abundance_diff / time_diff
         ) |>
         # Remove value column that includes average abundances
         select(-value)

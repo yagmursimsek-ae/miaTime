@@ -1,4 +1,6 @@
-#' @name addStepwiseDivergence
+#' @name
+#' getStepwiseDivergence
+#'
 #' @export
 #'
 #' @title
@@ -50,7 +52,7 @@
 #'
 NULL
 
-#' @rdname addStepwiseDivergence
+#' @rdname getStepwiseDivergence
 #' @export
 setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
     function(
@@ -107,7 +109,7 @@ setMethod("getStepwiseDivergence", signature = c(x = "ANY"),
     }
 )
 
-#' @rdname addStepwiseDivergence
+#' @rdname getStepwiseDivergence
 #' @export
 setMethod("addStepwiseDivergence", signature = c(x = "SummarizedExperiment"),
     function(
