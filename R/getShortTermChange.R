@@ -81,7 +81,7 @@
 #' p
 #'
 #' @seealso
-#' \code{\link[mia:getStepwiseDivergence]{mia::getStepwiseDivergence()}}
+#' \code{\link[miaTime:getStepwiseDivergence]{getStepwiseDivergence()}}
 NULL
 
 #' @rdname getShortTermChange
@@ -109,11 +109,9 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
             time.col, list("character scalar"), colnames(colData(x)))
         if( !is.numeric(x[[time.col]]) ){
             stop("'time.col' must specify numeric column from colData(x)",
-                 call. = FALSE)
+                call. = FALSE)
         }
-        #
         .check_assay_present(assay.type, x)
-        #
         temp <- .check_input(
             group, list(NULL, "character scalar"), colnames(colData(x)))
         ########################### Input check end ############################
@@ -128,9 +126,13 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
 ################################ HELP FUNCTIONS ################################
 
 # This function calculates the growth metrics from the data.frame.
-#' @importFrom dplyr arrange group_by summarise mutate select
+#' @importFrom dplyr arrange group_by sym summarise mutate select
 .calculate_growth_metrics <- function(
         df, assay.type, time.col, group, time.interval = 1L, ...) {
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    FeatureID <- .data <- value <- abundance_diff <- time_diff <- NULL
+    #
     temp <- .check_input(time.interval, list("numeric scalar"))
     # If there are replicated samples, give warning that average is calculated
     if( anyDuplicated(df[, c("FeatureID", group, time.col)]) ){

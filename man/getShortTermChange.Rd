@@ -104,5 +104,5 @@ Ji, B.W., et al. (2020) Macroecological dynamics of gut microbiota.
 Nat Microbiol 5, 768–775 . doi: https://doi.org/10.1038/s41564-020-0685-1
 }
 \seealso{
-\code{\link[mia:getStepwiseDivergence]{mia::getStepwiseDivergence()}}
+\code{\link[miaTime:getStepwiseDivergence]{getStepwiseDivergence()}}
 }
