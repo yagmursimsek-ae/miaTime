@@ -69,7 +69,6 @@ bimodality and abundance to determine conditionally rare taxa (CRT).
 }
 \examples{
 library(miaTime)
-library(mia)
 
 data(SilvermanAGutData)
 tse <- SilvermanAGutData

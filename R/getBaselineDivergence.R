@@ -65,7 +65,6 @@
 #'
 #' @examples
 #' library(miaTime)
-#' library(mia)
 #'
 #' data(hitchip1006)
 #' tse <- transformAssay(hitchip1006, method = "relabundance")

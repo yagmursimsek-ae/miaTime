@@ -67,15 +67,15 @@
 #' df <- getShortTermChange(
 #'   tse, assay.type = "log10", time.col = "Time.hr", group = "StudyIdentifier")
 #'
-#' # Select certain bacteria
-#' select <- df[["FeatureID"]] %in% c(
-#'     "Ruminococcus_bromii", "Coprococcus_catus", "Akkermansia_muciniphila")
-#' df <- df[ select, ]
+#' # Select certain bacteria that have highest growth rate
+#' select <- df[["growth_rate"]] |> abs() |> order(decreasing = FALSE)
+#' select <- df[select, "FeatureID"] |> unique() |> head(3)
+#' df <- df[ which(df[["FeatureID"]] %in% select), ]
 #'
 #' # Plot results
 #' library(ggplot2)
 #' p <- ggplot(df, aes(x = Time.hr, y = growth_rate, colour = FeatureID)) +
-#'     geom_smooth() +
+#'     geom_smooth(level = 0.5) +
 #'     facet_grid(. ~ StudyIdentifier, scales = "free") +
 #'     scale_y_log10()
 #' p
@@ -88,6 +88,7 @@ NULL
 #' @export
 setMethod("addShortTermChange", signature = c(x = "SummarizedExperiment"),
     function(x, name = "short_term_change", ...){
+        temp <- .check_input(name, list("character scalar"))
         x <- .check_and_get_altExp(x, ...)
         args <- c(list(x = x), list(...)[!names(list(...)) %in% c("altexp")])
         # Calculate short term change
@@ -133,8 +134,8 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
     temp <- .check_input(time.interval, list("numeric scalar"))
     # If there are replicated samples, give warning that average is calculated
     if( anyDuplicated(df[, c("FeatureID", group, time.col)]) ){
-        warning("The dataset contains replicated samples. The average is ",
-                "calculated for each time point.", call. = FALSE)
+        message("The dataset contains replicated samples. The average ",
+                "abundance is calculated for each time point.")
     }
     # Sort data based on time
     df <- df |> arrange( !!sym(time.col) )
@@ -157,6 +158,8 @@ setMethod("getShortTermChange", signature = c(x = "SummarizedExperiment"),
             rate_of_change = abundance_diff / time_diff
         ) |>
         # Remove value column that includes average abundances
-        select(-value)
+        select(-value) |>
+        # Convert to DataFrame
+        DataFrame()
     return(df)
 }

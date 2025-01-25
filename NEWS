@@ -1,3 +1,6 @@
+Changes in version 0.99.4
++ Added functions for calculating short term change metrics
+
 Changes in version 0.99.3
 + Handle repeated samples in divergence functions by calculating average
 
@@ -25,4 +28,3 @@ Changes in version 0.1.5
 + Changed the function name getTimeDivergence (deprecated) into getStepwiseDivergence
 + Added internal utility functions
 + Added SilvermanAGutData
-

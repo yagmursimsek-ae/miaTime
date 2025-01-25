@@ -85,15 +85,15 @@ tse <- transformAssay(
 df <- getShortTermChange(
   tse, assay.type = "log10", time.col = "Time.hr", group = "StudyIdentifier")
 
-# Select certain bacteria
-select <- df[["FeatureID"]] \%in\% c(
-    "Ruminococcus_bromii", "Coprococcus_catus", "Akkermansia_muciniphila")
-df <- df[ select, ]
+# Select certain bacteria that have highest growth rate
+select <- df[["growth_rate"]] |> abs() |> order(decreasing = FALSE)
+select <- df[select, "FeatureID"] |> unique() |> head(3)
+df <- df[ which(df[["FeatureID"]] \%in\% select), ]
 
 # Plot results
 library(ggplot2)
 p <- ggplot(df, aes(x = Time.hr, y = growth_rate, colour = FeatureID)) +
-    geom_smooth() +
+    geom_smooth(level = 0.5) +
     facet_grid(. ~ StudyIdentifier, scales = "free") +
     scale_y_log10()
 p
