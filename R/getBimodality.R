@@ -58,7 +58,6 @@
 #'
 #' @examples
 #' library(miaTime)
-#' library(mia)
 #'
 #' data(SilvermanAGutData)
 #' tse <- SilvermanAGutData

@@ -1,4 +1,6 @@
-#' @name addBaselineDivergence
+#' @name
+#' getBaselineDivergence
+#'
 #' @export
 #'
 #' @title
@@ -63,7 +65,6 @@
 #'
 #' @examples
 #' library(miaTime)
-#' library(mia)
 #'
 #' data(hitchip1006)
 #' tse <- transformAssay(hitchip1006, method = "relabundance")
@@ -94,7 +95,7 @@
 #'
 NULL
 
-#' @rdname addBaselineDivergence
+#' @rdname getBaselineDivergence
 #' @export
 setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     function(
@@ -155,7 +156,7 @@ setMethod("getBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     }
 )
 
-#' @rdname addBaselineDivergence
+#' @rdname getBaselineDivergence
 #' @export
 setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
     function(
@@ -356,6 +357,10 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 # This function get time difference between a sample and its reference sample
 #' @importFrom dplyr group_by mutate
 .get_time_difference <- function(x, time.col, reference, ...){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    temp_sample <- ":=" <- time <- .data <- NULL
+
     # Get timepoints
     time_point <- x[[time.col]]
     # Get reference time points

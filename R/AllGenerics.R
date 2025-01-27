@@ -1,22 +1,22 @@
 # All generic methods are listed here
 
-#' @rdname addBaselineDivergence
+#' @rdname getBaselineDivergence
 #' @export
 setGeneric("getBaselineDivergence", signature = "x", function(x, ...)
     standardGeneric("getBaselineDivergence"))
 
-#' @rdname addBaselineDivergence
+#' @rdname getBaselineDivergence
 #' @export
 setGeneric("addBaselineDivergence", signature = "x", function(x, ...)
     standardGeneric("addBaselineDivergence"))
 
-#' @rdname addStepwiseDivergence
+#' @rdname getStepwiseDivergence
 #' @export
 #'
 setGeneric("getStepwiseDivergence", signature = c("x"), function(x, ...)
     standardGeneric("getStepwiseDivergence"))
 
-#' @rdname addStepwiseDivergence
+#' @rdname getStepwiseDivergence
 #' @export
 setGeneric("addStepwiseDivergence", signature = "x", function(x, ...)
     standardGeneric("addStepwiseDivergence"))
@@ -30,3 +30,13 @@ setGeneric("getBimodality", signature = "x", function(x, ...)
 #' @export
 setGeneric("addBimodality", signature = "x", function(x, ...)
     standardGeneric("addBimodality"))
+
+#' @rdname getShortTermChange
+#' @export
+setGeneric("addShortTermChange", signature = "x", function(x, ...)
+    standardGeneric("addShortTermChange"))
+
+#' @rdname getShortTermChange
+#' @export
+setGeneric("getShortTermChange", signature = "x", function(x, ...)
+    standardGeneric("getShortTermChange"))
