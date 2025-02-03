@@ -56,7 +56,8 @@
 
     # If length was provided
     if( !is.null(length) ){
-        msg <- paste0(msg, " The length must be ", length, ".")
+        msg <- paste0(msg, " The length must be ",
+            paste0(length, collapse = " or "), ".")
     }
 
     # List all the input types. Run the check if the variable must be that type.
@@ -101,8 +102,12 @@
     if( "matrix" %in% classes_char && is.matrix(variable) ){
         input_correct <- TRUE
     }
-    # If supported values were provided
-    if( !is.null(supported_values) && !is.null(variable) ){
+    # If supported values were provided. Check these only if the variable
+    # is not correctly numeric or NULL.
+    num_types <- c("numeric vector", "numeric scalar", "integer vector",
+        "integer scalar")
+    is_num <- any(num_types %in% classes_char) && is.numeric(variable)
+    if( !is.null(supported_values) && !is.null(variable) && !is_num ){
         # Test that if variable is in supported values
         values_correct <- lapply(supported_values, function(value){
             res <- FALSE
@@ -134,7 +139,8 @@
         }
     }
     # Check length if provided
-    if( !is.null(length) && length(variable) != length ){
+    if( !is.null(variable) && !is.null(length) &&
+            !length(variable) %in% length ){
         input_correct <- FALSE
     }
     # Give error if variable was not correct type

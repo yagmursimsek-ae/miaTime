@@ -87,7 +87,8 @@ NULL
 #' @rdname getStability
 #' @export
 setMethod("getStability", signature = c(x = "SummarizedExperiment"),
-    function(x, time.col, assay.type = "counts", group = NULL, ...){
+    function(x, time.col, assay.type = "counts", reference = NULL, group = NULL,
+        ...){
         ############################## Input check #############################
         x <- .check_and_get_altExp(x, ...)
         temp <- .check_input(
@@ -99,12 +100,31 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
         .check_assay_present(assay.type, x)
         temp <- .check_input(
             group, list(NULL, "character scalar"), colnames(colData(x)))
+        # The reference must be NULL or column name from rowData. Additionally,
+        # it can be numeric vector but then user must specify reference value
+        # for each feature (or global reference).
+        temp <- .check_input(
+            reference,
+            list(NULL, "character scalar", "numeric vector"),
+            supported_values = colnames(rowData(x)),
+            length = c(1L, nrow(x))
+            )
+        # If user provided numeric references, add them to rowData
+        if( is.numeric(reference) ){
+            ref_name <- "reference_values"
+            rowData(x)[[ref_name]] <- reference
+            reference <- ref_name
+        }
         ########################### Input check end ############################
         # Get data into long format
-        df <- meltSE(x, assay.type, add.col = c(time.col, group))
+        df <- meltSE(
+            x, assay.type, add.col = c(time.col, group), add.row = reference)
+        # If there are duplicated samples, calculate average
+        df <- .summarize_duplicates(
+            df, assay.type, "FeatureID", time.col, group)
         # Calculate metrics for stability calculation
         df <- .calculate_stability_metrics(
-            df, assay.type, time.col, group, ...)
+            df, assay.type, time.col, reference, group, ...)
         # Calculate stability based on calculated metrics
         res <- .calculate_stability(df, group, ...)
         # Sort the data so that it matches with original order
@@ -115,38 +135,59 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 
 ################################ HELP FUNCTIONS ################################
 
-# This function calculates the metrics that will be later used for calculating
-# of stability.
-#' @importFrom dplyr arrange group_by sym summarise mutate select
-.calculate_stability_metrics <- function(
-        df, assay.type, time.col, group, time.interval = 1L, ...) {
-    #
-    temp <- .check_input(time.interval, list("numeric scalar"))
+# The dataset can include duplicated samples, i.e., multiple samples for
+# each patient in certain time point. This function can be utilized to summarize
+# these samples so that for each feature, there is only one data point for
+# each patient, time point and feature.
+#' @importFrom dplyr group_by accross all_of mutate ungroup distinct
+.summarize_duplicates <- function(
+        df, assay.type, feature.id = NULL, time.col = NULL, group = NULL){
     # If there are replicated samples, give warning that average is calculated
-    if( anyDuplicated(df[, c("FeatureID", group, time.col)]) ){
+    if( anyDuplicated(df[, c(feature.id, group, time.col)]) ){
         message("The dataset contains replicated samples. The average ",
                 "abundance is calculated for each time point.")
+        # Summarize duplicated samples by taking an average
+        df <- df |>
+            # Take unique set based on sample group, feature and time point
+            group_by(across(all_of(c(group, feature.id, time.col)))) |>
+            # Summarize them
+            mutate(!!assay.type := mean(.data[[assay.type]], na.rm = TRUE)) |>
+            ungroup() |>
+            # Keep only unique rows
+            distinct(across(all_of(c(group, feature.id, time.col))),
+                .keep_all = TRUE)
     }
+    return(df)
+}
+
+# This function calculates the metrics that will be later used for calculating
+# of stability.
+#' @importFrom dplyr arrange group_by mutate lag filter_at vars all_vars
+.calculate_stability_metrics <- function(
+        df, assay.type, time.col, reference, group, time.interval = 1L, ...){
+    #
+    temp <- .check_input(time.interval, list("numeric scalar"))
     # Sort data based on time
     df <- df |> arrange( !!sym(time.col) )
     # Group based on features and time points. If group was specified, take that
     # also into account
-    if( !is.null(group) ){
-        df <- df |> group_by(!!sym(group), FeatureID, !!sym(time.col))
-    } else{
-        df <- df |> group_by(FeatureID, !!sym(time.col))
+    df <- df |> group_by(across(all_of(c(group, "FeatureID"))))
+    # If reference was not provided, calculate default reference values, i.e,
+    # median for each feature and system.
+    if( is.null(reference) ){
+        reference <- "ref_values"
+        df <- df |>
+            mutate(!!reference := median(.data[[assay.type]], na.rm = TRUE))
     }
     # Calculate metrics for stability
     df <- df |>
-        # Summarize duplicated samples by taking an average
-        summarise(value = mean(.data[[assay.type]], na.rm = TRUE)) |>
-        # Calculate metrics
         mutate(
             # Difference between current and previous time point
-            curr_vs_prev = value - lag(value, n = time.interval),
-            # Difference between current time point and feature's median
-            prev_vs_ref = lag(value, n = time.interval) -
-                mean(range(value, na.rm = TRUE)),
+            curr_vs_prev = .data[[assay.type]] -
+                lag(.data[[assay.type]], n = time.interval),
+            # Difference between current time point and reference point
+            prev_vs_ref = lag(.data[[assay.type]], n = time.interval) -
+                .data[[reference]],
             # Time difference between consecutive time points
             time_diff = .data[[time.col]] -
                 lag(.data[[time.col]], n = time.interval)
