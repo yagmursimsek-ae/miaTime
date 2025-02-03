@@ -103,11 +103,9 @@
         input_correct <- TRUE
     }
     # If supported values were provided. Check these only if the variable
-    # is not correctly numeric or NULL.
-    num_types <- c("numeric vector", "numeric scalar", "integer vector",
-        "integer scalar")
-    is_num <- any(num_types %in% classes_char) && is.numeric(variable)
-    if( !is.null(supported_values) && !is.null(variable) && !is_num ){
+    # is not numeric, NULL or list.
+    if( !is.null(variable) && !is.numeric(variable) &&
+            !is.list(variable) ){
         # Test that if variable is in supported values
         values_correct <- lapply(supported_values, function(value){
             res <- FALSE

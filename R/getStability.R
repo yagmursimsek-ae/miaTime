@@ -105,26 +105,24 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
         # for each feature (or global reference).
         temp <- .check_input(
             reference,
-            list(NULL, "character scalar", "numeric vector"),
+            list(NULL, "character scalar", "numeric vector", "list"),
             supported_values = colnames(rowData(x)),
             length = c(1L, nrow(x))
             )
-        # If user provided numeric references, add them to rowData
-        if( is.numeric(reference) ){
-            ref_name <- "reference_values"
-            rowData(x)[[ref_name]] <- reference
-            reference <- ref_name
-        }
         ########################### Input check end ############################
         # Get data into long format
-        df <- meltSE(
-            x, assay.type, add.col = c(time.col, group), add.row = reference)
+        df <- meltSE(x, assay.type, add.col = c(time.col, group))
         # If there are duplicated samples, calculate average
         df <- .summarize_duplicates(
             df, assay.type, "FeatureID", time.col, group)
+        # Add reference values to df
+        args <- .add_reference_for_stability(
+            df, x, assay.type, reference, group)
         # Calculate metrics for stability calculation
-        df <- .calculate_stability_metrics(
-            df, assay.type, time.col, reference, group, ...)
+        args <- c(args,
+            list(assay.type = assay.type, time.col = time.col, group = group),
+            list(...))
+        df <- do.call(.calculate_stability_metrics, args)
         # Calculate stability based on calculated metrics
         res <- .calculate_stability(df, group, ...)
         # Sort the data so that it matches with original order
@@ -139,7 +137,7 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 # each patient in certain time point. This function can be utilized to summarize
 # these samples so that for each feature, there is only one data point for
 # each patient, time point and feature.
-#' @importFrom dplyr group_by accross all_of mutate ungroup distinct
+#' @importFrom dplyr group_by across all_of mutate ungroup distinct
 .summarize_duplicates <- function(
         df, assay.type, feature.id = NULL, time.col = NULL, group = NULL){
     # If there are replicated samples, give warning that average is calculated
@@ -160,27 +158,94 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
     return(df)
 }
 
+# This function adds reference values to the data.
+.add_reference_for_stability <- function(df, x, assay.type, reference, group){
+    ref_name <- "ref_values"
+    # If user did not specify reference, get default
+    if( is.null(reference) ){
+        df <- .default_reference_for_stability(df, assay.type, group, ref_name)
+    } else{
+        # If user specified reference values, add them to df
+        df <- .custom_reference_for_stability(df, x, reference, group, ref_name)
+    }
+    args <- list(df = df, reference = ref_name)
+    return(args)
+}
+
+# This function calculate the default reference values and adds them to data.
+#' @importFrom dplyr group_by across all_of mutate ungroup
+.default_reference_for_stability <- function(df, assay.type, group, ref.name){
+    # If reference was not provided, calculate default reference values,
+    # i.e, median for each feature and system.
+    df <- df |> group_by(across(all_of(c(group, "FeatureID")))) |>
+        mutate(!!ref.name := median(.data[[assay.type]], na.rm = TRUE)) |>
+        ungroup()
+    return(df)
+}
+
+# This function adds user-specified reference values to the data.
+.custom_reference_for_stability <- function(df, x, reference, group, ref.name){
+    # If reference is a list, group must be specified
+    if( is.list(reference) && is.null(group) ){
+        stop("'reference' cannot be a list if 'group' is not specified. ",
+            "Please use simple vector.", call. = FALSE)
+    }
+    # If user gave a list as reference, it must include reference for each
+    # system. To map refernce values correctly, also system names must be
+    # included. Moreover, the values must be numeric
+    if( is.list(reference) &&
+            !(all(lengths(reference) == length(unique((df[[group]])))) &&
+            all(x[[group]] %in% unique(names(unlist(reference)))) &&
+            all(is.numeric(unlist(reference)))
+            ) ){
+        stop("If 'reference' is provided as a list, all values must be ",
+            "numeric. Additionally, each group must have a corresponding ",
+            "reference value, and these values must be named to match the ",
+            "groups specified in 'group'.", call. = FALSE)
+    }
+
+    # If reference is just single numeric value, expand it for all features
+    if( .is_a_numeric(reference) ){
+        reference <- rep(reference, nrow(x))
+    }
+    # If reference specifies a field from rowData, get the values
+    if( .is_non_empty_string(reference) ){
+        reference <- rowData(x)[[reference]]
+    }
+    # If the reference is a list, create a data.frame that can be matched with
+    # the data. The data.frame will include rownames, groups and reference
+    # values
+    if( is.list(reference) ){
+        names(reference) <- rownames(x)
+        reference <- reference |> as.data.frame() |> t() |> stack() |>
+            as.data.frame()
+        colnames(reference) <- c("FeatureID", group, ref.name)
+    } else{
+        # If reference was a vector, convert it to data.frame that can be
+        # added to data
+        reference <- setNames(
+            data.frame(rownames(x), reference) , c("FeatureID", ref.name))
+    }
+    # Add references to the data
+    df <- dplyr::left_join(
+        df, reference, by = intersect(colnames(df), colnames(reference)))
+    return(df)
+}
+
 # This function calculates the metrics that will be later used for calculating
 # of stability.
-#' @importFrom dplyr arrange group_by mutate lag filter_at vars all_vars
+#' @importFrom dplyr arrange group_by across all_of mutate lag filter_at vars
+#'     all_vars
 .calculate_stability_metrics <- function(
         df, assay.type, time.col, reference, group, time.interval = 1L, ...){
     #
     temp <- .check_input(time.interval, list("numeric scalar"))
     # Sort data based on time
     df <- df |> arrange( !!sym(time.col) )
-    # Group based on features and time points. If group was specified, take that
-    # also into account
-    df <- df |> group_by(across(all_of(c(group, "FeatureID"))))
-    # If reference was not provided, calculate default reference values, i.e,
-    # median for each feature and system.
-    if( is.null(reference) ){
-        reference <- "ref_values"
-        df <- df |>
-            mutate(!!reference := median(.data[[assay.type]], na.rm = TRUE))
-    }
     # Calculate metrics for stability
     df <- df |>
+        # Take unique set based on sample group, feature and time point
+        group_by(across(all_of(c(group, "FeatureID")))) |>
         mutate(
             # Difference between current and previous time point
             curr_vs_prev = .data[[assay.type]] -
@@ -201,7 +266,7 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
     # calculate the difference between consecutive time points.
     if( nrow(df) == 0L ){
         stop("Cannot calculate the difference between consecutive time points ",
-            "with 'ẗime.interval=", time.interval, "'.", call. = FALSE)
+            "with 'time.interval=", time.interval, "'.", call. = FALSE)
     }
     return(df)
 }

@@ -7,7 +7,14 @@
 \usage{
 getStability(x, ...)
 
-\S4method{getStability}{SummarizedExperiment}(x, time.col, assay.type = "counts", group = NULL, ...)
+\S4method{getStability}{SummarizedExperiment}(
+  x,
+  time.col,
+  assay.type = "counts",
+  reference = NULL,
+  group = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{A
@@ -27,6 +34,10 @@ step, then increase this accordingly. (Default: \code{1L})
 
 \item{assay.type}{\code{Character scalar}. Specifies which assay values are
 used in the dissimilarity estimation. (Default: \code{"counts"})}
+
+\item{reference}{\code{Character scalar}. Specifies a name of the column from
+\code{colData} that identifies the baseline samples to be used.
+(Default: \code{NULL})}
 
 \item{group}{\code{Character scalar}. Specifies a name of the column from
 \code{colData} that identifies the grouping of the samples.
