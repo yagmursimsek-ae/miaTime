@@ -273,26 +273,59 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 
 # This function facilitates the actual calculation of stability based on the
 # previously calculated metrics.
-.calculate_stability <- function(df, group, ...){
+#' @importFrom dplyr group_by across all_of mutate ungroup distinct select
+#'     any_of ungroup
+#' @importFrom tidyr pivot_wider
+.calculate_stability <- function(df, group, calc.separately = FALSE, ...){
+    temp <- .check_input(calc.separately, list("logical scalar"))
     # Group based on feature so that we calculate stability for each feature.
     # If sample group was also specified, apply also it so that we calculate
-    # stability for4 each feature-patient/system pair.
-    if( !is.null(group) ){
-        df <- df |> group_by(!!sym(group), FeatureID)
-    } else{
-        df <- df |> group_by(FeatureID)
-    }
+    # stability for each feature-patient/system pair.
+    df <- df |> group_by(across(all_of(c(group, "FeatureID"))))
     # Calculate stability. We use help function to apply and control how the
     # stability is calculated.
-    df <- df |> summarise(
+    df <- df |> mutate(
         stability = .calc_stability(.data, ...)
-    )
+    ) |> ungroup()
+
+    # If user wants to calculate separately stability for values that are
+    # less or greater than reference
+    if( calc.separately ){
+        # Create column that tells if the data point is larger than reference
+        df[["larger_than_ref"]] <- ifelse(
+            df[["prev_vs_ref"]] > 0, "stability_right", "stability_left")
+        # For each group and feature, calculate left and right stability
+        # separately
+        df <- df |>
+            group_by(across(all_of(c(group, "FeatureID", "larger_than_ref"))))
+        df <- df |> mutate(
+            stability_sep = .calc_stability(.data, ...)
+        ) |> ungroup()
+    }
+    # Get taxa names and stability values
+    df <- df |>
+        select(any_of(c(
+            "FeatureID", group, "stability", "larger_than_ref",
+            "stability_sep"))) |> distinct()
+    # If we also calculated stability separately for left and right, currently
+    # they are in long format. Modify the data so that left and right values
+    # are in own columns
+    if( calc.separately ){
+        df <- df |> pivot_wider(
+            names_from = larger_than_ref, values_from = stability_sep)
+    }
+
     # If we had sample groups, we put each sample group to own columns.
     # Otherwise we have single column which contain stability values for each
     # feature.
     if( !is.null(group) ){
-        df <- df |>
-            pivot_wider(names_from = group, values_from = stability)
+        df <-  df |>
+            group_by(across(all_of(c(group, "FeatureID")))) |>
+            pivot_wider(
+                names_from = group,
+                values_from = any_of(c(
+                    "stability", "stability_left", "stability_right"))
+            ) |> ungroup()
     }
     # Convert tibble to DF and wrangle rownames.
     df <- DataFrame(df, check.names = FALSE)

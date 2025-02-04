@@ -104,8 +104,8 @@
     }
     # If supported values were provided. Check these only if the variable
     # is not numeric, NULL or list.
-    if( !is.null(variable) && !is.numeric(variable) &&
-            !is.list(variable) ){
+    if( !is.null(supported_values) && !is.null(variable) &&
+            !is.numeric(variable) && !is.list(variable) ){
         # Test that if variable is in supported values
         values_correct <- lapply(supported_values, function(value){
             res <- FALSE
