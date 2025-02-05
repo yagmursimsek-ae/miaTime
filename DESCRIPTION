@@ -1,7 +1,7 @@
 Package: miaTime
 Type: Package
 Title: Microbiome Time Series Analysis
-Version: 0.99.4
+Version: 0.99.5
 Authors@R:
      c(person(given = "Leo", family = "Lahti", role = c("aut"),
               email = "leo.lahti@iki.fi",
@@ -29,6 +29,7 @@ Imports:
     methods,
     S4Vectors,
     SingleCellExperiment,
+    stats,
     SummarizedExperiment,
     tidyr,
     TreeSummarizedExperiment

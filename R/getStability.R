@@ -4,16 +4,22 @@
 #' @export
 #'
 #' @title
-#' Calculate stability
+#' Estimate stability
 #'
 #' @description
-#' ADD.
+#' Quantify intermediate stability with respect to a given reference point.
 #'
 #' @details
-#' The stability is calculated by first defining reference point, \eqn{R_{f}},
-#' for each feature. This is defined by taking mean of range of values
+#' These methods estimate intermediate stability described in Lahti et al. 2014.
+#' The method is heuristic and makes many simplifying assumptions. However, the
+#' stability estimation can be useful for exploration, and can provide a
+#' baseline for more advanced measures.
 #'
-#' \deqn{R_{f} = \frac{x_{f, min} + x_{f, max}}{2}}
+#' The stability is calculated by first defining reference point, \eqn{R_{f}},
+#' for each feature. User can define the reference points with \code{reference}.
+#' If reference points are not defined, they are calculated by taking median
+#'
+#' \deqn{R_{f} = median(x_{f})}
 #'
 #' where \eqn{f} denotes a single feature and \eqn{x} abundance.
 #'
@@ -46,9 +52,17 @@
 #' Nat Commun. doi: 10.1038/ncomms5344
 #'
 #' @return
-#' Add here
+#' \code{getStability} returns \code{DataFrame} while \code{addStability}
+#' returns results added to its \code{rowData(x)}.
 #'
 #' @inheritParams addBaselineDivergence
+#'
+#' @param name \code{Character scalar}. Specifies a column name for storing
+#' stability results. (Default: \code{"stability"})
+#'
+#' @param reference \code{Character scalar}. Specifies a column from
+#' \code{rowData(x)} that determines the reference points. If \code{NULL},
+#' the default reference is used. (Default: \code{NULL})
 #'
 #' @param ... additional arguments.
 #' \itemize{
@@ -56,6 +70,14 @@
 #'   between time steps. By default, the function compares each sample to the
 #'   previous one. If you need to take every second, every third, or so, time
 #'   step, then increase this accordingly. (Default: \code{1L})
+#'
+#'   \item \code{calc.separately}: \code{Logical scalar}. Specifies whether to
+#'   calculate stability separately for data points with abundance below or
+#'   at/above the reference point. (Defaul: \code{FALSE})
+#'
+#'   \item \code{mode}: \code{Character scalar}. Specifies whether to calculate
+#'   stability using correlation ("correlation") or a linear model ("lm").
+#'   (Default: \code{"correlation"})
 #' }
 #
 #' @examples
@@ -70,19 +92,37 @@
 #'
 #' # Calculate stability single system
 #' tse_sub <- tse[, tse[["StudyIdentifier"]] == "Bioreactor A"]
-#' res <- getStability(tse_sub, assay.type = "rclr", time.col = "Time.hr")
-#' res |> head()
+#' tse_sub <- addStability(tse_sub, assay.type = "rclr", time.col = "Time.hr")
+#' rowData(tse_sub)
 #'
-#' # Calculate stability for each  system simultaneously by taking time
+#' # Add custom reference values
+#' rowData(tse)[["ref_col"]] <- 1
+#' # Calculate stability for each system simultaneously by taking time
 #' # difference into account
-#' res <- getStability(
+#' tse <- addStability(
 #'     tse, assay.type = "rclr", time.col = "Time.hr",
-#'     group = "StudyIdentifier", mode = "lm")
-#' res |> head()
+#'     group = "StudyIdentifier", ref_col = "ref_col", mode = "lm")
+#' rowData(tse)
 #'
 #' @seealso
 #' \code{\link[miaTime:getBimodality]{getBimodality()}}
 NULL
+
+
+#' @rdname getStability
+#' @export
+setMethod("addStability", signature = c(x = "SummarizedExperiment"),
+    function(x, time.col, name = "stability", ...){
+        .check_input(name, "character scalar")
+        x <- .check_and_get_altExp(x, ...)
+        args <- c(
+            list(x = x, time.col = time.col, name = name),
+            list(...)[!names(list(...)) %in% c("altexp")])
+        res <- do.call(getStability, args) |> as.list()
+        x <- .add_values_to_colData(x, unname(res), names(res), MARGIN = 1L)
+        return(x)
+    }
+)
 
 #' @rdname getStability
 #' @export
@@ -92,10 +132,10 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
         ############################## Input check #############################
         x <- .check_and_get_altExp(x, ...)
         temp <- .check_input(
-          time.col, list("character scalar"), colnames(colData(x)))
+            time.col, list("character scalar"), colnames(colData(x)))
         if( !is.numeric(x[[time.col]]) ){
-          stop("'time.col' must specify numeric column from colData(x)",
-               call. = FALSE)
+            stop("'time.col' must specify numeric column from colData(x)",
+                call. = FALSE)
         }
         .check_assay_present(assay.type, x)
         temp <- .check_input(
@@ -140,6 +180,10 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 #' @importFrom dplyr group_by across all_of mutate ungroup distinct
 .summarize_duplicates <- function(
         df, assay.type, feature.id = NULL, time.col = NULL, group = NULL){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    ":=" <- .data <- NULL
+
     # If there are replicated samples, give warning that average is calculated
     if( anyDuplicated(df[, c(feature.id, group, time.col)]) ){
         message("The dataset contains replicated samples. The average ",
@@ -175,6 +219,10 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 # This function calculate the default reference values and adds them to data.
 #' @importFrom dplyr group_by across all_of mutate ungroup
 .default_reference_for_stability <- function(df, assay.type, group, ref.name){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    ":=" <- .data <- NULL
+
     # If reference was not provided, calculate default reference values,
     # i.e, median for each feature and system.
     df <- df |> group_by(across(all_of(c(group, "FeatureID")))) |>
@@ -184,7 +232,12 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 }
 
 # This function adds user-specified reference values to the data.
+#' @importFrom stats setNames median
 .custom_reference_for_stability <- function(df, x, reference, group, ref.name){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    ":=" <- .data <- NULL
+
     # If reference is a list, group must be specified
     if( is.list(reference) && is.null(group) ){
         stop("'reference' cannot be a list if 'group' is not specified. ",
@@ -241,7 +294,10 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 #'     all_vars
 .calculate_stability_metrics <- function(
         df, assay.type, time.col, reference, group, time.interval = 1L, ...){
-    #
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    .data <- curr_vs_prev <- prev_vs_ref <- time_diff <- "." <- NULL
+
     temp <- .check_input(time.interval, list("integer scalar"))
     # Sort data based on time
     df <- df |> arrange( !!sym(time.col) )
@@ -277,9 +333,15 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 # This function facilitates the actual calculation of stability based on the
 # previously calculated metrics.
 #' @importFrom dplyr group_by across all_of mutate ungroup distinct select
-#'     any_of ungroup
+#'     any_of ungroup rename_with if_else
 #' @importFrom tidyr pivot_wider
-.calculate_stability <- function(df, group, calc.separately = FALSE, ...){
+.calculate_stability <- function(
+        df, group, name = "stability", calc.separately = FALSE, ...){
+    # This following line is to suppress "no visible binding for" messages
+    # in cmdcheck
+    .data <- larger_than_ref <- stability_sep <- NULL
+
+    temp <- .check_input(name, list("character scalar"))
     temp <- .check_input(calc.separately, list("logical scalar"))
     # Group based on feature so that we calculate stability for each feature.
     # If sample group was also specified, apply also it so that we calculate
@@ -296,7 +358,7 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
     if( calc.separately ){
         # Create column that tells if the data point is larger than reference
         df[["larger_than_ref"]] <- ifelse(
-            df[["prev_vs_ref"]] > 0, "stability_right", "stability_left")
+            df[["prev_vs_ref"]] >= 0, "stability_(>=)", "stability_(<)")
         # For each group and feature, calculate left and right stability
         # separately
         df <- df |>
@@ -327,18 +389,24 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
             pivot_wider(
                 names_from = group,
                 values_from = any_of(c(
-                    "stability", "stability_left", "stability_right"))
+                    "stability", "stability_(<)", "stability_(>=)"))
             ) |> ungroup()
     }
     # Convert tibble to DF and wrangle rownames.
     df <- DataFrame(df, check.names = FALSE)
     rownames(df) <- df[["FeatureID"]]
     df[["FeatureID"]] <- NULL
+    # Adjust names. Add user-specified column names.
+    colnames(df) <- ifelse(
+        grepl("^stability", colnames(df)),
+        colnames(df), paste0("stability_", colnames(df)))
+    colnames(df) <- gsub("stability", name, colnames(df))
     return(df)
 }
 
 # This function is used to control how the stability is calculated. As an input
 # we get values for single system and feature.
+#' @importFrom stats lm coef
 .calc_stability <- function(.data, mode = "correlation", ...){
     .check_input(mode, list("character scalar"), list("correlation", "lm"))
     # Get metrics

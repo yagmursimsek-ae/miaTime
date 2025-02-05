@@ -92,7 +92,10 @@ setMethod("addBimodality", signature = c(x = "SummarizedExperiment"),
     function(x, name = "bimodality", ...){
         .check_input(name, "character scalar")
         x <- .check_and_get_altExp(x, ...)
-        res <- getBimodality(x, name = name, ...) |> as.list()
+        args <- c(
+            list(x = x, name = name),
+            list(...)[!names(list(...)) %in% c("altexp")])
+        res <- do.call(getBimodality, args) |> as.list()
         x <- .add_values_to_colData(x, unname(res), names(res), MARGIN = 1L)
         return(x)
     }

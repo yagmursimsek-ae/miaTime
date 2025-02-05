@@ -20,9 +20,10 @@ test_that("getStability calculates correctly",{
     # Remove duplicated samples
     tse <- tse[ , !duplicated(colData(tse)[, c("Time")])]
     #
-    res <- getStability(tse, "Time") |> expect_no_message()
+    res <- getStability(tse, "Time", name = "test") |> expect_no_message()
     expect_s4_class(res, "DataFrame")
     expect_equal(ncol(res), 1L)
+    expect_equal(colnames(res), "test")
     #
     ref <- sapply(rownames(tse), function(feat){
         # Get data for single taxon
@@ -43,6 +44,20 @@ test_that("getStability calculates correctly",{
     expect_equal(res[[1]], unname(ref))
 })
 
+# Check that add* equals to get*
+test_that("addStability equals to getStability",{
+    tse <- makeTSE(nrow = 10L, ncol = 200L)
+    assay(tse, "counts", withDimnames = FALSE) <- matrix(
+        rnorm(10*200), nrow = 10L, ncol = 200L)
+    tse[["Time"]] <- sample(seq(1, 5), 200, replace = TRUE)
+    #
+    res <- getStability(tse, "Time", name = "test") |> expect_message()
+    expect_s4_class(res, "DataFrame")
+    tse <- addStability(tse, "Time", name = "test") |> expect_message()
+    expect_s4_class(tse, "TreeSummarizedExperiment")
+    expect_equal(res, rowData(tse)[, colnames(res), drop = FALSE])
+})
+
 # Check that stability is correctly calculated with groups
 test_that("getStability calculates correctly with groups",{
     tse <- makeTSE(nrow = 1000, ncol = 200)
@@ -52,10 +67,13 @@ test_that("getStability calculates correctly with groups",{
     # Remove duplicated samples
     tse <- tse[ , !duplicated(colData(tse)[, c("group", "Time")])]
     #
-    res_all <- getStability(tse, "Time", group = "group") |> expect_no_message()
+    res_all <- getStability(tse, "Time", group = "group", name = "test") |>
+        expect_no_message()
     expect_equal(ncol(res_all), length(unique(tse[["group"]])))
+    expect_true( all(grepl("test_", colnames(res_all))) )
     #
     tse_list <- splitOn(tse, by = 2L, group = "group")
+    tse_list <- tse_list[ gsub("test_", "", colnames(res_all)) ]
     res <- lapply(tse_list, function(x){
         getStability(x, "Time") |> expect_no_message()
     })

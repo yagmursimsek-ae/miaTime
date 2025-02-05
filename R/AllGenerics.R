@@ -45,3 +45,8 @@ setGeneric("getShortTermChange", signature = "x", function(x, ...)
 #' @export
 setGeneric("getStability", signature = "x", function(x, ...)
     standardGeneric("getStability"))
+
+#' @rdname getStability
+#' @export
+setGeneric("addStability", signature = "x", function(x, ...)
+    standardGeneric("addStability"))

@@ -2,10 +2,16 @@
 % Please edit documentation in R/AllGenerics.R, R/getStability.R
 \name{getStability}
 \alias{getStability}
+\alias{addStability}
+\alias{addStability,SummarizedExperiment-method}
 \alias{getStability,SummarizedExperiment-method}
-\title{Calculate stability}
+\title{Estimate stability}
 \usage{
 getStability(x, ...)
+
+addStability(x, ...)
+
+\S4method{addStability}{SummarizedExperiment}(x, time.col, name = "stability", ...)
 
 \S4method{getStability}{SummarizedExperiment}(
   x,
@@ -27,33 +33,51 @@ object.}
 between time steps. By default, the function compares each sample to the
 previous one. If you need to take every second, every third, or so, time
 step, then increase this accordingly. (Default: \code{1L})
+
+\item \code{calc.separately}: \code{Logical scalar}. Specifies whether to
+calculate stability separately for data points with abundance below or
+at/above the reference point. (Defaul: \code{FALSE})
+
+\item \code{mode}: \code{Character scalar}. Specifies whether to calculate
+stability using correlation ("correlation") or a linear model ("lm").
+(Default: \code{"correlation"})
 }}
 
 \item{time.col}{\code{Character scalar}. Specifies a name of the column from
 \code{colData} that identifies the sampling time points for the samples.}
 
+\item{name}{\code{Character scalar}. Specifies a column name for storing
+stability results. (Default: \code{"stability"})}
+
 \item{assay.type}{\code{Character scalar}. Specifies which assay values are
 used in the dissimilarity estimation. (Default: \code{"counts"})}
 
-\item{reference}{\code{Character scalar}. Specifies a name of the column from
-\code{colData} that identifies the baseline samples to be used.
-(Default: \code{NULL})}
+\item{reference}{\code{Character scalar}. Specifies a column from
+\code{rowData(x)} that determines the reference points. If \code{NULL},
+the default reference is used. (Default: \code{NULL})}
 
 \item{group}{\code{Character scalar}. Specifies a name of the column from
 \code{colData} that identifies the grouping of the samples.
 (Default: \code{NULL})}
 }
 \value{
-Add here
+\code{getStability} returns \code{DataFrame} while \code{addStability}
+returns results added to its \code{rowData(x)}.
 }
 \description{
-ADD.
+Quantify intermediate stability with respect to a given reference point.
 }
 \details{
-The stability is calculated by first defining reference point, \eqn{R_{f}},
-for each feature. This is defined by taking mean of range of values
+These methods estimate intermediate stability described in Lahti et al. 2014.
+The method is heuristic and makes many simplifying assumptions. However, the
+stability estimation can be useful for exploration, and can provide a
+baseline for more advanced measures.
 
-\deqn{R_{f} = \frac{x_{f, min} + x_{f, max}}{2}}
+The stability is calculated by first defining reference point, \eqn{R_{f}},
+for each feature. User can define the reference points with \code{reference}.
+If reference points are not defined, they are calculated by taking median
+
+\deqn{R_{f} = median(x_{f})}
 
 where \eqn{f} denotes a single feature and \eqn{x} abundance.
 
@@ -93,15 +117,17 @@ tse <- transformAssay(tse, method = "rclr")
 
 # Calculate stability single system
 tse_sub <- tse[, tse[["StudyIdentifier"]] == "Bioreactor A"]
-res <- getStability(tse_sub, assay.type = "rclr", time.col = "Time.hr")
-res |> head()
+tse_sub <- addStability(tse_sub, assay.type = "rclr", time.col = "Time.hr")
+rowData(tse_sub)
 
-# Calculate stability for each  system simultaneously by taking time
+# Add custom reference values
+rowData(tse)[["ref_col"]] <- 1
+# Calculate stability for each system simultaneously by taking time
 # difference into account
-res <- getStability(
+tse <- addStability(
     tse, assay.type = "rclr", time.col = "Time.hr",
-    group = "StudyIdentifier", mode = "lm")
-res |> head()
+    group = "StudyIdentifier", ref_col = "ref_col", mode = "lm")
+rowData(tse)
 
 }
 \references{
