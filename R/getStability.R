@@ -211,6 +211,9 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
     # If reference specifies a field from rowData, get the values
     if( .is_non_empty_string(reference) ){
         reference <- rowData(x)[[reference]]
+        # Check that reference is numeric. rowData variable is not checked
+        # before this point.
+        .check_input(reference, list("numeric vector"))
     }
     # If the reference is a list, create a data.frame that can be matched with
     # the data. The data.frame will include rownames, groups and reference
@@ -239,7 +242,7 @@ setMethod("getStability", signature = c(x = "SummarizedExperiment"),
 .calculate_stability_metrics <- function(
         df, assay.type, time.col, reference, group, time.interval = 1L, ...){
     #
-    temp <- .check_input(time.interval, list("numeric scalar"))
+    temp <- .check_input(time.interval, list("integer scalar"))
     # Sort data based on time
     df <- df |> arrange( !!sym(time.col) )
     # Calculate metrics for stability
