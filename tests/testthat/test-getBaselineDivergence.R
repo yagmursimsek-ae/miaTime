@@ -288,7 +288,7 @@ test_that(".convert_divergence_to_df with NA divergence values", {
 test_that("getBaselineDivergence with replicated samples", {
     tse <- makeTSE(nrow = 1000, ncol = 20)
     assayNames(tse) <- "counts"
-    colData(tse)[["time"]] <- sample(c(1, 3, 6, 100), 20, replace = TRUE)
+    colData(tse)[["time"]] <- sample(c(1, 3, 100), 20, replace = TRUE)
     res <- getBaselineDivergence(
         tse, time.col = "time", group = "group", method = "euclidean") |>
         expect_warning()
