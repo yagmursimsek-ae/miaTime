@@ -375,7 +375,6 @@ setMethod("addBaselineDivergence", signature = c(x = "SummarizedExperiment"),
 }
 
 # This function converts time divergence results to DF object
-#' @importFrom dplyr summarize
 .convert_divergence_to_df <- function(
         x, res, time_res, reference,
         name = c("divergence", "time_diff", "ref_samples"), ...){
